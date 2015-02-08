@@ -2,6 +2,8 @@ package com.example.android.location.Resource;
 
 import android.location.Location;
 
+import com.metaio.sdk.jni.IGeometry;
+
 /**
  * Created by Adisorn on 1/16/2015.
  */
@@ -10,12 +12,18 @@ public class MapObject {
     private double initialAngle;
     private double acceptableAngle;
     private double acceptableDistance;
+    private IGeometry model;
 
-    public MapObject(Location location,double acceptableAngle, double acceptableDistance, double initialAngle) {
-        this.acceptableAngle = acceptableAngle;
-        this.acceptableDistance = acceptableDistance;
-        this.initialAngle = initialAngle;
-        this.location = location;
+    public MapObject(IGeometry model) {
+        this.model = model;
+    }
+
+    public IGeometry getModel() {
+        return model;
+    }
+
+    public void setModel(IGeometry model) {
+        this.model = model;
     }
 
     public Location getLocation() {

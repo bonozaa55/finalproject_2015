@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="500dp"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="20dp"
+    android:background="@drawable/tbg5" >
+
+    <ListView
+        android:id="@+id/upgrade_listview"
+        android:layout_width="400dp"
+        android:layout_height="240dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp" >
+    </ListView>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="500dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/upgrade_listview"
+        android:layout_alignLeft="@+id/upgrade_listview" >
+
+        <TextView
+            android:id="@+id/static_upgrade_lv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="Enchantment of Kaioshin"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <ImageView
+            android:id="@+id/icon_item1"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="110dp"
+            android:src="@drawable/gold" />
+
+        <TextView
+            android:id="@+id/user_gold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/icon_item1"
+            android:layout_alignLeft="@+id/icon_item1"
+            android:layout_marginLeft="46dp"
+            android:text="56284"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:onClick="onButtonClick"
+        android:src="@drawable/cancel" />
+
+</RelativeLayout>

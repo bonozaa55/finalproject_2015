@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="#ECF0F1"
+        android:layout_width="580dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/relativeLayout">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:background="#E74C3C"
+            android:id="@+id/store_buy_potion"
+            android:layout_marginStart="45dp"
+            android:layout_alignTop="@+id/store_sell_item"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:background="#E74C3C"
+            android:id="@+id/store_sell_item"
+            android:layout_marginStart="30dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/store_buy_potion" />
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:text="Craft"
+            android:textStyle="bold"
+
+            android:textSize="20sp"
+            android:textColor="#ECF0F1"
+            android:background="#E74C3C"
+            android:id="@+id/store_craft"
+            android:layout_marginStart="30dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/store_sell_item" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:background="#E74C3C"
+            android:id="@+id/store_upgrade"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/store_craft"
+            android:layout_marginStart="30dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#E74C3C"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Store X"
+                android:textColor="#ECF0F1"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:id="@+id/textView3"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/store_cancle"
+                android:src="@drawable/cancel"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:layout_margin="10dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="5dp"
+                android:id="@+id/imageView5"
+                android:src="@drawable/gold_icon"
+                android:layout_gravity="left|center_vertical"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="9987845"
+                android:textStyle="bold"
+                android:textColor="#E74C3C"
+                android:id="@+id/textView2"
+                android:layout_gravity="right|center_vertical" />
+
+
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

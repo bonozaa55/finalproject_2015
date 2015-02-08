@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/myview"
+    android:orientation="vertical"
+    android:layout_width="250dp"
+    android:layout_height="240dp" >
+<!-- focused and pressed
+    android:background="@drawable/list_drawable" -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/icon_item0"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/item_name2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/item_name2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="Name"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/static_upgrade_cost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/static_upgrade_lv"
+            android:layout_below="@+id/static_upgrade_lv"
+            android:layout_marginTop="5dp"
+            android:text="Cost:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/upgrade_gold_cost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/static_upgrade_cost"
+            android:layout_alignBottom="@+id/static_upgrade_cost"
+            android:layout_toRightOf="@+id/static_upgrade_cost"
+            android:text="xxx"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/upgrade_lv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/static_upgrade_lv"
+            android:layout_alignBottom="@+id/static_upgrade_lv"
+            android:layout_toRightOf="@+id/static_upgrade_lv"
+            android:text="xxx"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <Button
+            android:id="@+id/Upgrade_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Upgrade" />
+
+        <TextView
+            android:id="@+id/static_upgrade_lv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/Upgrade_button"
+            android:layout_below="@+id/icon_item0"
+            android:layout_marginTop="5dp"
+            android:text="LV:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
+
+</LinearLayout>

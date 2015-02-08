@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Canvas;
+import android.content.res.Resources;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -14,36 +14,50 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.location.Interface.CustomView;
+import com.example.android.location.GameManagement.GameGenerator;
+import com.example.android.location.GameManagement.LocationObjectManager;
+import com.example.android.location.GameManagement.MapObjectManager;
+import com.example.android.location.GameManagement.MarkerObjectManager;
+import com.example.android.location.GameManagement.StoreManager;
+import com.example.android.location.Interface.MyCraftMissionManager;
+import com.example.android.location.Interface.TouchEffectView;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
-import com.example.android.location.Resource.LocalbasedMonster;
+import com.example.android.location.Resource.ItemsID;
+import com.example.android.location.Resource.ItemsLoader;
+import com.example.android.location.Resource.LocationBasedObject;
 import com.example.android.location.Resource.MapObject;
-import com.example.android.location.Resource.MarkerMonster;
-import com.example.android.location.Resource.ResourceManager;
+import com.example.android.location.Resource.MarkerObject;
+import com.example.android.location.Resource.ObjectID;
+import com.example.android.location.Resource.ObjectLoader;
+import com.example.android.location.Resource.Player;
+import com.example.android.location.Resource.PlayerItem;
 import com.example.android.location.Util.BackgroundLocationService;
 import com.example.android.location.Util.Constants;
+import com.example.android.location.Util.ImmersiveModeFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.MetaioDebug;
 import com.metaio.sdk.jni.ETRACKING_STATE;
@@ -53,38 +67,34 @@ import com.metaio.sdk.jni.IRadar;
 import com.metaio.sdk.jni.LLACoordinate;
 import com.metaio.sdk.jni.TrackingValues;
 import com.metaio.sdk.jni.TrackingValuesVector;
-import com.metaio.sdk.jni.Vector3d;
 import com.metaio.tools.SystemInfo;
 import com.metaio.tools.io.AssetsManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
-public class MainActivity extends ARViewActivity{
+public class MainActivity extends ARViewActivity {
 
-    static CustomView touchEffectView;
-
-
-    static boolean dialogState = false,geometryTouch=false;
-    private static TextView tBearing;
+    static Context thisContext;
     public static Vibrator mVibration;
+    static TouchEffectView touchEffectView;
+    static boolean dialogState = false, geometryTouch = false;
+    static int count = 0, hitPoint = 100;
+    private static TextView tBearing;
+    private static double phoneHeading;
     DialogInterface.OnClickListener dialogClickListener;
-    HashMap<String, String> markersIDAndType = new HashMap<String, String>();
     SensorManager mSensorManager;
-    ArrayList<MarkerMonster> markerMonster = new ArrayList<MarkerMonster>();
-    ArrayList<LocalbasedMonster> localbaseMonster = new ArrayList<LocalbasedMonster>();
+    ArrayList<MarkerObject> markerObject = new ArrayList<MarkerObject>();
+    ArrayList<LocationBasedObject> localbaseMonster = new ArrayList<LocationBasedObject>();
     ArrayList<MapObject> mapCollectableItemList = new ArrayList<MapObject>();
-    float phone_heading;
-    static int count = 0,hitPoint=100;
     int layoutID = R.layout.overlay_camera_layout;
     int found = 0, SDK_ready = 0, index = -1;
     IGeometry gLocalMonster;
     IGeometry gMarkerMonster;
     IGeometry gStoreObject;
-    LocalbasedMonster foundedLocalMonster;
-    MarkerMonster foundedMarkerMonster;
+    LocationBasedObject foundedLocalMonster;
+    MarkerObject foundedMarkerObject;
     boolean pause = true;
     int ViewState = -1;
     private Button resumeMapButton;
@@ -104,8 +114,26 @@ public class MainActivity extends ARViewActivity{
     private MetaioSDKCallbackHandler mCallbackHandler;
     private int timeCount = 0;
     private int maxTime = 200;
-    private boolean startCount = false, collectItemState = false, locationBasedMonsterState = false,markerBasedMonsterState=false;
+    private boolean startCount = false, collectItemState = false, locationBasedMonsterState = false, markerBasedMonsterState = false;
     private int gameState = 0;
+    private GameGenerator mGameGeneretor;
+    private MapObjectManager mMapObjectManager;
+    private LocationObjectManager mLocationBasedManager;
+    private MarkerObjectManager mMarkerObjectManager;
+    private int atkDMG = 0;
+    public static final String FRAGTAG = "ImmersiveModeFragment";
+
+    public static double getPhoneHeading() {
+        return MainActivity.phoneHeading;
+    }
+
+    public static void setHitPoint(int hitPoint) {
+        MainActivity.hitPoint = hitPoint;
+    }
+
+    public static Context getThisContext() {
+        return thisContext;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,7 +146,13 @@ public class MainActivity extends ARViewActivity{
         lReceiver = new LocationReceiver();
         intent_location = new Intent(this, BackgroundLocationService.class);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGTAG) == null ) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            ImmersiveModeFragment fragment = new ImmersiveModeFragment();
+            transaction.add(fragment, FRAGTAG);
+            transaction.commit();
+        }
+
         try {
             AssetsManager.extractAllAssets(this, true);
         } catch (IOException e) {
@@ -153,7 +187,6 @@ public class MainActivity extends ARViewActivity{
 
     @Override
     protected void onStop() {
-
         super.onStop();
     }
 
@@ -164,25 +197,113 @@ public class MainActivity extends ARViewActivity{
         mCallbackHandler = null;
     }
 
-
-
-
-
     @Override
     public void onDrawFrame() {
         super.onDrawFrame();
         if (startCount)
             timeCount++;
         if (timeCount >= maxTime) {
-            if(collectItemState)
+            if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_GATHERING)
                 metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
-            if(markerBasedMonsterState)
+            if (markerBasedMonsterState)
                 touchEffectView.setVisibility(View.GONE);
             timeCount = 0;
         }
         // checkDistanceToTarget();
     }
 
+    public void initResource() {
+        initInterface();
+        Player player=new Player();
+        Player.getPlayerItems().put(ItemsID.GOLD,new PlayerItem(ItemsID.GOLD,1000));
+        Player.getPlayerItems().put(ItemsID.ORE,new PlayerItem(ItemsID.ORE,3));
+        thisContext=getApplicationContext();
+        ItemsLoader itemsData=new ItemsLoader();
+        SDK_ready = 1;
+        mMapObjectManager = new MapObjectManager(metaioSDK);
+        mLocationBasedManager = new LocationObjectManager(mRadar, metaioSDK);
+        mMarkerObjectManager = new MarkerObjectManager(metaioSDK);
+        mGameGeneretor = new GameGenerator(this, metaioSDK, mMapObjectManager, mMarkerObjectManager, mLocationBasedManager, map);
+
+    }
+
+    public void initInterface() {
+
+        View mapLayout = mList.get(Constants.MAP_LAYOUT);
+        View overlayLayout = mList.get(Constants.OVERLAY_LAYOUT);
+        View craftLayout = mList.get(2);
+        final View storeLayout=mList.get(3);
+        StoreManager mStoreManager=new StoreManager(this);
+
+        final ProgressBar playerHPbar= (ProgressBar) overlayLayout.findViewById(R.id.overlay_player_hp);
+        final ProgressBar objectHPbar=(ProgressBar) overlayLayout.findViewById(R.id.overlay_object_hp);
+        //Drawable draw=getResources().getDrawable(R.drawable.customprogressbar);
+        //progressBar.setProgressDrawable(draw);
+        playerHPbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playerHPbar.setProgress(playerHPbar.getProgress()-10);
+                    }
+                }, 40);
+            }
+        });
+        objectHPbar.setRotation(180);
+        objectHPbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        objectHPbar.setProgress(objectHPbar.getProgress()-10);
+                    }
+                }, 40);
+            }
+        });
+
+
+
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        map.getUiSettings().setZoomControlsEnabled(false);
+        LatLng mapCenter = new LatLng(cLocation.getLatitude(), cLocation.getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, 18f));
+        map.setMyLocationEnabled(true);
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                sLocation = "2";
+            }
+        });
+        TextView t = (TextView) mapLayout.findViewById(R.id.bearing_text);
+        t.setVisibility(View.GONE);
+        Button b = (Button) mapLayout.findViewById(R.id.switch_location);
+        b.setVisibility(View.VISIBLE);
+        resumeMapButton = (Button) mapLayout.findViewById(R.id.toggleZoom);
+        tBearing = (TextView) findViewById(R.id.bearing_text);
+        tBearing.setVisibility(View.VISIBLE);
+        AddAllMarker();
+        ImageView interfaceCraftQuest = (ImageView) overlayLayout.findViewById(R.id.overlay_craft_quest_interface);
+
+        interfaceCraftQuest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mList.get(2).setVisibility(View.VISIBLE);
+               // mMyCraftMissionManager.checkCraftingMaterial();
+            }
+        });
+        View questInterface=overlayLayout.findViewById(R.id.overlay_quest_interface);
+        questInterface.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                storeLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        MyCraftMissionManager test=new MyCraftMissionManager(craftLayout,getSupportFragmentManager());
+
+    }
 
 
     public void initSensor() {
@@ -200,7 +321,7 @@ public class MainActivity extends ARViewActivity{
                     float[] orientation = new float[3];
                     SensorManager.getOrientation(mRotationMatrix, orientation);
                     float bearing = (float) (Math.toDegrees(orientation[0]) + mDeclination);
-                    phone_heading = bearing;
+                    phoneHeading = bearing;
                     if (SDK_ready == 1)
                         tBearing.setText(bearing + "");
                     updateCamera(bearing + 90);
@@ -218,32 +339,20 @@ public class MainActivity extends ARViewActivity{
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER
-                        && mList.size() == mlist_size
-                        && (ViewState == Constants.MAP_VISIBLE
+                        && mList.size() == mlist_size && (ViewState == Constants.MAP_VISIBLE
                         || ViewState == Constants.metaio_VISIBLE || ViewState == -1)) {
                     count++;
                     float z_value = event.values[2];
-                    // Log.i("kak",
                     // show map only a phone flip up
-                    /*Log.i("kak", event.values[0] + " " + event.values[1] + " "
-                            + event.values[2]);*/
                     if (count > 20) {
-                        if (z_value >= 8 && !collectItemState) {// map
-                            mList.get(Constants.OVERLAY_LAYOUT).setVisibility(View.GONE);
-                            mList.get(Constants.MAP_LAYOUT).setVisibility(View.VISIBLE);
-                            ViewState = Constants.MAP_VISIBLE;
-                            if (pause) {
-                                metaioSDK.pauseTracking();
-                                pause = false;
-                            }
-                        } else {
+                        if ((z_value < 8) || GlobalResource.getGAME_STATE() != GlobalResource.STATE_IDLE) {
                             mList.get(Constants.MAP_LAYOUT).setVisibility(View.GONE);
                             mList.get(Constants.OVERLAY_LAYOUT).setVisibility(View.VISIBLE);
                             ViewState = Constants.metaio_VISIBLE;
-                            if (!pause) {
-                                metaioSDK.resumeTracking();
-                                pause = true;
-                            }
+                        } else {// map
+                            mList.get(Constants.OVERLAY_LAYOUT).setVisibility(View.GONE);
+                            mList.get(Constants.MAP_LAYOUT).setVisibility(View.VISIBLE);
+                            ViewState = Constants.MAP_VISIBLE;
                         }
                         count = 0;
                     }
@@ -264,242 +373,15 @@ public class MainActivity extends ARViewActivity{
      * ******************************
      */
     public void AddAllMarker() {
-
-        map.clear();
-
-
         sLocation = "1";
-        LocalbasedMonster tMonster = new LocalbasedMonster(18.796535, 98.952877, -130f, 30, 15);
-        /*LocalbasedMonster tMonster2 = new LocalbasedMonster(18.796526,
-                98.952473, -130f, 30, 20);*/
-        /*
-         * LocalbasedMonster tMonster3 = new LocalbasedMonster(18.799983,
-		 * 98.9597227, -130f, 30, 20);
-		 */
-        localbaseMonster.add(tMonster);
-        //localbaseMonster.add(tMonster2);
-        // localbaseMonster.add(tMonster3);
-        MarkerMonster t1 = new MarkerMonster(18.796425, 98.953134, 130f, 45,
-                15, "ENG");
-        /*MarkerMonster t1 = new MarkerMonster(18.799983, 98.9597227, -130f, 45,
-                20, "ENG");*/
-        markerMonster.add(t1);
-        MarkerMonster t2 = new MarkerMonster(18.795768, 98.952795, 130f, 45,
-                20, "SPIC");
-        markerMonster.add(t2);
-        for (LocalbasedMonster t : localbaseMonster)
-            addMarker(t.getLocation(), R.drawable.monster2, "Monster");
-        for (MarkerMonster t : markerMonster)
-            addMarker(t.getLocation(), R.drawable.monster_marker_icon,
-                    "Monster");
-        Location temp = new Location("");
-        temp.setLatitude(18.795749);
-        temp.setLongitude(98.952889);
-        /*
-         * temp.setLatitude(18.799983); temp.setLongitude(98.9597227);
-		 */
-        addMarker(temp, R.drawable.store2, "Store");
-        // 18.795726f,98.952469f,0.000886f,0.00015f
         dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));
-        dlocation.add(new LLACoordinate(18.796425f,98.953134f, 0, 0));
+        dlocation.add(new LLACoordinate(18.796425f, 98.953134f, 0, 0));
         dlocation.add(new LLACoordinate(18.796535f, 98.952877f, 0, 0));
-
-
-
-       /*
-        temp = new Location("");
-        temp.setLatitude(18.795946);
-        temp.setLongitude(98.952497);
-        MapObject t = new MapObject(temp, 30, 20, 180);
-        mapCollectableItemList.add(t);
-        addMarker(temp, R.drawable.treasure_icon, "x");*/
-
-    }
-    public void addMarker(Location location, int icon, String type) {
-        MarkerOptions temp = new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(icon))
-                .anchor(0.0f, 0.0f)
-                .flat(true)
-                .position(new LatLng(location.getLatitude(), location.getLongitude()));
-        Marker x = map.addMarker(temp);
-        markersIDAndType.put(x.getId(), type);
-    }
-    private void FoundMarkerMonster(final MarkerMonster mMonster) {
-        String filepath = AssetsManager.getAssetPath( getApplicationContext(),"TutorialDynamicModels/Assets/MarkerConfig_"
-                        + mMonster.getImagePath() + ".xml");
-        metaioSDK.setTrackingConfiguration(filepath);
-        setMarkerMonsterState(true);
-        loadMarkerMonster(mMonster);
-        foundedMarkerMonster=mMonster;
     }
 
-    private void FoundLocalMonster(LocalbasedMonster lMonster) {
-        metaioSDK.setTrackingConfiguration("GPS", false);
-        setLocaltioBasedMonsterState(true);
-        loadLocalMonster(lMonster);
-        foundedLocalMonster=lMonster;
-    }
-
-    private void loadLocalMonster(LocalbasedMonster lMonster) {
-        LLACoordinate location = new LLACoordinate(lMonster.getLocation()
-                .getLatitude(), lMonster.getLocation().getLongitude(), 0, 0);
-        gLocalMonster.setTransparency(0);
-        gLocalMonster.setTranslationLLA(location);
-        gLocalMonster.setVisible(true);
-        mRadar.setVisible(true);
-    }
-
-    private void unloadLocalMonster() {
-        gLocalMonster.setVisible(false);
-        mRadar.setVisible(false);
-    }
-
-    private void loadMarkerMonster(MarkerMonster mMonster) {
-        //add layout
-
-        gMarkerMonster.setTransparency(0);
-        gMarkerMonster.setTranslation(new Vector3d(0, -20f, -200f));
-        gMarkerMonster.setVisible(true);
-
-    }
-
-    private void unLoadMarkerMonster() {
-        gMarkerMonster.setVisible(false);
-    }
-
-    private void NotifyEvent(final int eventNo,final LocalbasedMonster t1,final MarkerMonster t2) {
-        mVibration.vibrate(300);
-        if (eventNo == 0) {
-            Toast.makeText(getApplicationContext(), "Gathering", Toast.LENGTH_SHORT).show();
-            setCollectingState(true);
-        }
-        if (eventNo == 1) {
-            Toast.makeText(getApplicationContext(), "Location monster", Toast.LENGTH_SHORT).show();
-            FoundLocalMonster(t1);
-        }
-        if (eventNo == 2){
-            Toast.makeText(getApplicationContext(), "BOSS!!", Toast.LENGTH_SHORT).show();
-            FoundMarkerMonster(t2);
-        }
-        /*dialogState = true;
-        String s[]={"Found something around here!","Found monster around here","Found BOSS monster!!"};
-        String s1[]={"Want to get it?","You wanna fight?","Want to talk with him?"};
-        int n[]={R.drawable.treasure_icon,R.drawable.monster2,R.drawable.monster_marker_icon};
-        new AlertDialog.Builder(this)
-                .setTitle(s[eventNo])
-                .setIcon(n[eventNo])
-                .setMessage(s1[eventNo])
-                .setPositiveButton(android.R.string.yes,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog2,
-                                                int which) {
-                                if (eventNo == 0)
-                                    setCollectingState(true);
-                                if (eventNo == 1) {
-                                    FoundLocalMonster(t1);
-                                }
-                                if (eventNo == 2){
-                                    FoundMarkerMonster(t2);
-                                 }
-                            }
-                        })
-                .setNegativeButton(android.R.string.no,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog2,
-                                                int which) {
-                                metaioSDK.setTrackingConfiguration("DUMMY",
-                                        false);
-                                dialogState = false;
-                            }
-                        }).show();*/
-    }
-
-    private boolean checkLocationDistance(Location monsterLocation, double maxDistance) {
-        if (monsterLocation.distanceTo(cLocation) <= maxDistance) {
-            return true;
-        } else
-            return false;
-    }
-
-    private boolean CheckPhoneHeading(double acceptableAngle, double initialAngle) {
-        double difOfAngle = phone_heading - initialAngle;
-        if (difOfAngle > 180) difOfAngle -= 360;
-        if (difOfAngle < -180) difOfAngle += 360;
-        if (Math.abs(difOfAngle) <= acceptableAngle)
-            return true;
-        else
-            return false;
-    }
-
-    private boolean CheckLocationArea(float pointLat, float pointLng, float height, float width, Location target) {
-        if ((target.getLatitude() >= pointLat && target.getLatitude() <= height + pointLat) &&
-                (target.getLongitude() >= pointLng && target.getLongitude() <= width + pointLng))
-            return true;
-        else
-            return false;
-    }
-
-    private void FoundMapItem() {
-        metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
-       // setVisibilityCollectItem(true);
-        //gameState = 2;
-    }
-
-    public void setVisibilityCollectItem(boolean parameter) {
-        View motherView = mList.get(Constants.OVERLAY_LAYOUT);
-        if(parameter)
-            motherView.findViewById(R.id.backToNormal).setVisibility(View.VISIBLE);
-        else
-            motherView.findViewById(R.id.backToNormal).setVisibility(View.GONE);
-        for (IGeometry t : CollectingModelPack)
-            t.setVisible(parameter);
-    }
-
-    public void setVisibilityLocationBasedMonster(boolean parameter) {
-        View motherView = mList.get(Constants.OVERLAY_LAYOUT);
-        gLocalMonster.setVisible(parameter);
-    }
-
-
-    public void setGeneralState(boolean parameter){
-        if(!parameter) {
-            unLoadMarkerMonster();
-            setVisibilityLocationBasedMonster(false);
-            setVisibilityCollectItem(false);
-            gameState = 0;
-            dialogState = false;
-            metaioSDK.setTrackingConfiguration("DUMMY", false);
-        }else{
-            hitPoint=100;
-            gameState=1;
-            dialogState=true;
-        }
-
-    }
-
-    public void setCollectingState(boolean parameter){
-        setGeneralState(parameter);
-        collectItemState = parameter;
-        setVisibilityCollectItem(parameter);
-    }
-
-    public void setMarkerMonsterState(boolean parameter){
-        setGeneralState(parameter);
-        markerBasedMonsterState=parameter;
-        if(!parameter)
-            unloadLocalMonster();
-    }
-
-    public void setLocaltioBasedMonsterState(boolean parameter){
-        setGeneralState(parameter);
-        locationBasedMonsterState=parameter;
-        //setVisibilityLocationBasedMonster(parameter);
-        if(!parameter)
-            unloadLocalMonster();
-    }
 
     public void BackToNormal(View v) {
-        setCollectingState(false);
+        mGameGeneretor.resetState(GlobalResource.STATE_GATHERING);
     }
 
     public void SwitchLocation(View v) {
@@ -536,7 +418,6 @@ public class MainActivity extends ARViewActivity{
     }
 
 
-
     @Override
     protected int getGUILayout() {
         // TODO Auto-generated method stub
@@ -552,40 +433,15 @@ public class MainActivity extends ARViewActivity{
 
     @Override
     protected void loadContents() {
-        ResourceManager temp = new ResourceManager(getApplicationContext(), metaioSDK, mRadar);
+
+        ObjectLoader temp = new ObjectLoader(getApplicationContext(), metaioSDK, mRadar);
         temp.LoadARcontent();
-        gLocalMonster = GlobalResource.getmLocationModel();
-        gMarkerMonster = GlobalResource.getmMarkerModel();
-        gStoreObject = GlobalResource.getmStoreModel();
-        mRadar = GlobalResource.getmRadar();
-        CollectingModelPack = GlobalResource.getCollectingModelPack();
+        mRadar = GlobalResource.getRadar();
     }
-
-
-
-    private void tryDrawing(SurfaceHolder holder) {
-        Log.i("www", "Trying to draw...");
-
-        Canvas canvas = holder.lockCanvas();
-        if (canvas == null) {
-            Log.e("www", "Cannot draw onto the canvas as it's null");
-        } else {
-            drawMyStuff(canvas);
-            holder.unlockCanvasAndPost(canvas);
-        }
-    }
-
-    private void drawMyStuff(final Canvas canvas) {
-        Random random = new Random();
-        Log.i("www", "Drawing...");
-        canvas.drawRGB(255, 128, 128);
-    }
-
-
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(event.getAction()== MotionEvent.ACTION_DOWN){
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             touchEffectView.setGlowX(event.getX());
             touchEffectView.setGlowY(event.getY());
         }
@@ -596,34 +452,40 @@ public class MainActivity extends ARViewActivity{
         return super.onTouch(v, event);
     }
 
+    public static int getPlayerItemQuantity(HashMap<Integer,PlayerItem>playerItemHashMap,int id){
+        PlayerItem t=playerItemHashMap.get(id);
+        int playerItemQuantity=0;
+        if(t!=null)
+            playerItemQuantity=t.getQuantity();
+        return playerItemQuantity;
+    }
+
     @Override
     protected void onGeometryTouched(IGeometry geometry) {
-        if (geometry.getFadeInTime() == 501) {
+
+
+        int GAME_STATE = GlobalResource.getGAME_STATE();
+        HashMap<Integer,PlayerItem>playerItemHashMap= Player.getPlayerItems();
+        if (GAME_STATE == GlobalResource.STATE_GATHERING) {
+            if (geometry.getName().equals("ore")) {
+                int playerOreQuantity=getPlayerItemQuantity(playerItemHashMap,ItemsID.ORE);
+                playerItemHashMap.put(ItemsID.ORE,new PlayerItem(ItemsID.ORE,playerOreQuantity+1));
+                Toast.makeText(getApplicationContext(), "Receive Ore 1 ea!", Toast.LENGTH_SHORT).show();
+            }
+            if (geometry.getName().equals("bush")) {
+                int playerGrassQuantity=getPlayerItemQuantity(playerItemHashMap,ItemsID.GRASS);
+                playerItemHashMap.put(ItemsID.GRASS,new PlayerItem(ItemsID.GRASS,playerGrassQuantity+1));
+                Toast.makeText(getApplicationContext(), "Receive Grass 1 ea!", Toast.LENGTH_SHORT).show();
+            }
             geometry.setVisible(false);
-            setCollectingState(false);
-            Toast.makeText(getApplicationContext(), "Got 1 item!", Toast.LENGTH_SHORT).show();
+            mGameGeneretor.resetState(GAME_STATE);
         } else {
             touchEffectView.setVisibility(View.VISIBLE);
-            hitPoint-=20;
-            //gMarkerMonster.startAnimation("create");
-            if (hitPoint==0) {
-                if (geometry.equals(gLocalMonster))
-                    setLocaltioBasedMonsterState(false);
-                if (geometry.equals(gMarkerMonster))
-                    setMarkerMonsterState(false);
-                Toast.makeText(getApplicationContext(), "You had slain the enemy", Toast.LENGTH_SHORT).show();
-            }
-            /*
-            geometry.setTransparency(geometry.getTransparency() + 0.2f);
-            if (geometry.getTransparency() == 1) {
-                if(geometry.equals(gLocalMonster))
-                    setLocaltioBasedMonsterState(false);
-                if(geometry.equals(gMarkerMonster))
-                    setMarkerMonsterState(false);
-                Toast.makeText(getApplicationContext(), "You had slain the enemy", Toast.LENGTH_SHORT).show();
-            }
-            */
+            mGameGeneretor.checkLocationGeometryTouch(geometry.getName(),GAME_STATE,mRadar,playerItemHashMap);
+
         }
+
+
     }
 
     public void onButtonClick(View v) {
@@ -651,36 +513,17 @@ public class MainActivity extends ARViewActivity{
 
             if (SDK_ready == 0 && mList.size() == mlist_size
                     && cLocation != null) {
-                map = ((MapFragment) getFragmentManager().findFragmentById(
-                        R.id.map)).getMap();
-                map.getUiSettings().setZoomControlsEnabled(false);
-                LatLng mapCenter = new LatLng(cLocation.getLatitude(), cLocation.getLongitude());
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, 18f));
-                map.setMyLocationEnabled(true);
-                map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng) {
-                        sLocation = "2";
-                    }
-                });
-                AddAllMarker();
-                SDK_ready = 1;
-                TextView t = (TextView) mList.get(Constants.MAP_LAYOUT).findViewById(
-                        R.id.bearing_text);
-                t.setVisibility(View.GONE);
-                Button b = (Button) mList.get(Constants.MAP_LAYOUT).findViewById(R.id.switch_location);
-                b.setVisibility(View.VISIBLE);
-                resumeMapButton = (Button) mList.get(Constants.MAP_LAYOUT).findViewById(R.id.toggleZoom);
-                tBearing = (TextView) findViewById(R.id.bearing_text);
-                tBearing.setVisibility(View.VISIBLE);
+                initResource();
             }
             cLocation = new Location("");
             cLocation.setLatitude(Lat);
             cLocation.setLongitude(Lng);
             if (dlocation.size() != 0 && index != -1) {
-                cLocation.setLatitude(dlocation.get(index).getLatitude());
-                cLocation.setLongitude(dlocation.get(index).getLongitude());
-
+                double lat = dlocation.get(index).getLatitude();
+                double lng = dlocation.get(index).getLongitude();
+                cLocation.setLatitude(lat);
+                cLocation.setLongitude(lng);
+                mSensors.setManualLocation(new LLACoordinate(lat, lng, 0, 0));
             }
             //bearing
             GeomagneticField field = new GeomagneticField((float) Lat,
@@ -689,46 +532,20 @@ public class MainActivity extends ARViewActivity{
 
             //check map object location
             if (SDK_ready == 1) {
-                if (gameState == 1) {
-                    if (collectItemState)
-                        FoundMapItem();
-                    if(locationBasedMonsterState){
-                        int distance=(int)foundedLocalMonster.getLocation().distanceTo(cLocation);
-                        if(distance>foundedLocalMonster.getDistance()){
-                            setLocaltioBasedMonsterState(false);
-                        }
-                    }
-                    if(markerBasedMonsterState){
-                        int distance=(int)foundedMarkerMonster.getLocation().distanceTo(cLocation);
-                        if(distance>foundedMarkerMonster.getDistance()){
-                            setMarkerMonsterState(false);
-                        }
-                    }
-
-                } else {
-                for (MarkerMonster t : markerMonster) {
-                    if (checkLocationDistance(t.getLocation(),t.getDistance())&&CheckPhoneHeading(t.getRadius(),t.getInitialAngle())) {
-                        if (!dialogState)
-                            NotifyEvent(2,null,t);
-                    }
-                }
-                    for (LocalbasedMonster t : localbaseMonster) {
-                        if (checkLocationDistance(t.getLocation(),t.getDistance())) {
-                            if (!dialogState)
-                                NotifyEvent(1,t,null);
-                        }
-                    }
-                    if (CheckLocationArea(18.795526f, 98.953083f, 0.000846f, 0.000206f, cLocation)) {
-                    //if (CheckLocationArea(18.795726f, 98.952469f, 0.000886f, 0.00015f, cLocation)) {
-                        if (!dialogState)
-                            NotifyEvent(0,null,null);
-                    }
-                }
+                mGameGeneretor.gameChecking(cLocation);
             }
+
         }
     }
 
+    public static void makeToast(String message){
+        Toast.makeText(thisContext, message, Toast.LENGTH_SHORT).show();
+    }
+
     final class MetaioSDKCallbackHandler extends IMetaioSDKCallback {
+
+
+
 
         @Override
         public void onSDKReady() {
@@ -737,6 +554,7 @@ public class MainActivity extends ARViewActivity{
                 @Override
                 public void run() {
                     if (mList.size() == 0) {
+                        mlist_size = 5;
                         // add map layout
                         mGUIView = View.inflate(MainActivity.this,
                                 R.layout.map_layout, null);
@@ -745,18 +563,51 @@ public class MainActivity extends ARViewActivity{
                         addContentView(mGUIView, new LayoutParams(
                                 LayoutParams.MATCH_PARENT,
                                 LayoutParams.MATCH_PARENT));
+                        //camera overlay
                         mGUIView = View.inflate(MainActivity.this,
                                 R.layout.overlay_camera_layout, null);
                         mList.add(mGUIView);
-                        mGUIView.setVisibility(View.GONE);
                         addContentView(mGUIView, new LayoutParams(
                                 LayoutParams.MATCH_PARENT,
                                 LayoutParams.MATCH_PARENT));
-                        mGUIView = View.inflate(MainActivity.this,
-                                R.layout.main, null);
-                        mList.add(mGUIView);
                         mGUIView.setVisibility(View.GONE);
-                        touchEffectView=(CustomView)mList.get(Constants.OVERLAY_LAYOUT).findViewById(R.id.touch_effect);
+                        //craft detail View
+
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.mycraft_main, null);
+                        mList.add(mGUIView);
+                        Resources r = getResources();
+                        float px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 280, r.getDisplayMetrics());
+                        float px_h = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 320, r.getDisplayMetrics());
+                        FrameLayout.LayoutParams temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+                        touchEffectView = (TouchEffectView) mList.get(Constants.OVERLAY_LAYOUT).findViewById(R.id.touch_effect);
+                        //store view
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.overlay_store, null);
+                        mList.add(mGUIView);
+                        px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 580, r.getDisplayMetrics());
+                        px_h = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //store craft
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.overlay_craft_recipe, null);
+                        mList.add(mGUIView);
+                        px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 280, r.getDisplayMetrics());
+                        px_h = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 320, r.getDisplayMetrics());
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //set global
+                        GlobalResource.setListOfViews(mList);
                     }
                 }
             });
@@ -766,26 +617,48 @@ public class MainActivity extends ARViewActivity{
         @Override
         public void onTrackingEvent(TrackingValuesVector trackingValues) {
             found = 0;
-            int x=0;
             for (int i = 0; i < trackingValues.size(); i++) {
                 final TrackingValues v = trackingValues.get(i);
                 found = v.getCoordinateSystemID();
-                Log.i("kak",
-                        "Tracking state for COS " + v.getCoordinateSystemID()
-                                + " is " + v.getState() + found);
+                Log.i("kak","Tracking state for COS " + v.getCoordinateSystemID()+ " is " + v.getState() + found);
                 if (v.getState().compareTo(ETRACKING_STATE.ETS_INITIALIZED) == 0)
                     startCount = true;
                 if (v.getState().compareTo(ETRACKING_STATE.ETS_FOUND) == 0) {
-                    if(gameState<=2&&gameState>0) {
+                    if (gameState <= 2 && gameState > 0) {
                         mVibration.vibrate(100);
-                        gameState+=2;
+                        gameState += 2;
                     }
-                    if(markerBasedMonsterState)
-                        gMarkerMonster.startAnimation("create");
+                    if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER) {
+                        IGeometry t=ObjectLoader.getObjectList().get(ObjectID.BOSS).getModel();
+                        t.setScale(0.3f);
+                        //t.setAnimationSpeed(200);
+                        t.startAnimation("loop");
+                    }
+                    if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_GATHERING) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mGameGeneretor.startCountdownTimer(10000);
+                            }
+                        });
+                    }
                     startCount = false;
                     timeCount = 0;
                 }
             }
+        }
+
+        @Override
+        public void onAnimationEnd(IGeometry geometry, String animationName) {
+            if(mGameGeneretor.isHitting()&&animationName.equals("loop")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mGameGeneretor.playerGetHit();
+                    }
+                });
+            }
+            super.onAnimationEnd(geometry, animationName);
         }
 
         @Override
@@ -795,7 +668,7 @@ public class MainActivity extends ARViewActivity{
                         .log("MetaioSDKCallbackHandler.onInstantTrackingEvent: "
                                 + file);
                 metaioSDK.setTrackingConfiguration(file);
-                setVisibilityCollectItem(true);
+                //mMapObjectManager.setVisibilityCollectItem(true);
             } else {
                 MetaioDebug.log(Log.ERROR,
                         "Failed to create instant tracking configuration!");

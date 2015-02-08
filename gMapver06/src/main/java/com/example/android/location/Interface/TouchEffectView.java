@@ -17,18 +17,18 @@ import java.util.HashMap;
 /**
  * Created by Adisorn on 1/23/2015.
  */
-public class CustomView  extends ImageView {
-        public CustomView(Context context, AttributeSet attrs, int defStyle) {
+public class TouchEffectView extends ImageView {
+        public TouchEffectView(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
             init();
         }
 
-        public CustomView(Context context, AttributeSet attrs) {
+        public TouchEffectView(Context context, AttributeSet attrs) {
             super(context, attrs);
             init();
         }
 
-        public CustomView(Context context) {
+        public TouchEffectView(Context context) {
             super(context);
             init();
         }
@@ -69,17 +69,10 @@ public class CustomView  extends ImageView {
                 canvas.drawCircle(glowX, glowY, radius, paint);
         }*/
 
-    public float getGlowX() {
-        return glowX;
-    }
-
     public void setGlowX(float glowX) {
         this.glowX = glowX;
     }
 
-    public float getGlowY() {
-        return glowY;
-    }
 
     public void setGlowY(float glowY) {
         this.glowY = glowY;
@@ -98,7 +91,7 @@ public class CustomView  extends ImageView {
 
     public void init() {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(),
-                R.drawable.monster1);
+                R.drawable.splash);
         mStore.put("0", bmp);
     }
 

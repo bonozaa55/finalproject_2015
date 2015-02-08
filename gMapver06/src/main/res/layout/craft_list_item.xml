@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="260dp"
+        android:background="#F6FFE0"
+        android:layout_centerInParent="true"
+        android:paddingBottom="7dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/relativeLayout2">
+
+        <TextView
+            android:id="@+id/craft_detail_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Title"
+            android:textColor="#10222B"
+            android:layout_alignBottom="@+id/craft_detail_img"
+            android:layout_toEndOf="@+id/craft_detail_img" />
+
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:id="@+id/craft_detail_img"
+            android:src="@drawable/monster1"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/craft_detail_property"
+            android:layout_below="@+id/craft_detail_img"
+            android:layout_alignStart="@+id/craft_detail_img" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/craft_detail_property"
+            android:layout_alignStart="@+id/craft_detail_property"
+            android:id="@+id/craft_detail_list_require">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Needed items"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:id="@+id/craft_detail_required" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="30dp"
+            android:background="#FFFFFF"
+            android:text="Get a recipe"
+            android:id="@+id/craft_detail_get_recipe"
+            android:layout_below="@+id/craft_detail_list_require"
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

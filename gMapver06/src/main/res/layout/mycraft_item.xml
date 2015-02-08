@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="320dp"
+    android:layout_margin="20dp"
+    android:background="#ECF0F1"
+    android:id="@+id/temp000"
+    >
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#2980B9"
+        android:id="@+id/frameLayout">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/cancel"
+            android:id="@+id/mycraft_cancel"
+            android:layout_gravity="right|center_vertical" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="35dp"
+            android:text="Craft Item1"
+            android:textColor="#ECF0F1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:id="@+id/mycraft_title"
+            android:layout_gravity="left|center_vertical" />
+
+    </FrameLayout>
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:text="Title"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:id="@+id/mycraft_title2"
+        android:layout_alignBottom="@+id/mycraft_img"
+        android:layout_toEndOf="@+id/mycraft_img" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mycraft_require_list"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/mycraft_required_title"
+        android:layout_alignStart="@+id/mycraft_required_title">
+
+        </LinearLayout>
+
+    <TextView
+        android:layout_width="160dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:id="@+id/mycraft_get_it"
+        android:text="Get It!"
+        android:gravity="center"
+        android:background="#2980B9"
+        android:textColor="#ECF0F1"
+        android:textSize="20dp"
+        android:layout_below="@+id/mycraft_require_list"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/mycraft_img"
+        android:src="@drawable/monster1"
+        android:layout_below="@+id/frameLayout"
+        android:layout_toStartOf="@+id/mycraft_get_it" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="detail"
+        android:layout_marginTop="10dp"
+        android:id="@+id/mycraft_detail"
+        android:layout_below="@+id/mycraft_title2"
+        android:layout_alignStart="@+id/mycraft_img" />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Required Items"
+        android:id="@+id/mycraft_required_title"
+        android:layout_below="@+id/mycraft_detail"
+        android:layout_alignStart="@+id/mycraft_detail" />
+
+</RelativeLayout>
