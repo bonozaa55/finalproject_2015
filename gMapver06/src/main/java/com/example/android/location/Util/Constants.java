@@ -22,6 +22,8 @@ public final class Constants {
 	public static final int SHOP_VISIBLE = 3;
     public static final int MAP_LAYOUT=0;
     public static final int OVERLAY_LAYOUT=1;
+    public static final int TOAST_LAYOUT=5;
+    public static final int HEAL_LAYOUT=6;
 	public static TextView User_gold;
 
 	public static TextView getUser_gold() {

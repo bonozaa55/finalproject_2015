@@ -6,10 +6,10 @@ import android.widget.ExpandableListView;
 
 import com.example.android.location.Interface.CraftMissionAdapter;
 import com.example.android.location.R;
-import com.example.android.location.Resource.CraftMission;
+import com.example.android.location.Resource.Mission.CraftMission;
 import com.example.android.location.Resource.GlobalResource;
-import com.example.android.location.Resource.MaterialRequired;
-import com.example.android.location.Resource.ItemsID;
+import com.example.android.location.Resource.Mission.MaterialRequired;
+import com.example.android.location.Resource.Item.ItemsID;
 
 import java.util.ArrayList;
 

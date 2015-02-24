@@ -1,4 +1,4 @@
-package com.example.android.location.Resource;
+package com.example.android.location.Resource.Item;
 
 /**
  * Created by Adisorn on 2/8/2015.
@@ -7,11 +7,21 @@ public class ItemDetail {
     int id;
     String name;
     String detail;
+    int iconResource;
 
-    public ItemDetail(int id, String name, String detail) {
+    public ItemDetail(int id, String name, String detail, int iconResource) {
         this.id = id;
         this.name = name;
         this.detail = detail;
+        this.iconResource = iconResource;
+    }
+
+    public int getIconResource() {
+        return iconResource;
+    }
+
+    public void setIconResource(int iconResource) {
+        this.iconResource = iconResource;
     }
 
     public int getId() {

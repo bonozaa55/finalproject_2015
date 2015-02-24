@@ -22,7 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import com.example.android.location.R;
-import com.example.android.location.Resource.CraftMission;
+import com.example.android.location.Resource.Mission.CraftMission;
 
 import java.util.ArrayList;
 
@@ -47,10 +47,11 @@ public class MyCraftMissionManager {
         mPager = (ViewPager) motherView.findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(fm);
         mPager.setAdapter(mPagerAdapter);
+
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                MyCraftMissionFragment.UpdateUI(myCraftMissionList.get(position), mPager.getChildAt(position));
+                MyCraftMissionFragment.UpdateUI(myCraftMissionList.get(position), mPager.getRootView());
             }
         });
     }

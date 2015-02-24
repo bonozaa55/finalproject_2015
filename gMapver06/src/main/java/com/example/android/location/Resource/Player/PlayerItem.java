@@ -1,4 +1,4 @@
-package com.example.android.location.Resource;
+package com.example.android.location.Resource.Player;
 
 /**
  * Created by Adisorn on 2/8/2015.

@@ -27,13 +27,13 @@ import android.widget.TextView;
 
 import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.R;
-import com.example.android.location.Resource.CraftMission;
 import com.example.android.location.Resource.GlobalResource;
-import com.example.android.location.Resource.ItemDetail;
-import com.example.android.location.Resource.ItemsLoader;
-import com.example.android.location.Resource.MaterialRequired;
-import com.example.android.location.Resource.Player;
-import com.example.android.location.Resource.PlayerItem;
+import com.example.android.location.Resource.Item.ItemDetail;
+import com.example.android.location.Resource.Item.ItemsLoader;
+import com.example.android.location.Resource.Mission.CraftMission;
+import com.example.android.location.Resource.Mission.MaterialRequired;
+import com.example.android.location.Resource.Player.Player;
+import com.example.android.location.Resource.Player.PlayerItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +55,7 @@ public class MyCraftMissionFragment extends android.support.v4.app.Fragment {
     }
 
     public static void UpdateUI(CraftMission craftMission, View rootView) {
+
         LinearLayout requiredLayout = (LinearLayout) rootView.findViewById(R.id.mycraft_require_list);
         requiredLayout.removeAllViews();
         ArrayList<MaterialRequired> itemsRequired = craftMission.getMaterialRequireList();

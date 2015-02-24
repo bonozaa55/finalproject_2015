@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
      android:id="@+id/fullscreen_content"
     android:layout_width="match_parent"
-
     android:layout_height="match_parent" >
 
     <com.example.android.location.Interface.TouchEffectView
@@ -22,98 +21,94 @@
         android:layout_margin="10dp"
         android:layout_gravity="left|top" />
 
+
     <ImageView
         android:layout_width="110dp"
         android:layout_height="110dp"
-        android:id="@+id/button2"
+        android:id="@+id/overlay_potions_interface"
         android:layout_gravity="right|bottom"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="15dp"
-        android:background="#90FFFFFF"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/potion0"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/overlay_potions_interface"
+        android:layout_alignEnd="@+id/overlay_potions_interface"
+        android:id="@+id/overlay_group_item">
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="#90FFFFFF"
+        android:src="@drawable/sense"
         android:id="@+id/overlay_def_item"
-        android:layout_marginBottom="5dp"
-        android:layout_gravity="right|bottom"
-        android:layout_above="@+id/overlay_atk_item"
-        android:layout_alignLeft="@+id/overlay_atk_item"
-        android:layout_alignStart="@+id/overlay_atk_item" />
+        android:layout_marginBottom="5dp" />
 
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="#90FFFFFF"
+        android:src="@drawable/shield_icon"
         android:layout_marginBottom="5dp"
-        android:id="@+id/overlay_sense_item"
-        android:layout_gravity="right|bottom"
-        android:layout_above="@+id/overlay_def_item"
-        android:layout_alignLeft="@+id/overlay_def_item"
-        android:layout_alignStart="@+id/overlay_def_item" />
+        android:id="@+id/overlay_sense_item" />
 
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:background="#90FFFFFF"
-        android:id="@+id/overlay_atk_item"
-        android:layout_above="@+id/button2"
-        android:layout_alignRight="@+id/button2"
-        android:layout_alignEnd="@+id/button2" />
+        android:src="@drawable/sword_icon0"
+        android:id="@+id/overlay_atk_item" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_alignBottom="@+id/overlay_potions_interface"
+        android:layout_toStartOf="@+id/overlay_potions_interface"
+        android:id="@+id/overlay_group_quest">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/icon_cart"
+            android:id="@+id/overlay_quest_interface"
+            android:layout_marginRight="10dp"
+           />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/overlay_craft_quest_interface"
+            android:src="@drawable/icon_flag" />
 
-    <ImageView
+        <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:id="@+id/overlay_myQuest_interface"
-        android:background="#90FFFFFF"
+            android:src="@drawable/stack"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_alignBottom="@+id/button2"
-        android:layout_toLeftOf="@+id/button2"
-        android:layout_toStartOf="@+id/button2" />
+        android:layout_marginRight="10dp" />
 
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:id="@+id/overlay_myItem_interface"
-        android:background="#90FFFFFF"
-        android:layout_marginLeft="10dp"
-        android:layout_alignTop="@+id/overlay_myQuest_interface"
-        android:layout_toLeftOf="@+id/overlay_myQuest_interface"
-        android:layout_toStartOf="@+id/overlay_myQuest_interface" />
+        android:src="@drawable/toolbox"
+        />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/overlay_craft_quest_interface"
-        android:src="@drawable/compose_64px"
-        android:layout_alignBottom="@+id/overlay_myItem_interface"
-        android:layout_toLeftOf="@+id/overlay_myItem_interface"
-        android:layout_toStartOf="@+id/overlay_myItem_interface" />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/overlay_quest_interface"
-        android:layout_marginRight="10dp"
-        android:background="#90FFFFFF"
-        android:layout_alignTop="@+id/overlay_craft_quest_interface"
-        android:layout_toLeftOf="@+id/overlay_craft_quest_interface"
-        android:layout_toStartOf="@+id/overlay_craft_quest_interface" />
+
+        </LinearLayout>
     <ProgressBar
         android:id="@+id/overlay_object_hp"
         style="?android:attr/progressBarStyleHorizontal"
         android:progressDrawable="@drawable/customprogressbar"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:layout_width="250dp"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
+        android:rotation="180"
+        android:visibility="gone"
         android:layout_alignParentRight="true"
         android:max="100"
         android:progress="100"
@@ -124,12 +119,13 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:progressDrawable="@drawable/customprogressbar"
         android:layout_width="250dp"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
         android:layout_marginLeft="10dp"
-        android:layout_alignBottom="@+id/overlay_quest_interface"
         android:max="100"
         android:progress="100"
-        android:indeterminate="false" />
+        android:indeterminate="false"
+        android:layout_alignBottom="@+id/overlay_group_quest"
+        />
 
     <ImageView
         android:layout_width="match_parent"

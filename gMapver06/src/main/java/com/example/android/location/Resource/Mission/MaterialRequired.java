@@ -1,4 +1,4 @@
-package com.example.android.location.Resource;
+package com.example.android.location.Resource.Mission;
 
 /**
  * Created by Adisorn on 2/7/2015.

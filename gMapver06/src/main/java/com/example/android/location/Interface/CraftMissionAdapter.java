@@ -13,10 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.location.R;
-import com.example.android.location.Resource.CraftMission;
-import com.example.android.location.Resource.ItemDetail;
-import com.example.android.location.Resource.ItemsLoader;
-import com.example.android.location.Resource.MaterialRequired;
+import com.example.android.location.Resource.Mission.CraftMission;
+import com.example.android.location.Resource.Item.ItemDetail;
+import com.example.android.location.Resource.Item.ItemsLoader;
+import com.example.android.location.Resource.Mission.MaterialRequired;
 
 import java.util.ArrayList;
 

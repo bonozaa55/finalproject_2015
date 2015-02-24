@@ -3,12 +3,14 @@
     android:layout_width="280dp"
     android:layout_height="320dp"
     android:layout_margin="20dp"
-    android:background="#ECF0F1"
+    android:background="@drawable/mycraft_item_background2"
     android:id="@+id/temp000"
     >
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginRight="2dp"
+        android:layout_marginLeft="2dp"
         android:background="#2980B9"
         android:id="@+id/frameLayout">
 
@@ -74,6 +76,7 @@
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
+
         android:id="@+id/mycraft_img"
         android:src="@drawable/monster1"
         android:layout_below="@+id/frameLayout"

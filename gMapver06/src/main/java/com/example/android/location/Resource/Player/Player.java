@@ -1,4 +1,6 @@
-package com.example.android.location.Resource;
+package com.example.android.location.Resource.Player;
+
+import com.example.android.location.Resource.Mission.CraftMission;
 
 import java.util.ArrayList;
 import java.util.HashMap;

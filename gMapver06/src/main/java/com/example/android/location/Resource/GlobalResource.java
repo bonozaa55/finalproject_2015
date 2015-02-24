@@ -2,6 +2,8 @@ package com.example.android.location.Resource;
 
 import android.view.View;
 
+import com.example.android.location.Resource.Mission.CraftMission;
+import com.example.android.location.Resource.Player.Player;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IRadar;
 
@@ -23,6 +25,9 @@ public class GlobalResource {
     public static final int STATE_LOCATIONBASED=2;
     public static final int STATE_GATHERING=1;
     public static final int STATE_MARKER=3;
+    public static final int STATE_METEOR=4;
+    public static final int STATE_HEALING=5;
+    public static final int STATE_DEAD=6;
 
     public static ArrayList<CraftMission> getCraftMissionList() {
         return craftMissionList;

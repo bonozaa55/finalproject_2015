@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="510dp"
+    android:layout_height="269dp">
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="117dp"
+        android:layout_height="122dp"
+        android:rotation="270"
+        android:progressDrawable="@drawable/customprogressbar"
+        android:id="@+id/healing_progress"
+        android:max="200"
+        android:layout_marginBottom="18dp"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_centerHorizontal="true" />
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="269dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/potion"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="240dp"
+        android:layout_height="15dp"
+        android:progressDrawable="@drawable/customprogressbar"
+        android:rotation="270"
+        android:progress="100"
+        android:max="100"
+        android:id="@+id/healing_timer"
+        android:layout_centerVertical="true" />
+
+
+</RelativeLayout>
