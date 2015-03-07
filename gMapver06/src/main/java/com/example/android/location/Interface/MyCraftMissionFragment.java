@@ -111,13 +111,14 @@ public class MyCraftMissionFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View view) {
                 UpdateUI(craftMission,rootView);
+                /*
                 if (craftMission.getMissionStatus()==3) {
                     Player.setAtkDmg(50);
                     MainActivity.makeToast("Crafting Successful!");
 
                 } else {
                     MainActivity.makeToast("Go out and find materials!!");
-                }
+                }*/
             }
         });
 

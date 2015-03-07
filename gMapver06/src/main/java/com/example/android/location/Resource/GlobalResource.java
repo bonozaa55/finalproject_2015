@@ -4,7 +4,6 @@ import android.view.View;
 
 import com.example.android.location.Resource.Mission.CraftMission;
 import com.example.android.location.Resource.Player.Player;
-import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IRadar;
 
 import java.util.ArrayList;
@@ -16,11 +15,10 @@ public class GlobalResource {
     private static IRadar radar;
     private static Player player;
     private static ArrayList<CraftMission> craftMissionList;
-    private static ArrayList<IGeometry> mapObjectModelList;
-    private static ArrayList<IGeometry> markerObjectModelList;
-    private static ArrayList<IGeometry> locationBasedObjectModelList;
     private static ArrayList<View> listOfViews;
     private static int GAME_STATE=0;
+    private static int MISSION_STATE=0;
+
     public static final int STATE_IDLE=0;
     public static final int STATE_LOCATIONBASED=2;
     public static final int STATE_GATHERING=1;
@@ -28,6 +26,15 @@ public class GlobalResource {
     public static final int STATE_METEOR=4;
     public static final int STATE_HEALING=5;
     public static final int STATE_DEAD=6;
+    public static final int STATE_MISSION=7;
+
+    public static int getMISSION_STATE() {
+        return MISSION_STATE;
+    }
+
+    public static void setMISSION_STATE(int MISSION_STATE) {
+        GlobalResource.MISSION_STATE = MISSION_STATE;
+    }
 
     public static ArrayList<CraftMission> getCraftMissionList() {
         return craftMissionList;
@@ -67,30 +74,6 @@ public class GlobalResource {
 
     public static void setListOfViews(ArrayList<View> listOfViews) {
         GlobalResource.listOfViews = listOfViews;
-    }
-
-    public static ArrayList<IGeometry> getLocationBasedObjectModelList() {
-        return locationBasedObjectModelList;
-    }
-
-    public static void setLocationBasedObjectModelList(ArrayList<IGeometry> locationBasedObjectModelList) {
-        GlobalResource.locationBasedObjectModelList = locationBasedObjectModelList;
-    }
-
-    public static ArrayList<IGeometry> getMapObjectModelList() {
-        return mapObjectModelList;
-    }
-
-    public static void setMapObjectModelList(ArrayList<IGeometry> mapObjectModelList) {
-        GlobalResource.mapObjectModelList = mapObjectModelList;
-    }
-
-    public static ArrayList<IGeometry> getMarkerObjectModelList() {
-        return markerObjectModelList;
-    }
-
-    public static void setMarkerObjectModelList(ArrayList<IGeometry> markerObjectModelList) {
-        GlobalResource.markerObjectModelList = markerObjectModelList;
     }
 
 

@@ -16,5 +16,7 @@ public class ObjectID {
     public static final String GROUP_BOSS="6";
     public static final String GROUP_METEOR="8";
     public static final String BOTTLE="12";
-
+    public static final String OLD_MAN_KARN="13";
+    public static final String STONE="14";
+    public static final String GRASS="15";
 }

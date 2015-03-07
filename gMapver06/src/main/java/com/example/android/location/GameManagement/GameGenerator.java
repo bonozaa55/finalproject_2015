@@ -12,7 +12,6 @@ import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemsID;
-import com.example.android.location.Resource.MapObject;
 import com.example.android.location.Resource.Object.ObjectDATA;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
@@ -21,6 +20,7 @@ import com.example.android.location.Resource.Object.ObjectLoader;
 import com.example.android.location.Resource.Player.Player;
 import com.example.android.location.Resource.Player.PlayerItem;
 import com.example.android.location.Util.Constants;
+import com.example.android.location.Util.Mission_ONE;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,8 +31,8 @@ import com.metaio.sdk.jni.IMetaioSDKAndroid;
 import com.metaio.sdk.jni.IRadar;
 import com.metaio.sdk.jni.LLACoordinate;
 import com.metaio.sdk.jni.Rotation;
+import com.metaio.sdk.jni.Vector3d;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -52,12 +52,11 @@ public class GameGenerator {
     IMetaioSDKAndroid metaioSDK;
     MapObjectManager mMapObjectManager;
     ObjectDetailManager mObjectDetailManager;
-    boolean isHitting = false,isDelay=false;
+    boolean isHitting = false, isDelay = false;
     BossManager bossManager;
-    private ArrayList<IGeometry> mapObjectModelList;
     private HashMap<String, ObjectGroup> objectGroupHashMap;
-    private CountDownTimer mCountDownTimer;
-    private ProgressBar playerHpBar,objectHpBar;
+    private static CountDownTimer mCountDownTimer;
+    private ProgressBar playerHpBar, objectHpBar;
     private View getHitView;
     private int meteorNo = 3;
     private int meteorCount = 0;
@@ -134,19 +133,29 @@ public class GameGenerator {
                 }
             }
 
-        } else if(!isDelay){
+        } else if (!isDelay) {
+            Mission_ONE x = new Mission_ONE();
             int found = 0;
             for (Map.Entry<String, ObjectGroup> t : objectGroupHashMap.entrySet()) {
-                if (t.getKey().equals(ObjectID.GROUP_BOSS)) {
+                if (t.getKey().equals(ObjectID.GROUP_BOSS)||t.getKey().equals(ObjectID.OLD_MAN_KARN)
+                        ||t.getKey().equals(ObjectID.BOTTLE)) {
                     ObjectGroup temp = t.getValue();
                     double phoneHeading = MainActivity.getPhoneHeading();
                     ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(temp.getMainKey());
                     boolean check = CheckPhoneHeading(objectDATA, phoneHeading);
                     if (checkLocationDistance(objectDATA.getLocation(), currentLocation, objectDATA.getAcceptableDistance())
                             && check) {
-                        notifyEvent(temp, GlobalResource.STATE_MARKER, 60000);
-                        bossManager = new BossManager();
-                        Player.setHp(1000);
+                        if (t.getKey().equals(ObjectID.GROUP_BOSS)) {
+                            notifyEvent(temp, GlobalResource.STATE_MARKER, 60000);
+                            bossManager = new BossManager();
+                        }
+                        if (t.getKey().equals(ObjectID.OLD_MAN_KARN)) {
+
+                            notifyEvent(temp,GlobalResource.STATE_MISSION,20000);
+                        }
+                        if (t.getKey().equals(ObjectID.BOTTLE)) {
+                            notifyEvent(temp,GlobalResource.STATE_HEALING,20000);
+                        }
                         found = 1;
                     }
                 }
@@ -156,10 +165,10 @@ public class GameGenerator {
                 temp = Math.random();
             double possibility = 0.5;
             if (CheckLocationArea(18.795526f, 98.953083f, 0.00095f, 0.000206f, currentLocation) && temp <= possibility) {
-                //temp -= 0.5;
+                temp += 5;
                 if (temp <= possibility / 3) {
-                    MapObject t = createRandomMapObject();
-                    notifyEvent(t);
+                    ObjectGroup t = createRandomMapObject();
+                    notifyEvent(t,GlobalResource.STATE_GATHERING,20000);
                 } else if (temp >= possibility * 2 / 3) {
                     meteorCount = 0;
                     notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.GROUP_METEOR)
@@ -173,9 +182,16 @@ public class GameGenerator {
         }
     }
 
-    public void notifyEvent(int GAME_STATE) {
+    public void stopTimer(){
+        if(mCountDownTimer!=null)
+            mCountDownTimer.cancel();
+    }
+
+    public void notifyEvent(ObjectGroup t,int GAME_STATE) {
         mVibration.vibrate(300);
-        FoundObject(null, GAME_STATE);
+        Mission_ONE.setVisibilityModel(false);
+        FoundObject(t, GAME_STATE);
+        objectGroup = t;
     }
 
     private void notifyEvent(ObjectGroup t, int GAME_STATE, int timeout) {
@@ -185,23 +201,15 @@ public class GameGenerator {
         objectGroup = t;
     }
 
-    private void notifyEvent(MapObject t) {
-        mVibration.vibrate(300);
-        MainActivity.makeToast("Gathering");
-        foundMapObject(t);
-        startCountdownTimer(20000);
-    }
-
     public void initResource() {
-        View overlayLayout=GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT);
+        View overlayLayout = GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT);
         playerHpBar = (ProgressBar) overlayLayout.findViewById(R.id.overlay_player_hp);
         playerHpBar.setMax(Player.getHp());
         playerHpBar.setProgress(Player.getHp());
-        objectHpBar= (ProgressBar) overlayLayout.findViewById(R.id.overlay_object_hp);
+        objectHpBar = (ProgressBar) overlayLayout.findViewById(R.id.overlay_object_hp);
 
         getHitView = overlayLayout.findViewById(R.id.overlay_get_hit);
         mVibration = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        mapObjectModelList = GlobalResource.getMapObjectModelList();
         objectGroupHashMap = ObjectLoader.getObjectGroupList();
         //createLocationObject();
 
@@ -212,10 +220,6 @@ public class GameGenerator {
         mObjectDetailManager.setGameState(true, mModelList, GAME_STATE);
     }
 
-    private void foundMapObject(MapObject object) {
-        mMapObjectManager.setCollectingState(true, object);
-        metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
-    }
 
     private boolean checkLocationDistance(Location objectLocation, Location currentLocation, double maxDistance) {
         if (objectLocation.distanceTo(currentLocation) <= maxDistance) {
@@ -257,10 +261,16 @@ public class GameGenerator {
         addMarker(temp, R.drawable.monster2, "Monster");
     }
 
-    private MapObject createRandomMapObject() {
-        IGeometry model = mapObjectModelList.get(randInt(0, mapObjectModelList.size() - 1));
-        MapObject temp = new MapObject(model);
-        return temp;
+    private ObjectGroup createRandomMapObject() {
+        String key = randInt(14, 15) + "";
+        ObjectGroup t1 = ObjectLoader.getObjectGroupList().get(key);
+        HashMap<String, ObjectDetail> temp = t1.getObjectDetailList();
+        int i=1;
+        for (Map.Entry<String, ObjectDetail> t : temp.entrySet()) {
+            t.getValue().getModel().setTranslation(new Vector3d(randInt(-200,200),i*200,0));
+            i++;
+        }
+        return t1;
     }
 
     private ObjectGroup createRandomLocationObject(Location currentLocation, int range) {
@@ -279,19 +289,15 @@ public class GameGenerator {
     }
 
     public void resetState(int STATE) {
-        mCountDownTimer.cancel();
+        stopTimer();
         objectHpBar.setVisibility(View.GONE);
-        if (STATE == GlobalResource.STATE_GATHERING) {
-            mMapObjectManager.setCollectingState(false, null);
-        } else {
             for (Map.Entry<String, ObjectDetail> t : objectGroup.getObjectDetailList().entrySet()) {
                 String key = t.getValue().getKey();
                 t.getValue().setRemainingHP(ObjectDATA.getObjectDATAHashMap().get(key).getMaxHP());
             }
             mObjectDetailManager.setGameState(false);
-        }
-        isDelay=true;
-        new CountDownTimer(3000,2000){
+        isDelay = true;
+        new CountDownTimer(3000, 2000) {
 
             @Override
             public void onTick(long l) {
@@ -300,7 +306,7 @@ public class GameGenerator {
 
             @Override
             public void onFinish() {
-                isDelay=false;
+                isDelay = false;
             }
         }.start();
     }
@@ -351,21 +357,32 @@ public class GameGenerator {
                 getHitView.setVisibility(View.GONE);
             }
         }, 100);
-        if (playerHp <= 0){
-            if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_MARKER) {
-                MainActivity.makeToast("A boss can't be killed?");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        resetState(GlobalResource.STATE_MARKER);
-                        notifyEvent(GlobalResource.STATE_DEAD);
-                        getHitView.setVisibility(View.VISIBLE);
-                        Player.setHp(0);
-                        playerHpBar.setProgress(Player.getHp());
-                       // GlobalResource.getListOfViews().get(Constants.HEAL_LAYOUT).setVisibility(View.VISIBLE);
-                    }
-                }, 1000);
+        if (playerHp <= 0) {
+            if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER) {
+                MainActivity.showSimpleDialog("ปีศาจไส้อั่ว", "นี้ผู้เฒ่ากานต์ส่งเจ้ามาจริงรึเปล่า ฮ่าๆๆๆๆ ทำไมเจ้าอ่อนแอแบบนี้!");
             }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    resetState(GlobalResource.getGAME_STATE());
+                    getHitView.setVisibility(View.VISIBLE);
+                    GlobalResource.getListOfViews().get(Constants.MAP_LAYOUT).findViewById(R.id.map_dead)
+                            .setVisibility(View.VISIBLE);
+                    Player.setHp(0);
+                    playerHpBar.setProgress(Player.getHp());
+                }
+            }, 1000);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (GlobalResource.getMISSION_STATE() == Mission_ONE.STATE_GET_MISSION) {
+                        GlobalResource.setMISSION_STATE(Mission_ONE.STATE_LOSE_TO_BOSS);
+                    } else {
+                        notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.OLD_MAN_KARN)
+                                , GlobalResource.STATE_DEAD);
+                    }
+                }
+            }, 2000);
         }
 
     }
@@ -384,38 +401,66 @@ public class GameGenerator {
             resetState(GlobalResource.STATE_METEOR);
         }
     }
-    public void checkHealingGeometryTouch(IGeometry geometry){
-        View healingLayout=GlobalResource.getListOfViews().get(Constants.HEAL_LAYOUT);
+
+    public void checkHealingGeometryTouch(IGeometry geometry) {
+        View healingLayout = GlobalResource.getListOfViews().get(Constants.HEAL_LAYOUT);
         healingLayout.setVisibility(View.VISIBLE);
         getHitView.setVisibility(View.GONE);
-
+        GlobalResource.getListOfViews().get(Constants.MAP_LAYOUT).findViewById(R.id.map_dead)
+                .setVisibility(View.GONE);
+        GlobalResource.getListOfViews().get(Constants.MAP_LAYOUT).findViewById(R.id.map_dead).setVisibility(View.GONE);
         GlobalResource.setGAME_STATE(GlobalResource.STATE_HEALING);
-        final ProgressBar t= (ProgressBar) healingLayout.findViewById(R.id.healing_progress);
+        final ProgressBar t = (ProgressBar) healingLayout.findViewById(R.id.healing_progress);
         final ProgressBar t2 = (ProgressBar) healingLayout.findViewById(R.id.healing_timer);
         t.setProgress(0);
         geometry.setVisible(false);
-        final int countDownTime=7000;
-        new CountDownTimer(countDownTime, countDownTime/100) {
+        final int countDownTime = 7000;
+        new CountDownTimer(countDownTime, countDownTime / 100) {
 
             public void onTick(long millisUntilFinished) {
-                t2.setProgress((int) ((float)millisUntilFinished/countDownTime*100));
+                t2.setProgress((int) ((float) millisUntilFinished / countDownTime * 100));
             }
 
             public void onFinish() {
-                int getHp= (int) ((float)t.getProgress()/t.getMax()*300);
-                Player.setHp(Player.getHp()+getHp);
-                playerHpBar.setProgress(playerHpBar.getProgress()+getHp);
+                int getHp = (int) ((float) t.getProgress() / t.getMax() * 300);
+                Player.setHp(Player.getHp() + getHp);
+                playerHpBar.setProgress(playerHpBar.getProgress() + getHp);
                 GlobalResource.getListOfViews().get(Constants.HEAL_LAYOUT).setVisibility(View.GONE);
-                MainActivity.makeToast("restore "+getHp+" HP" );
+                MainActivity.makeToast("restore " + getHp + " HP");
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                    MainActivity.showHealingDialog();
+                        MainActivity.showHealingDialog();
                     }
-                },3000);
+                }, 3000);
             }
         }.start();
     }
+
+    public static int getPlayerItemQuantity(HashMap<Integer, PlayerItem> playerItemHashMap, int id) {
+        PlayerItem t = playerItemHashMap.get(id);
+        int playerItemQuantity = 0;
+        if (t != null)
+            playerItemQuantity = t.getQuantity();
+        return playerItemQuantity;
+    }
+    public void checkGatheringGeometryTouch(String key, int GAME_STATE, HashMap<Integer, PlayerItem> playerItemHashMap){
+        ObjectDetail objectDetail = objectGroup.getObjectDetailList().get(key);
+        String mObjectID=objectDetail.getKey();
+        if (mObjectID.equals(ObjectID.STONE)) {
+            int playerOreQuantity = getPlayerItemQuantity(playerItemHashMap, ItemsID.ORE);
+            playerItemHashMap.put(ItemsID.ORE, new PlayerItem(ItemsID.ORE, playerOreQuantity + 1));
+            MainActivity.makeToastItem(ItemsID.ORE, 1);
+        }
+        if (mObjectID.equals(ObjectID.GRASS)) {
+            int playerGrassQuantity = getPlayerItemQuantity(playerItemHashMap, ItemsID.GRASS);
+            playerItemHashMap.put(ItemsID.GRASS, new PlayerItem(ItemsID.GRASS, playerGrassQuantity + 1));
+            MainActivity.makeToastItem(ItemsID.GRASS, 1);
+        }
+        objectDetail.getModel().setVisible(false);
+        objectDetail.getModel().setPickingEnabled(false);
+    }
+
 
     public void checkLocationGeometryTouch(String key, int GAME_STATE, IRadar mRadar
             , HashMap<Integer, PlayerItem> playerItemHashMap, GameGenerator gameGenerator) {
@@ -451,9 +496,9 @@ public class GameGenerator {
                     objectHpBar.setVisibility(View.GONE);
                 }
             });
-            int playerGold = MainActivity.getPlayerItemQuantity(playerItemHashMap, ItemsID.GOLD);
+            int playerGold = getPlayerItemQuantity(playerItemHashMap, ItemsID.GOLD);
             playerItemHashMap.put(ItemsID.GOLD, new PlayerItem(ItemsID.GOLD, playerGold + objectDATA.getGoldDrop()));
-            MainActivity.makeToastItem(ItemsID.GOLD,objectDATA.getGoldDrop());
+            MainActivity.makeToastItem(ItemsID.GOLD, objectDATA.getGoldDrop());
             //objectDetail.setRemainingHP(objectDetail.getMaxHP());
             objectDetail.getModel().setPickingEnabled(false);
             objectDetail.getModel().setVisible(false);

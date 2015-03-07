@@ -46,7 +46,6 @@
             android:layout_height="wrap_content"
             android:background="#ECF0F1"
             android:layout_margin="10dp"
-            android:scrollbars="none"
             android:groupIndicator="@null"
             android:listSelector="@android:color/transparent"
             android:id="@+id/expandableListView"

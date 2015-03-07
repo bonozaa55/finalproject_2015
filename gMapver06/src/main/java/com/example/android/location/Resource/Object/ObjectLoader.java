@@ -44,20 +44,19 @@ public class ObjectLoader {
         objectGroupList.put(ObjectID.GROUP_BOSS,new ObjectGroup(new String[]{ObjectID.ELEPHANT,ObjectID.ELEPHANT_UNDERLING_L
         ,ObjectID.ELEPHANT_UNDERLING_R},ObjectID.ELEPHANT));
 
-        objectGroupList.put(ObjectID.GROUP_ONE_EYE,new ObjectGroup(new String[]{ObjectID.ONE_EYE
+        objectGroupList.put(ObjectID.GROUP_ONE_EYE,new ObjectGroup(new String[]{ObjectID.PRISONER
                 ,ObjectID.PRISONER,ObjectID.PRISONER}));
-        objectGroupList.put(ObjectID.GROUP_PRISONER,new ObjectGroup(new String[]{ObjectID.ONE_EYE
-                ,ObjectID.PRISONER,ObjectID.ONE_EYE}));
+        objectGroupList.put(ObjectID.GROUP_PRISONER,new ObjectGroup(new String[]{ObjectID.PRISONER
+                ,ObjectID.PRISONER,ObjectID.PRISONER}));
         objectGroupList.put(ObjectID.GROUP_METEOR,new ObjectGroup(new String[]{ObjectID.METEOR},ObjectID.METEOR));
         objectGroupList.put(ObjectID.BOTTLE,new ObjectGroup(new String[]{ObjectID.BOTTLE},ObjectID.BOTTLE));
-
-
+        objectGroupList.put(ObjectID.OLD_MAN_KARN,new ObjectGroup(new String[]{ObjectID.OLD_MAN_KARN},ObjectID.OLD_MAN_KARN));
+        objectGroupList.put(ObjectID.STONE,new ObjectGroup(new String[]{ObjectID.STONE,ObjectID.STONE,ObjectID.STONE}));
+        objectGroupList.put(ObjectID.GRASS,new ObjectGroup(new String[]{ObjectID.GRASS,ObjectID.GRASS,ObjectID.GRASS}));
     }
     public void LoadARcontent() {
 
         ArrayList<IGeometry> mapObject = new ArrayList<IGeometry>();
-        ArrayList<IGeometry> markerObject = new ArrayList<IGeometry>();
-        ArrayList<IGeometry> locationBasedObject = new ArrayList<IGeometry>();
 
         try {
             _metaioSDK.setLLAObjectRenderingLimits(0, 200);
@@ -90,17 +89,6 @@ public class ObjectLoader {
             }
 
             ///load model for collecting function
-            String mapObjectString[] = {"ore", "grass"};
-            for (String t : mapObjectString) {
-                String filepath = AssetsManager.getAssetPath(_this, "ModelAsset/Assets/" + t + ".md2");
-                tresure = _metaioSDK.createGeometry(filepath);
-                tresure.setScale(0.05f);
-                tresure.setVisible(false);
-                tresure.setFadeInTime(1);
-                tresure.setName(t);
-                mapObject.add(tresure);
-                GlobalResource.setMapObjectModelList(mapObject);
-            }
 
 
 

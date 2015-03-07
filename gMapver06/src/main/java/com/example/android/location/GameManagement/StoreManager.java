@@ -33,7 +33,6 @@ public class StoreManager {
         createCraftMission();
         CraftMissionAdapter listAdapter = new CraftMissionAdapter(context, craftMissionList);
         expListView.setAdapter(listAdapter);
-
         View storeCraftInterface=motherView.findViewById(R.id.store_craft);
         final View storeCraftCancel=motherView.findViewById(R.id.store_cancle);
         View craftRecipe=storeCraftLayout.findViewById(R.id.craft_recipe_cancle);
@@ -73,7 +72,8 @@ public class StoreManager {
         materialRequiredList.add(item3);
         materialRequiredList2.add(item1);
         materialRequiredList2.add(item4);
-        craftMissionList.add(new CraftMission(0,"Craft1",materialRequiredList,"nothing",R.drawable.bag_64px));
+        craftMissionList.add(new CraftMission(0,"หนังสติ๊กทรงพลัง",materialRequiredList,"หนังสติ๊กที่ทำจากหญ้า " +
+                "และหินแกรนิตจึงทำให้มีความแข็งแรงและทนทาน แถมยังมีพลังทำลายล้างสูง,ATK+50",R.drawable.stick));
         craftMissionList.add(new CraftMission(0,"Craft2",materialRequiredList2,"nothing",R.drawable.book_64px));
         craftMissionList.add(new CraftMission(0,"Craft3",materialRequiredList,"nothing",R.drawable.browser_64px));
         GlobalResource.setCraftMissionList(craftMissionList);

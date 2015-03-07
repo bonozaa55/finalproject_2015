@@ -1,14 +1,18 @@
 package com.example.android.location.GameManagement;
 
 import android.content.Context;
+import android.view.View;
 
 import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Object.ObjectDATA;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
+import com.example.android.location.Util.Constants;
+import com.example.android.location.Util.Mission_ONE;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKAndroid;
 import com.metaio.sdk.jni.IRadar;
@@ -34,6 +38,8 @@ public class ObjectDetailManager {
     }
 
     public void setGameState(boolean parameter, ObjectGroup objectGroup, int GAME_STATE) {
+        GlobalResource.setGAME_STATE(GAME_STATE);
+        setGeneralState(parameter);
         switch (GAME_STATE) {
             case GlobalResource.STATE_MARKER:
                 ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(objectGroup.getMainKey());
@@ -65,13 +71,24 @@ public class ObjectDetailManager {
                 loadDeadResource();
                 break;
             case GlobalResource.STATE_HEALING:
-                setVisibilityHealObject();
+                MainActivity.makeToast("Healing");
+                markerPath=ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
+                filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
+                        "TutorialDynamicModels/Assets/MarkerConfig_" + markerPath + ".xml");
+                metaioSDK.setTrackingConfiguration(filePath);
+                loadDeadResource();
                 break;
-            default:
+            case GlobalResource.STATE_MISSION:
+                MainActivity.makeToast("Old man KARN");
+                new Mission_ONE().resetStateToMission();
+                break;
+            case GlobalResource.STATE_GATHERING:
+                MainActivity.makeToast("Gathering");
+                setCollectingState(true, objectGroup);
+                metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
                 break;
         }
-        GlobalResource.setGAME_STATE(GAME_STATE);
-        setGeneralState(parameter);
+
     }
 
     void setGameState(boolean parameter) {
@@ -114,7 +131,6 @@ public class ObjectDetailManager {
 
     void loadDeadResource(){
         setVisibilityHealObject();
-        GlobalResource.setGAME_STATE(GlobalResource.STATE_DEAD);
     }
 
     void setVisibilityHealObject(){
@@ -146,10 +162,34 @@ public class ObjectDetailManager {
             tt.setPickingEnabled(false);
             tt.stopAnimation();
         }
+        GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT)
+                .findViewById(R.id.backToNormal).setVisibility(View.GONE);
     }
 
-    public void initResource() {
+    public void setVisibilityCollectItem(boolean parameter,ObjectGroup object) {
+        View motherView = GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT);
+        if (parameter) {
+            for(Map.Entry<String,ObjectDetail> t:object.getObjectDetailList().entrySet()){
+                IGeometry tt=t.getValue().getModel();
+                tt.setScale(0.05f);
+                tt.setVisible(true);
+                tt.setFadeInTime(1);
+                tt.setPickingEnabled(true);
+            }
+            motherView.findViewById(R.id.backToNormal).setVisibility(View.VISIBLE);
+        } else
+            motherView.findViewById(R.id.backToNormal).setVisibility(View.GONE);
+    }
 
+    public void setCollectingState(boolean parameter,ObjectGroup object) {
+        if (!parameter) {
+            GlobalResource.setGAME_STATE(GlobalResource.STATE_IDLE);
+        } else
+            GlobalResource.setGAME_STATE(GlobalResource.STATE_GATHERING);
+        setVisibilityCollectItem(parameter,object);
+        setGeneralState(parameter);
+    }
+    void initResource(){
 
     }
 }

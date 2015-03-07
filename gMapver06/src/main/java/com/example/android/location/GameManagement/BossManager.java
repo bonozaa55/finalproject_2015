@@ -2,12 +2,12 @@ package com.example.android.location.GameManagement;
 
 import android.os.Handler;
 
-import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
+import com.example.android.location.Util.Mission_ONE;
 import com.metaio.sdk.jni.IGeometry;
 
 import java.util.Map;
@@ -60,8 +60,10 @@ public class BossManager {
             t.getValue().getModel().startAnimation(1,2);
     }
     public void setPickingEnabled(){
-        for (Map.Entry<String, ObjectDetail> t : objectGroup.getObjectDetailList().entrySet())
+        for (Map.Entry<String, ObjectDetail> t : objectGroup.getObjectDetailList().entrySet()) {
             t.getValue().getModel().setPickingEnabled(false);
+            t.getValue().getModel().stopAnimation();
+        }
     }
 
     public void changeBossState(int STATE) {
@@ -150,14 +152,22 @@ public class BossManager {
             isUnderlingDead = false;
         }
         if (bossRemainPercent <= 0) {
-            MainActivity.makeToast("Congrats you had finish a hard boss");
+            //MainActivity.makeToast("Congrats you had finish a hard boss");
             setPickingEnabled();
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     gameGenerator.resetState(GlobalResource.STATE_MARKER);
                 }
             }, 2000);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    GlobalResource.setMISSION_STATE(Mission_ONE.STATE_WIN_BOSS);
+                    (new Mission_ONE()).resetStateToMission();
+                }
+            },3000);
         }
 
     }
