@@ -102,9 +102,9 @@ public class BossManager {
     public void checkOnAnimationEnd(String animationName, IGeometry geometry, GameGenerator gameGenerator) {
         if (animationName.equals("attack")) {
             geometry.startAnimation("attack_back");
-            int dmg = 500;
+            int dmg = 200;
             if (BOSS_STATE == STATE_UNDERLING_L_ATK || BOSS_STATE == STATE_UNDERLING_R_ATK)
-                dmg = 150;
+                dmg = 50;
             gameGenerator.playerGetHit(dmg);
         }
         if (animationName.equals("attack_back")) {
@@ -158,7 +158,7 @@ public class BossManager {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    gameGenerator.resetState(GlobalResource.STATE_MARKER);
+                    gameGenerator.resetState();
                 }
             }, 2000);
             new Handler().postDelayed(new Runnable() {

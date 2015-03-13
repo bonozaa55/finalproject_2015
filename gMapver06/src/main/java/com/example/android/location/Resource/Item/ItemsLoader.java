@@ -19,6 +19,7 @@ public class ItemsLoader {
         itemList.put(ItemsID.GOLD,new ItemDetail(ItemsID.GOLD,"Gold","", R.drawable.icon_gold));
         itemList.put(ItemsID.GRASS,new ItemDetail(ItemsID.GRASS,"Grass","",R.drawable.icon_grass3));
         itemList.put(ItemsID.ORE,new ItemDetail(ItemsID.ORE,"Ore","",R.drawable.icon_ore3));
+        itemList.put(ItemsID.FISH,new ItemDetail(ItemsID.FISH,"Fish","",R.drawable.fish_icon));
     }
 
     public static HashMap<Integer, ItemDetail> getItemList() {

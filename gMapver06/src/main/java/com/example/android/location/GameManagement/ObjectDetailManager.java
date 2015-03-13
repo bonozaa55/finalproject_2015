@@ -16,6 +16,7 @@ import com.example.android.location.Util.Mission_ONE;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKAndroid;
 import com.metaio.sdk.jni.IRadar;
+import com.metaio.sdk.jni.Rotation;
 import com.metaio.sdk.jni.Vector3d;
 import com.metaio.tools.io.AssetsManager;
 
@@ -45,7 +46,7 @@ public class ObjectDetailManager {
                 ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(objectGroup.getMainKey());
                 MainActivity.makeToast("BOSS!!");
                 String filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
-                        "TutorialDynamicModels/Assets/MarkerConfig_" + objectDATA.getMarkerPath() + ".xml");
+                        "TrackingConfig/Assets/MarkerConfig_" + objectDATA.getMarkerPath() + ".xml");
                 metaioSDK.setTrackingConfiguration(filePath);
                 loadMarkerModel(objectGroup);
                 ObjectDATA t = ObjectDATA.getObjectDATAHashMap().get(objectGroup.getMainKey());
@@ -66,7 +67,7 @@ public class ObjectDetailManager {
                 MainActivity.makeToast("You are dead, Please go to heal station to refill it");
                 String markerPath=ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
-                        "TutorialDynamicModels/Assets/MarkerConfig_" + markerPath + ".xml");
+                        "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
                 metaioSDK.setTrackingConfiguration(filePath);
                 loadDeadResource();
                 break;
@@ -74,18 +75,26 @@ public class ObjectDetailManager {
                 MainActivity.makeToast("Healing");
                 markerPath=ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
-                        "TutorialDynamicModels/Assets/MarkerConfig_" + markerPath + ".xml");
+                        "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
                 metaioSDK.setTrackingConfiguration(filePath);
                 loadDeadResource();
                 break;
             case GlobalResource.STATE_MISSION:
-                MainActivity.makeToast("Old man KARN");
+                MainActivity.makeToast("The Old man");
                 new Mission_ONE().resetStateToMission();
                 break;
             case GlobalResource.STATE_GATHERING:
                 MainActivity.makeToast("Gathering");
                 setCollectingState(true, objectGroup);
                 metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
+                break;
+            case GlobalResource.STATE_FISHING:
+                MainActivity.makeToast("Fishing");
+                markerPath=ObjectDATA.getObjectDATAHashMap().get(ObjectID.WATER_VALVE).getMarkerPath();
+                filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
+                        "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
+                metaioSDK.setTrackingConfiguration(filePath);
+                loadFishingResource();
                 break;
         }
 
@@ -99,9 +108,27 @@ public class ObjectDetailManager {
 
     public void setGeneralState(boolean parameter) {
         if (!parameter) {
+            metaioSDK.setTrackingConfiguration("DUMMY");
             metaioSDK.pauseTracking();
         } else {
             metaioSDK.resumeTracking();
+        }
+    }
+
+    private  void loadFishingResource(){
+        HashMap<String, ObjectDetail> temp = ObjectLoader.getObjectGroupList().get(ObjectID.GROUP_FISHING).getObjectDetailList();
+        for(Map.Entry<String, ObjectDetail> t : temp.entrySet()){
+            IGeometry tt=t.getValue().getModel();
+            tt.setPickingEnabled(true);
+            if(!t.getKey().split("_")[1].equals(ObjectID.WATER_VALVE)){
+                //tt.setRelativeToScreen(IGeometry.ANCHOR_BC);
+                tt.setVisible(false);
+                tt.setTranslation(new Vector3d(200,-1500,0));
+                // tt.setRotation(new Rotation((float)(Math.PI/180f*20),0,0));
+            }else {
+                tt.setVisible(true);
+                tt.setPickingEnabled(true);
+            }
         }
     }
 
@@ -161,6 +188,7 @@ public class ObjectDetailManager {
             tt.setVisible(false);
             tt.setPickingEnabled(false);
             tt.stopAnimation();
+            tt.setRotation(new Rotation(0,0,0));
         }
         GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT)
                 .findViewById(R.id.backToNormal).setVisibility(View.GONE);

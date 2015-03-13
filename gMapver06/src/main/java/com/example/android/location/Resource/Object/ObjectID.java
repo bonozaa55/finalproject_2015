@@ -19,4 +19,10 @@ public class ObjectID {
     public static final String OLD_MAN_KARN="13";
     public static final String STONE="14";
     public static final String GRASS="15";
+    public static final String GROUP_FISHING="16";
+    public static final String FISHING_ROD="17";
+    public static final String WATER_VALVE="18";
+    public static final String FISH="19";
+    public static final String TENDON="20";
+
 }

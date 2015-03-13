@@ -32,9 +32,9 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.location.GameManagement.FishingManager;
 import com.example.android.location.GameManagement.GameGenerator;
 import com.example.android.location.GameManagement.HealManager;
-import com.example.android.location.GameManagement.MapObjectManager;
 import com.example.android.location.GameManagement.ObjectDetailManager;
 import com.example.android.location.GameManagement.StoreManager;
 import com.example.android.location.Interface.MyCraftMissionManager;
@@ -44,6 +44,8 @@ import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemDetail;
 import com.example.android.location.Resource.Item.ItemsID;
 import com.example.android.location.Resource.Item.ItemsLoader;
+import com.example.android.location.Resource.Object.ObjectDetail;
+import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
 import com.example.android.location.Resource.Player.Player;
@@ -58,8 +60,10 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.metaio.sdk.ARViewActivity;
+import com.metaio.sdk.GestureHandlerAndroid;
 import com.metaio.sdk.MetaioDebug;
 import com.metaio.sdk.jni.ETRACKING_STATE;
+import com.metaio.sdk.jni.GestureHandler;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKCallback;
 import com.metaio.sdk.jni.IRadar;
@@ -72,16 +76,18 @@ import com.metaio.tools.io.AssetsManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends ARViewActivity {
 
     public static final String FRAGTAG = "ImmersiveModeFragment";
     public static Vibrator mVibration;
-    static Context applicationContext,this_Context;
+    static Context applicationContext, this_Context;
     static TouchEffectView touchEffectView;
     static int count = 0, count2 = 0;
     static GameGenerator mGameGeneretor;
     static ImmersiveModeFragment immersiveModeFragment;
+    static Mission_ONE mMissionOne;
     private static TextView tBearing;
     private static double phoneHeading;
     SensorManager mSensorManager;
@@ -89,6 +95,7 @@ public class MainActivity extends ARViewActivity {
     int ViewState = -1;
     ObjectDetailManager mObjectDetailManager;
     double mAccelCurrent;
+
     private Button resumeMapButton;
     private LocationReceiver lReceiver;
     private Intent intent_location;
@@ -106,9 +113,9 @@ public class MainActivity extends ARViewActivity {
     private int maxTime = 200;
     private boolean startCount = false;
     private int gameState = 0;
-    private MapObjectManager mMapObjectManager;
     private HealManager mHealManager;
-    static Mission_ONE mMissionOne;
+    private GestureHandlerAndroid mGestureHandler;
+    FishingManager mFishingManager;
 
     public static double getPhoneHeading() {
         return MainActivity.phoneHeading;
@@ -117,56 +124,6 @@ public class MainActivity extends ARViewActivity {
     public static Context getThisContext() {
         return applicationContext;
     }
-
-
-/*
-    private void checkDistanceToTarget()
-    {
-
-        // get tracing values for COS 1
-        final TrackingValues tv = metaioSDK.getTrackingValues(1);
-
-        // check if the current state is tracking
-        // Note, you can use this mechanism also to detect if something is tracking or not.
-        // (e.g. for triggering an action as soon as some target is visible on screen)
-
-        if (tv.isTrackingState())
-        {
-            // get the translation part of the pose
-            final Vector3d translation = tv.getTranslation();
-
-            // calculate the distance as sqrt( x^2 + y^2 + z^2 )
-            final float distanceToTarget = translation.norm();
-
-            // define a threshold distance
-            final float threshold = 800;
-
-            // if we are already close to the model
-            if (mIsCloseToModel)
-            {
-                // if our distance is larger than our threshold (+ a little)
-                if (distanceToTarget > (threshold + 10))
-                {
-                    // we flip this variable again
-                    mIsCloseToModel = false;
-                    // and start the close_up animation
-                    mMetaioMan.startAnimation("close_up", false);
-                }
-            }
-            else
-            {
-                // we're not close yet, let's check if we are now
-                if (distanceToTarget < threshold)
-                {
-                    // flip the variable
-                    mIsCloseToModel = true;
-                    // and start an animation
-                    mMetaioMan.startAnimation("close_down", false);
-                }
-            }
-        }
-    }
-    */
 
     public static void makeToastItem(int itemID, int quantity) {
         ItemDetail t = ItemsLoader.getItemList().get(itemID);
@@ -204,7 +161,7 @@ public class MainActivity extends ARViewActivity {
             public void onClick(View v) {
                 dialog.dismiss();
                 mGameGeneretor.notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.OLD_MAN_KARN)
-                        ,GlobalResource.STATE_HEALING);
+                        , GlobalResource.STATE_HEALING);
             }
         });
 
@@ -212,8 +169,8 @@ public class MainActivity extends ARViewActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                mGameGeneretor.resetState(GlobalResource.STATE_HEALING);
-               //mMissionOne.resetStateToMission();
+                mGameGeneretor.resetState();
+                //mMissionOne.resetStateToMission();
 
             }
         });
@@ -222,7 +179,7 @@ public class MainActivity extends ARViewActivity {
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
 
-    public static void showSimpleDialog(String title,String Text) {
+    public static void showSimpleDialog(String title, String Text) {
         final Dialog dialog = new Dialog(this_Context);
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
@@ -247,7 +204,6 @@ public class MainActivity extends ARViewActivity {
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
 
-
     public static void makeToast(String message) {
         View layout = GlobalResource.getListOfViews().get(Constants.TOAST_LAYOUT);
         ImageView image = (ImageView) layout.findViewById(R.id.image);
@@ -260,6 +216,10 @@ public class MainActivity extends ARViewActivity {
         toast.setView(layout);
         toast.show();
     }
+
+
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -285,6 +245,7 @@ public class MainActivity extends ARViewActivity {
             e.printStackTrace();
         }
         mCallbackHandler = new MetaioSDKCallbackHandler();
+        //mGestureCallback= new MetaioGestureHandlerCallback();
         initSensor();
     }
 
@@ -325,6 +286,8 @@ public class MainActivity extends ARViewActivity {
     @Override
     public void onDrawFrame() {
         super.onDrawFrame();
+        if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_FISHING)
+            mFishingManager.checkDistanceToTarget();
         if (startCount)
             timeCount++;
         if (timeCount >= maxTime) {
@@ -335,9 +298,9 @@ public class MainActivity extends ARViewActivity {
         // checkDistanceToTarget();
     }
 
-
-
     public void initResource() {
+
+
         initInterface();
         Player player = new Player();
         //Player.setAtkDmg(50);
@@ -345,17 +308,19 @@ public class MainActivity extends ARViewActivity {
         //Player.getPlayerItems().put(ItemsID.ORE,new PlayerItem(ItemsID.ORE,3));
         //Player.getPlayerItems().put(ItemsID.GRASS,new PlayerItem(ItemsID.GRASS,3));
         applicationContext = getApplicationContext();
-        this_Context=MainActivity.this;
+        this_Context = MainActivity.this;
         ItemsLoader itemsData = new ItemsLoader();
         SDK_ready = 1;
-
-
         mObjectDetailManager = new ObjectDetailManager(metaioSDK, mRadar, this);
         mHealManager = new HealManager();
-        mGameGeneretor = new GameGenerator(this, metaioSDK, mMapObjectManager, mObjectDetailManager, map);
-        mMissionOne=new Mission_ONE(mGameGeneretor,metaioSDK,applicationContext);
+        mFishingManager=new FishingManager(metaioSDK,mSurfaceView,mGestureHandler);
+
+        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager,mFishingManager, map);
+
+        mMissionOne = new Mission_ONE(mGameGeneretor, metaioSDK, applicationContext);
+
         //mMissionOne.startMission();
-        //GlobalResource.setGAME_STATE(GlobalResource.STATE_IDLE);
+        GlobalResource.setGAME_STATE(GlobalResource.STATE_IDLE);
     }
 
     public void initInterface() {
@@ -505,10 +470,12 @@ public class MainActivity extends ARViewActivity {
 
                     if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_DEAD)
                         mList.get(Constants.MAP_LAYOUT).findViewById(R.id.map_dead).setVisibility(View.VISIBLE);
-                    if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_HEALING) {
+
+                    if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_HEALING)
                         mAccelCurrent = mHealManager.calculateShakeValue(event.values, mAccelCurrent);
-                        //
-                    }
+                    if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_FISHING)
+                        mFishingManager.calculateHook(event.values,mAccelCurrent);
+
                 }
 
             }
@@ -528,22 +495,22 @@ public class MainActivity extends ARViewActivity {
 
     public void AddAllMarker() {
         dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));//area
-        dlocation.add(new LLACoordinate(18.796551, 98.952543, 0, 0));//boss
-        dlocation.add(new LLACoordinate(18.795516, 98.952832, 0, 0));//heal
-        dlocation.add(new LLACoordinate(18.795798, 98.952797, 0, 0));//karn
-        LLACoordinate t=new LLACoordinate(cLocation.getLatitude(),cLocation.getLongitude(),0,0);
+        dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+        dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
+        dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
+        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+        LLACoordinate t = new LLACoordinate(cLocation.getLatitude(), cLocation.getLongitude(), 0, 0);
         dlocation.add(t);
     }
 
     public void BackToNormal(View v) {
-        mGameGeneretor.resetState(GlobalResource.STATE_GATHERING);
+        mGameGeneretor.resetState();
     }
 
     public void SwitchLocation(View v) {
         index++;
         index = index % dlocation.size();
     }
-
 
     public void ToggleZoom(View v) {
         sLocation = "1";
@@ -589,13 +556,31 @@ public class MainActivity extends ARViewActivity {
     @Override
     protected void loadContents() {
 
-        ObjectLoader temp = new ObjectLoader(getApplicationContext(), metaioSDK, mRadar);
-        temp.LoadARcontent();
-        mRadar = GlobalResource.getRadar();
+        mSurfaceView.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                ObjectLoader temp = new ObjectLoader(getApplicationContext(), metaioSDK, mRadar);
+                temp.LoadARcontent();
+                mRadar = GlobalResource.getRadar();
+
+                int mGestureMask = GestureHandler.GESTURE_ROTATE;
+                mGestureHandler = new GestureHandlerAndroid(metaioSDK, mGestureMask);
+                ObjectGroup t1 = ObjectLoader.getObjectGroupList().get(ObjectID.GROUP_FISHING);
+                for(Map.Entry<String,ObjectDetail> t:t1.getObjectDetailList().entrySet()){
+                    if(t.getKey().split("_")[1].equals(ObjectID.WATER_VALVE))
+                        mGestureHandler.addObject(t.getValue().getModel(),1);
+                }
+                mGestureHandler.setRotationAxis('y');
+
+            }
+        });
+
+
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             touchEffectView.setGlowX(event.getX());
             touchEffectView.setGlowY(event.getY());
@@ -603,28 +588,36 @@ public class MainActivity extends ARViewActivity {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             touchEffectView.setVisibility(View.GONE);
         }
+        if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_FISHING ) {
+            mFishingManager.checkFishingOnTouch(v,event);
+        }
+
+        mGestureHandler.onTouch(v, event);
         return super.onTouch(v, event);
     }
 
+
+
+
     @Override
     protected void onGeometryTouched(IGeometry geometry) {
+
         int GAME_STATE = GlobalResource.getGAME_STATE();
         HashMap<Integer, PlayerItem> playerItemHashMap = Player.getPlayerItems();
         if (GAME_STATE == GlobalResource.STATE_GATHERING) {
-            mGameGeneretor.checkGatheringGeometryTouch(geometry.getName(),GAME_STATE,playerItemHashMap);
-        }
-        else if (GAME_STATE == GlobalResource.STATE_DEAD || GAME_STATE == GlobalResource.STATE_HEALING) {
+            mGameGeneretor.checkGatheringGeometryTouch(geometry.getName(), playerItemHashMap);
+        } else if (GAME_STATE == GlobalResource.STATE_DEAD || GAME_STATE == GlobalResource.STATE_HEALING) {
             mGameGeneretor.stopTimer();
             mGameGeneretor.checkHealingGeometryTouch(geometry);
-        }else if (GAME_STATE == GlobalResource.STATE_MISSION){
+        } else if (GAME_STATE == GlobalResource.STATE_MISSION) {
             mMissionOne.checkMissionState();
-        }
-        else {
+
+        } else if (GAME_STATE == GlobalResource.STATE_FISHING) {
+            mFishingManager.checkFishingOnGeometryTouch(geometry,playerItemHashMap,mGameGeneretor);
+        } else {
             touchEffectView.setVisibility(View.VISIBLE);
             mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, playerItemHashMap, mGameGeneretor);
         }
-
-
     }
 
     public void onButtonClick(View v) {
@@ -676,6 +669,7 @@ public class MainActivity extends ARViewActivity {
 
         }
     }
+
 
     final class MetaioSDKCallbackHandler extends IMetaioSDKCallback {
 

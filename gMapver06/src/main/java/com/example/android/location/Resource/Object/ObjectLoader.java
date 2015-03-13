@@ -34,9 +34,7 @@ public class ObjectLoader {
         return objectGroupList;
     }
 
-    public static void setObjectGroupList(HashMap<String, ObjectGroup> objectGroupList) {
-        ObjectLoader.objectGroupList = objectGroupList;
-    }
+
 
     public void createObject(){
         ObjectDATA.LoadObjectDATA();
@@ -53,6 +51,10 @@ public class ObjectLoader {
         objectGroupList.put(ObjectID.OLD_MAN_KARN,new ObjectGroup(new String[]{ObjectID.OLD_MAN_KARN},ObjectID.OLD_MAN_KARN));
         objectGroupList.put(ObjectID.STONE,new ObjectGroup(new String[]{ObjectID.STONE,ObjectID.STONE,ObjectID.STONE}));
         objectGroupList.put(ObjectID.GRASS,new ObjectGroup(new String[]{ObjectID.GRASS,ObjectID.GRASS,ObjectID.GRASS}));
+        objectGroupList.put(ObjectID.GROUP_FISHING,new ObjectGroup(new String[]{ObjectID.FISHING_ROD,ObjectID.FISH
+                ,ObjectID.WATER_VALVE,ObjectID.TENDON},ObjectID.WATER_VALVE));
+
+
     }
     public void LoadARcontent() {
 
@@ -88,7 +90,7 @@ public class ObjectLoader {
                 t.getValue().setObjectDetailList(objectDetailHashMap);
             }
 
-            ///load model for collecting function
+            ///load set rotate
 
 
 

@@ -50,7 +50,6 @@ public class GameGenerator {
     GoogleMap mMap;
     Context context;
     IMetaioSDKAndroid metaioSDK;
-    MapObjectManager mMapObjectManager;
     ObjectDetailManager mObjectDetailManager;
     boolean isHitting = false, isDelay = false;
     BossManager bossManager;
@@ -60,14 +59,15 @@ public class GameGenerator {
     private View getHitView;
     private int meteorNo = 3;
     private int meteorCount = 0;
+    FishingManager mFishingManager;
 
-    public GameGenerator(Context context, IMetaioSDKAndroid metaioSDK, MapObjectManager mMapObjectManager
-            , ObjectDetailManager mObjectDetailManager, GoogleMap map) {
+    public GameGenerator(Context context, IMetaioSDKAndroid metaioSDK
+            , ObjectDetailManager mObjectDetailManager,FishingManager mFishingManager, GoogleMap map) {
         this.context = context;
         this.metaioSDK = metaioSDK;
-        this.mMapObjectManager = mMapObjectManager;
         this.mMap = map;
         this.mObjectDetailManager = mObjectDetailManager;
+        this.mFishingManager=mFishingManager;
         initResource();
     }
 
@@ -75,9 +75,9 @@ public class GameGenerator {
         return objectGroup;
     }
 
-    public static void setObjectGroup(ObjectGroup objectGroup) {
-        GameGenerator.objectGroup = objectGroup;
-    }
+
+
+
 
     public static void setFoundedObjectDistance(double foundedObjectDistance) {
         GameGenerator.foundedObjectDistance = foundedObjectDistance;
@@ -135,10 +135,13 @@ public class GameGenerator {
 
         } else if (!isDelay) {
             Mission_ONE x = new Mission_ONE();
+            HashMap<String,String> tempHashMap=new HashMap<String,String>();
+            String[] markerSET={ObjectID.GROUP_BOSS,ObjectID.OLD_MAN_KARN,ObjectID.GROUP_FISHING,ObjectID.BOTTLE};
+            for(String stringTemp:markerSET)
+                tempHashMap.put(stringTemp,stringTemp);
             int found = 0;
             for (Map.Entry<String, ObjectGroup> t : objectGroupHashMap.entrySet()) {
-                if (t.getKey().equals(ObjectID.GROUP_BOSS)||t.getKey().equals(ObjectID.OLD_MAN_KARN)
-                        ||t.getKey().equals(ObjectID.BOTTLE)) {
+                if (tempHashMap.get(t.getKey())!=null) {
                     ObjectGroup temp = t.getValue();
                     double phoneHeading = MainActivity.getPhoneHeading();
                     ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(temp.getMainKey());
@@ -150,11 +153,14 @@ public class GameGenerator {
                             bossManager = new BossManager();
                         }
                         if (t.getKey().equals(ObjectID.OLD_MAN_KARN)) {
-
                             notifyEvent(temp,GlobalResource.STATE_MISSION,20000);
                         }
                         if (t.getKey().equals(ObjectID.BOTTLE)) {
                             notifyEvent(temp,GlobalResource.STATE_HEALING,20000);
+                        }
+                        if (t.getKey().equals(ObjectID.GROUP_FISHING)) {
+                            mFishingManager.resetRotateAngle();
+                            notifyEvent(temp,GlobalResource.STATE_FISHING,30000);
                         }
                         found = 1;
                     }
@@ -165,7 +171,7 @@ public class GameGenerator {
                 temp = Math.random();
             double possibility = 0.5;
             if (CheckLocationArea(18.795526f, 98.953083f, 0.00095f, 0.000206f, currentLocation) && temp <= possibility) {
-                temp += 5;
+                //temp += 5;
                 if (temp <= possibility / 3) {
                     ObjectGroup t = createRandomMapObject();
                     notifyEvent(t,GlobalResource.STATE_GATHERING,20000);
@@ -246,20 +252,19 @@ public class GameGenerator {
             return false;
     }
 
-    private void createMarkerObject() {/*
-        MarkerObject t1 = new MarkerObject(18.796425, 98.953134, 130f, 45, 15, "ENG", markerModelList.get(0));
-        markerGeometryList.add(t1);
-        for (MarkerObject t : markerGeometryList)
-            addMarker(t.getLocation(), R.drawable.monster_marker_icon, "Monster");*/
+    private void createMarkerObject() {
+
+        HashMap<String,ObjectGroup> t1=ObjectLoader.getObjectGroupList();
+        for (Map.Entry<String,ObjectGroup> t : t1.entrySet()){
+            HashMap<String,ObjectDetail> t0=t.getValue().getObjectDetailList();
+            for(Map.Entry<String,ObjectDetail> t2:t0.entrySet()){
+                if(t2.getValue().getLocation()!=null)
+                    addMarker(t2.getValue().getLocation(), R.drawable.monster_marker_icon, "Monster");
+            }
+        }
+
     }
 
-    private void createLocationObject() {
-        Location temp = new Location("");
-        temp.setLatitude(18.796535);
-        temp.setLongitude(98.952877);
-        //for (LocationBasedObject t : locationGeometryList)
-        addMarker(temp, R.drawable.monster2, "Monster");
-    }
 
     private ObjectGroup createRandomMapObject() {
         String key = randInt(14, 15) + "";
@@ -288,7 +293,7 @@ public class GameGenerator {
         return t1;
     }
 
-    public void resetState(int STATE) {
+    public void resetState() {
         stopTimer();
         objectHpBar.setVisibility(View.GONE);
             for (Map.Entry<String, ObjectDetail> t : objectGroup.getObjectDetailList().entrySet()) {
@@ -297,7 +302,7 @@ public class GameGenerator {
             }
             mObjectDetailManager.setGameState(false);
         isDelay = true;
-        new CountDownTimer(3000, 2000) {
+        new CountDownTimer(8000, 2000) {
 
             @Override
             public void onTick(long l) {
@@ -341,7 +346,7 @@ public class GameGenerator {
                     MainActivity.makeToast("Meteor Storm is ending!!");
                 else
                     MainActivity.makeToast("Timeout!!");
-                resetState(GlobalResource.getGAME_STATE());
+                resetState();
             }
         }.start();
     }
@@ -358,13 +363,25 @@ public class GameGenerator {
             }
         }, 100);
         if (playerHp <= 0) {
-            if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER) {
+            if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER
+                    &&GlobalResource.getMISSION_STATE()!=0) {
                 MainActivity.showSimpleDialog("ปีศาจไส้อั่ว", "นี้ผู้เฒ่ากานต์ส่งเจ้ามาจริงรึเปล่า ฮ่าๆๆๆๆ ทำไมเจ้าอ่อนแอแบบนี้!");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (GlobalResource.getMISSION_STATE() == Mission_ONE.STATE_GET_MISSION) {
+                            GlobalResource.setMISSION_STATE(Mission_ONE.STATE_LOSE_TO_BOSS);
+                        } else {
+                            notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.OLD_MAN_KARN)
+                                    , GlobalResource.STATE_DEAD);
+                        }
+                    }
+                }, 2000);
             }
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    resetState(GlobalResource.getGAME_STATE());
+                    resetState();
                     getHitView.setVisibility(View.VISIBLE);
                     GlobalResource.getListOfViews().get(Constants.MAP_LAYOUT).findViewById(R.id.map_dead)
                             .setVisibility(View.VISIBLE);
@@ -372,17 +389,6 @@ public class GameGenerator {
                     playerHpBar.setProgress(Player.getHp());
                 }
             }, 1000);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (GlobalResource.getMISSION_STATE() == Mission_ONE.STATE_GET_MISSION) {
-                        GlobalResource.setMISSION_STATE(Mission_ONE.STATE_LOSE_TO_BOSS);
-                    } else {
-                        notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.OLD_MAN_KARN)
-                                , GlobalResource.STATE_DEAD);
-                    }
-                }
-            }, 2000);
         }
 
     }
@@ -398,7 +404,7 @@ public class GameGenerator {
             meteorCount++;
         } else {
             MainActivity.makeToast("Meteor Storm is ending!!");
-            resetState(GlobalResource.STATE_METEOR);
+            resetState();
         }
     }
 
@@ -444,7 +450,7 @@ public class GameGenerator {
             playerItemQuantity = t.getQuantity();
         return playerItemQuantity;
     }
-    public void checkGatheringGeometryTouch(String key, int GAME_STATE, HashMap<Integer, PlayerItem> playerItemHashMap){
+    public void checkGatheringGeometryTouch(String key, HashMap<Integer, PlayerItem> playerItemHashMap){
         ObjectDetail objectDetail = objectGroup.getObjectDetailList().get(key);
         String mObjectID=objectDetail.getKey();
         if (mObjectID.equals(ObjectID.STONE)) {
@@ -467,14 +473,9 @@ public class GameGenerator {
 
         ObjectDetail objectDetail = objectGroup.getObjectDetailList().get(key);
         int atkDmg = Player.getAtkDmg();
-        View overlayLayout = GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT);
-
         ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(objectDetail.getKey());
         objectHpBar.setVisibility(View.VISIBLE);
-        /*
-        float alpha = (objectDetail.getMaxHP() - objectRemainHP) / (float)objectDetail.getMaxHP();
-        objectDetail.getModelList().get(0).setTransparency(alpha);
-        */
+
         if (GAME_STATE == GlobalResource.STATE_MARKER) {
             /*
             objectDetail.getModel().stopAnimation();

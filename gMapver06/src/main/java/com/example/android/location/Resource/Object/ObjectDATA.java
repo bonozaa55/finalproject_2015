@@ -19,25 +19,36 @@ public class ObjectDATA {
     private Location location=null;
 
     public static void LoadObjectDATA(){
-        Location temp=new Location("");
+
         objectDATAHashMap=new HashMap<String, ObjectDATA>();
         objectDATAHashMap.put(ObjectID.ONE_EYE,new ObjectDATA(150,"monster_one_eye",300));
         objectDATAHashMap.put(ObjectID.PRISONER,new ObjectDATA(100,"prisoner",200));
-        temp.setLatitude(18.796551);
-        temp.setLongitude(98.952543);
-        //objectDATAHashMap.put(ObjectID.TENTACLE,new ObjectDATA(temp,135,45,15,400,"ENG",400,"monster_loop"));
         objectDATAHashMap.put(ObjectID.METEOR,new ObjectDATA(50,"meteor",100));
-        objectDATAHashMap.put(ObjectID.ELEPHANT,new ObjectDATA(temp,135,45,15,2000,"ENG",1000,"bomb_boss"));
+        Location temp=new Location("");
+        temp.setLatitude(18.796474);
+        temp.setLongitude(98.952519);
+        //objectDATAHashMap.put(ObjectID.TENTACLE,new ObjectDATA(temp,135,45,15,400,"ENG",400,"monster_loop"));
+        objectDATAHashMap.put(ObjectID.ELEPHANT,new ObjectDATA(temp,135,45,15,2000,"BOSS",1000,"bomb_boss"));
         objectDATAHashMap.put(ObjectID.ELEPHANT_UNDERLING_L,new ObjectDATA(500,"bomb_monster_L",100));
         objectDATAHashMap.put(ObjectID.ELEPHANT_UNDERLING_R,new ObjectDATA(500,"bomb_monster_R",100));
+
         temp=new Location("");
-        temp.setLatitude(18.795516);
-        temp.setLongitude(98.952832);
-        objectDATAHashMap.put(ObjectID.BOTTLE,new ObjectDATA(temp,135,45,15,0,"ELE",0,"bottle"));
+        temp.setLatitude(18.796568);
+        temp.setLongitude(98.951905);
+        objectDATAHashMap.put(ObjectID.BOTTLE,new ObjectDATA(temp,135,45,15,0,"Healing",0,"bottle"));
+
         temp=new Location("");
-        temp.setLatitude(18.795798);
-        temp.setLongitude(98.952797);
-        objectDATAHashMap.put(ObjectID.OLD_MAN_KARN,new ObjectDATA(temp,135,45,15,0,"ONE",0,"monster_one_eye"));
+        temp.setLatitude(18.795122);
+        temp.setLongitude(98.951545);
+        objectDATAHashMap.put(ObjectID.WATER_VALVE,new ObjectDATA(temp,135,45,15,0,"Fishing",0,"valve"));
+        objectDATAHashMap.put(ObjectID.FISHING_ROD,new ObjectDATA(0,"fishing2",0));
+        objectDATAHashMap.put(ObjectID.TENDON,new ObjectDATA(0,"tendon",0));
+        objectDATAHashMap.put(ObjectID.FISH,new ObjectDATA(0,"fish2",0));
+
+        temp=new Location("");
+        temp.setLatitude(18.795396);
+        temp.setLongitude(98.951926);
+        objectDATAHashMap.put(ObjectID.OLD_MAN_KARN,new ObjectDATA(temp,135,45,15,0,"Mission",0,"monster_one_eye"));
         objectDATAHashMap.put(ObjectID.GRASS,new ObjectDATA(0,"grass",0));
         objectDATAHashMap.put(ObjectID.STONE,new ObjectDATA(0,"ore",0));
 
