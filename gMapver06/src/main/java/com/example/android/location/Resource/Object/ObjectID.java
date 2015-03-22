@@ -16,7 +16,7 @@ public class ObjectID {
     public static final String GROUP_BOSS="6";
     public static final String GROUP_METEOR="8";
     public static final String BOTTLE="12";
-    public static final String OLD_MAN_KARN="13";
+    public static final String THE_OLD_MAN="13";
     public static final String STONE="14";
     public static final String GRASS="15";
     public static final String GROUP_FISHING="16";
@@ -24,5 +24,11 @@ public class ObjectID {
     public static final String WATER_VALVE="18";
     public static final String FISH="19";
     public static final String TENDON="20";
+    public static final String SHOP_MAN="21";
+    public static final String PET_V1="a0";
+    public static final String PET_V2="a1";
+    public static final String PET_V3="a2";
+    public static final String GROUP_PET="25";
+
 
 }

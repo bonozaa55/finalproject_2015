@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#90000000"
+    android:id="@+id/temp000">
+
+    <RelativeLayout
+        android:layout_width="260dp"
+        android:layout_height="320dp"
+        android:background="@drawable/mycraft_item_background2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp"
+            android:background="#88A825"
+            android:id="@+id/frameLayout">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:src="@drawable/cancel"
+                android:id="@+id/myitem_cancel"
+                android:layout_gravity="right|center_vertical" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="35dp"
+                android:text="My Items"
+                android:textColor="#ECF0F1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:id="@+id/mycraft_title"
+                android:layout_gravity="left|center_vertical" />
+
+        </FrameLayout>
+
+        <GridView
+            android:layout_width="240dp"
+            android:layout_height="220dp"
+            android:id="@+id/myitem_grid"
+            android:layout_below="@+id/frameLayout"
+            android:layout_centerHorizontal="true"
+            android:columnWidth="70dp"
+            android:numColumns="auto_fit"
+            android:verticalSpacing="3dp"
+            android:horizontalSpacing="3dp"
+            android:stretchMode="columnWidth"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/frameLayout3"
+            android:layout_alignParentBottom="true"
+            android:layout_alignEnd="@+id/myitem_grid">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/imageView2"
+                android:src="@drawable/gold_icon" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="9999"
+                android:textColor="#88A825"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:id="@+id/my_item_gold"
+                android:layout_gravity="right|center_vertical"
+                />
+        </LinearLayout>
+
+
+
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
+

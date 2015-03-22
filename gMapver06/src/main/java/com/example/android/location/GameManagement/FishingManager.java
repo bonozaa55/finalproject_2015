@@ -65,7 +65,6 @@ public class FishingManager {
             rotateAngle = rotateAngle + angle;
             t.setRotation(new Rotation(0, (float) (rotateAngle * Math.PI / 180), 0));
             if (360 * 3 - rotateAngle < 30) {
-                //mGameGeneretor.resetState();
                 isOpenValve = true;
                 t.setPickingEnabled(false);
                 t.setVisible(false);
@@ -132,7 +131,7 @@ public class FishingManager {
         double y = values[1];
         double z = values[2];
         mAccelLast = mAccelCurrent;
-        mAccelCurrent = Math.abs(z);
+        mAccelCurrent = Math.sqrt(z*z+y*y);
         double delta = mAccelCurrent - mAccelLast;
         mAccel = mAccel * 0.9f + delta; // perform low-cut filter
         mAccel *= 0.2;
@@ -149,7 +148,7 @@ public class FishingManager {
     public void checkFishingOnGeometryTouch(IGeometry geometry, HashMap<Integer, PlayerItem> playerItemHashMap
             , GameGenerator mGameGenerator) {
         if (geometry.equals(mFish)) {
-            int playerFish = mGameGenerator.getPlayerItemQuantity(playerItemHashMap, ItemsID.FISH);
+            int playerFish = mGameGenerator.getPlayerItemQuantity( ItemsID.FISH);
             playerItemHashMap.put(ItemsID.FISH, new PlayerItem(ItemsID.FISH, playerFish + 1));
             MainActivity.makeToastItem(ItemsID.FISH, 1);
             mFish.setVisible(false);
@@ -214,7 +213,7 @@ public class FishingManager {
     }
 
     void initResource() {
-        mHandlerThread = new HandlerThread("MyHandlerThread");
+        mHandlerThread = new HandlerThread("FishingThread");
         mHandlerThread.start();
         HashMap<String, ObjectDetail> t0 = ObjectLoader.getObjectGroupList().get(ObjectID.GROUP_FISHING).getObjectDetailList();
         for (Map.Entry<String, ObjectDetail> t : t0.entrySet()) {

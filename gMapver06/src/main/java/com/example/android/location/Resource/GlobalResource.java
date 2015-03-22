@@ -28,6 +28,9 @@ public class GlobalResource {
     public static final int STATE_DEAD=6;
     public static final int STATE_MISSION=7;
     public static final int STATE_FISHING=8;
+    public static final int STATE_PETTING=9;
+    public static final int STATE_SHOPPING=10;
+    public static final int STATE_MIST=11;
 
     public static int getMISSION_STATE() {
         return MISSION_STATE;

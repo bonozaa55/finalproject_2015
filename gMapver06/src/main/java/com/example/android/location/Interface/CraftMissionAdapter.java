@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.example.android.location.R;
 import com.example.android.location.Resource.Mission.CraftMission;
 import com.example.android.location.Resource.Item.ItemDetail;
-import com.example.android.location.Resource.Item.ItemsLoader;
+import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Mission.MaterialRequired;
 
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class CraftMissionAdapter implements ExpandableListAdapter{
             requiredLayout.addView(temp);
             ArrayList<MaterialRequired> itemsRequired = mCraftMission.getMaterialRequireList();
             for (MaterialRequired t : itemsRequired) {
-                ItemDetail item= ItemsLoader.getItemList().get(t.getItemID());
+                ItemDetail item= ItemDATA.getItemList().get(t.getItemID());
                 TextView tv = new TextView(_context);
                 tv.setText("\t\t"+item.getName() + "(" + t.getQuantity() + ")");
                 requiredLayout.addView(tv);

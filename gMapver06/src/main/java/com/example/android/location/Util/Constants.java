@@ -19,12 +19,21 @@ public final class Constants {
 	// Stores the lat / long pairs in a text file
 	public static final int MAP_VISIBLE = 0;
 	public static final int metaio_VISIBLE = 2;
-	public static final int SHOP_VISIBLE = 3;
+    //layout
     public static final int MAP_LAYOUT=0;
     public static final int OVERLAY_LAYOUT=1;
+    public static final int MY_CRAFT_DETIAL_LAYOUT=2;
+    public static final int STORE_LAYOUT=3;
+    public static final int CRAFT_RECIPE_LAYOUT=4;
     public static final int TOAST_LAYOUT=5;
     public static final int HEAL_LAYOUT=6;
-	public static TextView User_gold;
+    public static final int BUY_POTION_LAYOUT=7;
+    public static final int PET_LAYOUT=8;
+    public static final int MY_ITEMS_LAYOUT=9;
+    public static final int MY_EQUIPMENT_LAYOUT=10;
+    public static final int SELL_ITEM_LAYOUT=11;
+
+    public static TextView User_gold;
 
 	public static TextView getUser_gold() {
 		return User_gold;

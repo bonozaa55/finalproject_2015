@@ -1,15 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     android:id="@+id/fullscreen_content"
+    android:id="@+id/fullscreen_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <com.example.android.location.Interface.TouchEffectView
         android:id="@+id/touch_effect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#40FFFFFF"
+        android:id="@+id/overlay_mist"
         android:visibility="gone"
-        />
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#50FF0000"
+        android:id="@+id/overlay_get_hit"
+        android:visibility="gone"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#5000A000"
+        android:id="@+id/overlay_get_restore"
+        android:visibility="gone"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -33,47 +59,41 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/overlay_potions_interface"
         android:layout_alignEnd="@+id/overlay_potions_interface"
+        android:layout_marginBottom="5dp"
         android:id="@+id/overlay_group_item">
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/sense"
-        android:id="@+id/overlay_def_item"
-        android:layout_marginBottom="5dp" />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/shield_icon"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/overlay_sense_item" />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="5dp"
-        android:src="@drawable/sword_icon0"
-        android:id="@+id/overlay_atk_item" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_alignBottom="@+id/overlay_potions_interface"
-        android:layout_toStartOf="@+id/overlay_potions_interface"
-        android:id="@+id/overlay_group_quest">
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginRight="10dp"
-            android:id="@+id/overlay_quest_interface"
-            android:src="@drawable/icon_cart" />
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/sword_icon0"
+            android:id="@+id/overlay_equipment" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/overlay_myItem_interface"
+            android:src="@drawable/toolbox" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignBottom="@+id/overlay_potions_interface"
+        android:layout_toStartOf="@+id/overlay_potions_interface"
+        android:id="@+id/overlay_group_quest">
+
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -81,23 +101,14 @@
             android:src="@drawable/icon_flag" />
 
         <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/overlay_myQuest_interface"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/overlay_myQuest_interface"
             android:src="@drawable/stack"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+    </LinearLayout>
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/overlay_myItem_interface"
-        android:src="@drawable/toolbox"
-        />
-
-
-
-        </LinearLayout>
     <ProgressBar
         android:id="@+id/overlay_object_hp"
         style="?android:attr/progressBarStyleHorizontal"
@@ -123,15 +134,38 @@
         android:max="100"
         android:progress="100"
         android:indeterminate="false"
-        android:layout_alignBottom="@+id/overlay_group_quest"
-        />
+        android:layout_alignBottom="@+id/overlay_group_quest" />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#50FF0000"
-        android:id="@+id/overlay_get_hit"
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="0"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:background="#ffffff"
+        android:id="@+id/overlay_potions_count"
+        android:layout_alignBottom="@+id/overlay_potions_interface"
+        android:layout_alignEnd="@+id/overlay_potions_interface" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:visibility="gone"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="+20"
+        android:textStyle="bold"
+        android:shadowColor="#90000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="10"
+        android:id="@+id/overlay_get_hit_dmg"
+        android:textColor="#58aF27"
+        android:layout_above="@+id/overlay_player_hp"
+        android:layout_toEndOf="@+id/backToNormal"
+        android:layout_marginStart="100dp" />
+
+
 </RelativeLayout>

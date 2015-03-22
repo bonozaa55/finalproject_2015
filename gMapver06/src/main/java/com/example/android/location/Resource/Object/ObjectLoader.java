@@ -7,6 +7,7 @@ import com.example.android.location.Resource.GlobalResource;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKAndroid;
 import com.metaio.sdk.jni.IRadar;
+import com.metaio.sdk.jni.Vector3d;
 import com.metaio.tools.io.AssetsManager;
 
 import java.util.ArrayList;
@@ -48,13 +49,14 @@ public class ObjectLoader {
                 ,ObjectID.PRISONER,ObjectID.PRISONER}));
         objectGroupList.put(ObjectID.GROUP_METEOR,new ObjectGroup(new String[]{ObjectID.METEOR},ObjectID.METEOR));
         objectGroupList.put(ObjectID.BOTTLE,new ObjectGroup(new String[]{ObjectID.BOTTLE},ObjectID.BOTTLE));
-        objectGroupList.put(ObjectID.OLD_MAN_KARN,new ObjectGroup(new String[]{ObjectID.OLD_MAN_KARN},ObjectID.OLD_MAN_KARN));
+        objectGroupList.put(ObjectID.THE_OLD_MAN,new ObjectGroup(new String[]{ObjectID.THE_OLD_MAN},ObjectID.THE_OLD_MAN));
         objectGroupList.put(ObjectID.STONE,new ObjectGroup(new String[]{ObjectID.STONE,ObjectID.STONE,ObjectID.STONE}));
         objectGroupList.put(ObjectID.GRASS,new ObjectGroup(new String[]{ObjectID.GRASS,ObjectID.GRASS,ObjectID.GRASS}));
         objectGroupList.put(ObjectID.GROUP_FISHING,new ObjectGroup(new String[]{ObjectID.FISHING_ROD,ObjectID.FISH
                 ,ObjectID.WATER_VALVE,ObjectID.TENDON},ObjectID.WATER_VALVE));
-
-
+        objectGroupList.put(ObjectID.SHOP_MAN,new ObjectGroup(new String[]{ObjectID.SHOP_MAN},ObjectID.SHOP_MAN));
+        objectGroupList.put(ObjectID.GROUP_PET,new ObjectGroup(new String[]{ObjectID.PET_V1,ObjectID.PET_V2
+                ,ObjectID.PET_V3},ObjectID.PET_V1));
     }
     public void LoadARcontent() {
 
@@ -77,10 +79,12 @@ public class ObjectLoader {
                 for (String objectID:t.getValue().getKeyList()){
                     String name=t.getKey()+"_"+objectID+"_"+i;
                     HashMap<String,ObjectDATA> objectDATAHashMap=ObjectDATA.getObjectDATAHashMap();
+                    ObjectDATA objectDATA=objectDATAHashMap.get(objectID);
                     String filePath = AssetsManager.getAssetPath(_this, "ModelAsset/Assets/" +
-                            objectDATAHashMap.get(objectID).getModelString() + ".md2");
+                            objectDATA.getModelString() + ".md2");
                     IGeometry temp = _metaioSDK.createGeometry(filePath);
-                    temp.setScale(0.6f);
+                    temp.setScale(objectDATA.getSize());
+                    temp.setTranslation(new Vector3d(objectDATA.getxOffset(),objectDATA.getyOffset(),objectDATA.getzOffset()));
                     temp.setVisible(false);
                     temp.setName(name);
                     ObjectDetail objectDetail=new ObjectDetail(objectID,temp);

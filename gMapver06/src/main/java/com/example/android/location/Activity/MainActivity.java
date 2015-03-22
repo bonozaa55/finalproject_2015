@@ -31,11 +31,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.android.location.GameManagement.FishingManager;
 import com.example.android.location.GameManagement.GameGenerator;
 import com.example.android.location.GameManagement.HealManager;
+import com.example.android.location.GameManagement.Mission_ONE;
+import com.example.android.location.GameManagement.MistManager;
+import com.example.android.location.GameManagement.MyItemManager;
 import com.example.android.location.GameManagement.ObjectDetailManager;
+import com.example.android.location.GameManagement.PettingManager;
 import com.example.android.location.GameManagement.StoreManager;
 import com.example.android.location.Interface.MyCraftMissionManager;
 import com.example.android.location.Interface.TouchEffectView;
@@ -43,7 +46,7 @@ import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemDetail;
 import com.example.android.location.Resource.Item.ItemsID;
-import com.example.android.location.Resource.Item.ItemsLoader;
+import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
@@ -53,7 +56,6 @@ import com.example.android.location.Resource.Player.PlayerItem;
 import com.example.android.location.Util.BackgroundLocationService;
 import com.example.android.location.Util.Constants;
 import com.example.android.location.Util.ImmersiveModeFragment;
-import com.example.android.location.Util.Mission_ONE;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -95,7 +97,7 @@ public class MainActivity extends ARViewActivity {
     int ViewState = -1;
     ObjectDetailManager mObjectDetailManager;
     double mAccelCurrent;
-
+    FishingManager mFishingManager;
     private Button resumeMapButton;
     private LocationReceiver lReceiver;
     private Intent intent_location;
@@ -115,7 +117,11 @@ public class MainActivity extends ARViewActivity {
     private int gameState = 0;
     private HealManager mHealManager;
     private GestureHandlerAndroid mGestureHandler;
-    FishingManager mFishingManager;
+    private PettingManager mPettingManager;
+    private MistManager mMistManager;
+    static Toast mToast;
+    private MyItemManager mMyItemManager;
+
 
     public static double getPhoneHeading() {
         return MainActivity.phoneHeading;
@@ -124,9 +130,13 @@ public class MainActivity extends ARViewActivity {
     public static Context getThisContext() {
         return applicationContext;
     }
+    public static Context getActivityContext() {return this_Context;}
+    public static GameGenerator getmGameGeneretor() {
+        return mGameGeneretor;
+    }
 
     public static void makeToastItem(int itemID, int quantity) {
-        ItemDetail t = ItemsLoader.getItemList().get(itemID);
+        ItemDetail t = ItemDATA.getItemList().get(itemID);
         View layout = GlobalResource.getListOfViews().get(Constants.TOAST_LAYOUT);
         ImageView image = (ImageView) layout.findViewById(R.id.image);
         image.setImageResource(t.getIconResource());
@@ -135,49 +145,14 @@ public class MainActivity extends ARViewActivity {
             text.setText("Receive " + t.getName() + " " + quantity + " gold!");
         else
             text.setText("Receive " + t.getName() + " " + quantity + " ea!");
-
         Toast toast = new Toast(applicationContext);
-        toast.setGravity(Gravity.TOP, 50, 0);
+        toast.setGravity(Gravity.TOP, 0, -200);
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
+
     }
 
-    public static void showHealingDialog() {
-        final Dialog dialog = new Dialog(this_Context);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-        dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        dialog.setContentView(R.layout.dialog_custom);
-        dialog.setTitle("Healing Mode");
-        dialog.findViewById(R.id.dialogBtnYes).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                mGameGeneretor.notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.OLD_MAN_KARN)
-                        , GlobalResource.STATE_HEALING);
-            }
-        });
-
-        dialog.findViewById(R.id.dialogBtnNo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                mGameGeneretor.resetState();
-                //mMissionOne.resetStateToMission();
-
-            }
-        });
-        ((TextView) dialog.findViewById(R.id.dialogTxt)).setText("Do you want to healing again?");
-        dialog.show();
-        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-    }
 
     public static void showSimpleDialog(String title, String Text) {
         final Dialog dialog = new Dialog(this_Context);
@@ -190,7 +165,7 @@ public class MainActivity extends ARViewActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        dialog.setContentView(R.layout.dialog_custom2);
+        dialog.setContentView(R.layout.dialog_ok);
         dialog.setTitle(title);
 
         dialog.findViewById(R.id.dialogBtnOK).setOnClickListener(new View.OnClickListener() {
@@ -210,16 +185,11 @@ public class MainActivity extends ARViewActivity {
         image.setImageResource(R.drawable.icon_star);
         TextView text = (TextView) layout.findViewById(R.id.text);
         text.setText(message);
-        Toast toast = new Toast(applicationContext);
-        toast.setGravity(Gravity.TOP, 50, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(layout);
-        toast.show();
+        mToast.setGravity(Gravity.TOP, 0, -200);
+        mToast.setDuration(Toast.LENGTH_LONG);
+        mToast.setView(layout);
+        mToast.show();
     }
-
-
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -292,7 +262,7 @@ public class MainActivity extends ARViewActivity {
             timeCount++;
         if (timeCount >= maxTime) {
             if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_GATHERING)
-                metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
+                mObjectDetailManager.setGatheringConfig();
             timeCount = 0;
         }
         // checkDistanceToTarget();
@@ -300,37 +270,37 @@ public class MainActivity extends ARViewActivity {
 
     public void initResource() {
 
+        applicationContext = getApplicationContext();
+        this_Context = this;
+        mMyItemManager=new MyItemManager();
+        SDK_ready = 1;
 
         initInterface();
-        Player player = new Player();
-        //Player.setAtkDmg(50);
-        //Player.getPlayerItems().put(ItemsID.GOLD,new PlayerItem(ItemsID.GOLD,1500));
-        //Player.getPlayerItems().put(ItemsID.ORE,new PlayerItem(ItemsID.ORE,3));
-        //Player.getPlayerItems().put(ItemsID.GRASS,new PlayerItem(ItemsID.GRASS,3));
-        applicationContext = getApplicationContext();
-        this_Context = MainActivity.this;
-        ItemsLoader itemsData = new ItemsLoader();
-        SDK_ready = 1;
+
         mObjectDetailManager = new ObjectDetailManager(metaioSDK, mRadar, this);
         mHealManager = new HealManager();
-        mFishingManager=new FishingManager(metaioSDK,mSurfaceView,mGestureHandler);
+        mFishingManager = new FishingManager(metaioSDK, mSurfaceView, mGestureHandler);
+        mPettingManager = new PettingManager(mObjectDetailManager);
+        StoreManager mStoreManager = new StoreManager(this,mMyItemManager);
+        mMistManager=new MistManager();
 
-        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager,mFishingManager, map);
+
+        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager, mFishingManager,mMistManager, map);
 
         mMissionOne = new Mission_ONE(mGameGeneretor, metaioSDK, applicationContext);
 
-        //mMissionOne.startMission();
+
+        mMissionOne.startMission();
         GlobalResource.setGAME_STATE(GlobalResource.STATE_IDLE);
+        mToast=new Toast(applicationContext);
     }
 
     public void initInterface() {
 
         View mapLayout = mList.get(Constants.MAP_LAYOUT);
         final View overlayLayout = mList.get(Constants.OVERLAY_LAYOUT);
-        View craftLayout = mList.get(2);
+        View craftLayout = mList.get(Constants.MY_CRAFT_DETIAL_LAYOUT);
         final View storeLayout = mList.get(3);
-        StoreManager mStoreManager = new StoreManager(this);
-
 
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         map.getUiSettings().setZoomControlsEnabled(false);
@@ -343,7 +313,7 @@ public class MainActivity extends ARViewActivity {
 
         map.animateCamera(
                 CameraUpdateFactory.newCameraPosition(t0),
-                2000,
+                3000,
                 new GoogleMap.CancelableCallback() {
 
                     @Override
@@ -372,11 +342,15 @@ public class MainActivity extends ARViewActivity {
         tBearing = (TextView) findViewById(R.id.bearing_text);
         tBearing.setVisibility(View.VISIBLE);
         AddAllMarker();
+        TextView potionText = (TextView) overlayLayout.findViewById(R.id.overlay_potions_count);
+        potionText.setText(GameGenerator.getPlayerItemQuantity(ItemsID.POTION) + "");
         View potionInterface = overlayLayout.findViewById(R.id.overlay_potions_interface);
         potionInterface.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View t = overlayLayout.findViewById(R.id.overlay_group_item);
+                mGameGeneretor.restoreHPbyItems();
+
+                /*View t = overlayLayout.findViewById(R.id.overlay_group_item);
                 View t2 = overlayLayout.findViewById(R.id.overlay_group_quest);
                 if (t.getVisibility() == View.INVISIBLE) {
                     t.setVisibility(View.VISIBLE);
@@ -385,6 +359,8 @@ public class MainActivity extends ARViewActivity {
                     t.setVisibility(View.INVISIBLE);
                     t2.setVisibility(View.INVISIBLE);
                 }
+                */
+
 
             }
         });
@@ -397,14 +373,6 @@ public class MainActivity extends ARViewActivity {
                 // mMyCraftMissionManager.checkCraftingMaterial();
             }
         });
-        View questInterface = overlayLayout.findViewById(R.id.overlay_quest_interface);
-        questInterface.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                storeLayout.setVisibility(View.VISIBLE);
-            }
-        });
-
         MyCraftMissionManager test = new MyCraftMissionManager(craftLayout, getSupportFragmentManager());
 
     }
@@ -452,8 +420,7 @@ public class MainActivity extends ARViewActivity {
                     boolean check = z_value < 8 && x_value > 3;
                     // show map only a phone flip up
 
-                    boolean x = check || (GlobalResource.getGAME_STATE() != GlobalResource.STATE_IDLE
-                            && GlobalResource.getGAME_STATE() != GlobalResource.STATE_DEAD);
+                    boolean x = check || (GlobalResource.getGAME_STATE() != GlobalResource.STATE_IDLE);
                     //Log.i("www",x+"");
                     if (count > 20) {//camera
                         if (x) {
@@ -467,14 +434,10 @@ public class MainActivity extends ARViewActivity {
                         }
                         count = 0;
                     }
-
-                    if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_DEAD)
-                        mList.get(Constants.MAP_LAYOUT).findViewById(R.id.map_dead).setVisibility(View.VISIBLE);
-
                     if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_HEALING)
                         mAccelCurrent = mHealManager.calculateShakeValue(event.values, mAccelCurrent);
-                    if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_FISHING)
-                        mFishingManager.calculateHook(event.values,mAccelCurrent);
+                    if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_FISHING)
+                        mFishingManager.calculateHook(event.values, mAccelCurrent);
 
                 }
 
@@ -494,11 +457,30 @@ public class MainActivity extends ARViewActivity {
 
 
     public void AddAllMarker() {
-        dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));//area
+
+
+        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+        /*
+        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
         dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
         dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
-        dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
         dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+        dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
+        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+        dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+        */
+        /*
+        dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
+        dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
+        dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
+        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+        dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+        dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));//area
+        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+        */
+
         LLACoordinate t = new LLACoordinate(cLocation.getLatitude(), cLocation.getLongitude(), 0, 0);
         dlocation.add(t);
     }
@@ -566,9 +548,9 @@ public class MainActivity extends ARViewActivity {
                 int mGestureMask = GestureHandler.GESTURE_ROTATE;
                 mGestureHandler = new GestureHandlerAndroid(metaioSDK, mGestureMask);
                 ObjectGroup t1 = ObjectLoader.getObjectGroupList().get(ObjectID.GROUP_FISHING);
-                for(Map.Entry<String,ObjectDetail> t:t1.getObjectDetailList().entrySet()){
-                    if(t.getKey().split("_")[1].equals(ObjectID.WATER_VALVE))
-                        mGestureHandler.addObject(t.getValue().getModel(),1);
+                for (Map.Entry<String, ObjectDetail> t : t1.getObjectDetailList().entrySet()) {
+                    if (t.getKey().split("_")[1].equals(ObjectID.WATER_VALVE))
+                        mGestureHandler.addObject(t.getValue().getModel(), 1);
                 }
                 mGestureHandler.setRotationAxis('y');
 
@@ -580,23 +562,21 @@ public class MainActivity extends ARViewActivity {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            touchEffectView.setGlowX(event.getX());
-            touchEffectView.setGlowY(event.getY());
+        if (SDK_ready == 1) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                touchEffectView.setGlowX(event.getX());
+                touchEffectView.setGlowY(event.getY());
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                touchEffectView.setVisibility(View.GONE);
+            }
+            if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_FISHING) {
+                mFishingManager.checkFishingOnTouch(v, event);
+            }
+            mGestureHandler.onTouch(v, event);
         }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            touchEffectView.setVisibility(View.GONE);
-        }
-        if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_FISHING ) {
-            mFishingManager.checkFishingOnTouch(v,event);
-        }
-
-        mGestureHandler.onTouch(v, event);
         return super.onTouch(v, event);
     }
-
-
 
 
     @Override
@@ -608,12 +588,16 @@ public class MainActivity extends ARViewActivity {
             mGameGeneretor.checkGatheringGeometryTouch(geometry.getName(), playerItemHashMap);
         } else if (GAME_STATE == GlobalResource.STATE_DEAD || GAME_STATE == GlobalResource.STATE_HEALING) {
             mGameGeneretor.stopTimer();
-            mGameGeneretor.checkHealingGeometryTouch(geometry);
+            mGameGeneretor.checkHealingGeometryTouch(geometry,GAME_STATE);
         } else if (GAME_STATE == GlobalResource.STATE_MISSION) {
             mMissionOne.checkMissionState();
 
         } else if (GAME_STATE == GlobalResource.STATE_FISHING) {
-            mFishingManager.checkFishingOnGeometryTouch(geometry,playerItemHashMap,mGameGeneretor);
+            mFishingManager.checkFishingOnGeometryTouch(geometry, playerItemHashMap, mGameGeneretor);
+        } else if (GAME_STATE == GlobalResource.STATE_SHOPPING) {
+            mList.get(Constants.STORE_LAYOUT).setVisibility(View.VISIBLE);
+        } else if (GAME_STATE == GlobalResource.STATE_PETTING) {
+            mPettingManager.checkGeometryPetTouch(geometry);
         } else {
             touchEffectView.setVisibility(View.VISIBLE);
             mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, playerItemHashMap, mGameGeneretor);
@@ -699,7 +683,6 @@ public class MainActivity extends ARViewActivity {
                                 LayoutParams.MATCH_PARENT));
                         mGUIView.setVisibility(View.GONE);
                         //craft detail View
-
                         mGUIView = View.inflate(MainActivity.this,
                                 R.layout.mycraft_main, null);
                         mList.add(mGUIView);
@@ -711,6 +694,7 @@ public class MainActivity extends ARViewActivity {
                         addContentView(mGUIView, temp);
                         mGUIView.setVisibility(View.GONE);
                         touchEffectView = (TouchEffectView) mList.get(Constants.OVERLAY_LAYOUT).findViewById(R.id.touch_effect);
+
                         //store view
                         mGUIView = View.inflate(MainActivity.this,
                                 R.layout.overlay_store, null);
@@ -746,6 +730,52 @@ public class MainActivity extends ARViewActivity {
                         temp.gravity = Gravity.CENTER;
                         addContentView(mGUIView, temp);
                         mGUIView.setVisibility(View.GONE);
+                        //buy potion layout
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.dialog_buying, null);
+                        mList.add(mGUIView);
+                        px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 640, r.getDisplayMetrics());
+                        px_h = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360, r.getDisplayMetrics());
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+                        //pet layout
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.petting_layout, null);
+                        mList.add(mGUIView);
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //Myitem Layout
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.overlay_myitem_list, null);
+                        mList.add(mGUIView);
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //MyEquipment Layout
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.overlay_my_equip_list, null);
+                        mList.add(mGUIView);
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //selling Layout
+                        mGUIView = View.inflate(MainActivity.this,
+                                R.layout.dialog_selling, null);
+                        mList.add(mGUIView);
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
                         //set global
                         mlist_size = mList.size();
                         GlobalResource.setListOfViews(mList);
@@ -804,7 +834,7 @@ public class MainActivity extends ARViewActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mGameGeneretor.playerGetHit(100);
+                        mGameGeneretor.playerGetHit(100,true);
                         mGameGeneretor.checkMeteor(geometry);
                     }
                 });
@@ -817,6 +847,14 @@ public class MainActivity extends ARViewActivity {
                     }
                 });
             }
+            if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_MIST){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMistManager.onMistModelAnimationEnd(animationName,geometry);
+                    }
+                });
+            }
             /*
             if (mGameGeneretor.isHitting() && animationName.equals("loop")) {
                 runOnUiThread(new Runnable() {
@@ -826,7 +864,7 @@ public class MainActivity extends ARViewActivity {
                     }
                 });
             }*/
-            super.onAnimationEnd(geometry, animationName);
+
         }
 
         @Override

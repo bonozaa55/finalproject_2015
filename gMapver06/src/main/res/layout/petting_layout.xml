@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/temp000">
+
+    <ProgressBar
+        android:id="@+id/pet_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressDrawable="@drawable/custom_progressbar_blue"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:rotation="180"
+        android:visibility="gone"
+        android:layout_alignParentRight="true"
+        android:max="100"
+        android:progress="50"
+        android:indeterminate="false" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pet_status_layout"
+        android:visibility="gone"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="#90000000"
+            android:layout_height="match_parent"/>
+        <RelativeLayout
+            android:layout_width="280dp"
+            android:layout_height="290dp"
+            android:background="@drawable/mycraft_item_background2"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true">
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="2dp"
+                android:layout_marginLeft="2dp"
+                android:background="#2980B9"
+                android:id="@+id/frameLayout">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/cancel"
+                    android:id="@+id/buying_cancel"
+                    android:layout_gravity="right|center_vertical" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="35dp"
+                    android:text="Pet Status"
+                    android:textColor="#ECF0F1"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:id="@+id/mycraft_title"
+                    android:layout_gravity="left|center_vertical" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mycraft_require_list"
+                android:layout_below="@+id/frameLayout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/selling_icon"
+                    android:src="@drawable/monster1"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_below="@+id/mycraft_require_list"
+                    android:layout_alignStart="@+id/selling_ok" />
+
+                <NumberPicker
+                    android:layout_width="wrap_content"
+                    android:layout_height="130dp"
+                    android:id="@+id/buying_number" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mycraft_require_list"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="right|center_vertical"
+                android:id="@+id/linearLayout3">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/mycraft_img2"
+                    android:src="@drawable/gold_icon"
+                    android:layout_below="@+id/mycraft_require_list"
+                    android:layout_alignStart="@+id/selling_ok" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:layout_gravity="right|center_vertical"
+                    android:id="@+id/buying_price" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_margin="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayout3"
+                android:layout_alignEnd="@+id/frameLayout">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:id="@+id/selling_ok"
+                    android:text="OK"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:background="#2980B9"
+                    android:textColor="#ECF0F1" />
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:id="@+id/buying_cancle_order"
+                    android:text="Cancel"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:background="#2980B9"
+                    android:textColor="#ECF0F1" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
+

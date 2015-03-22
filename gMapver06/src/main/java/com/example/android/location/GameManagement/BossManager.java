@@ -7,7 +7,6 @@ import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
-import com.example.android.location.Util.Mission_ONE;
 import com.metaio.sdk.jni.IGeometry;
 
 import java.util.Map;
@@ -37,7 +36,7 @@ public class BossManager {
         switch (BOSS_STATE) {
             case STATE_SHIELD:
                 retDmg = 0;
-                gameGenerator.playerGetHit(50);
+                gameGenerator.playerGetHit(50,true);
                 break;
             case STATE_UNDERLING_L_ATK:
                 if (ObjectID.ELEPHANT_UNDERLING_R.equals(geometryID)) {
@@ -102,10 +101,10 @@ public class BossManager {
     public void checkOnAnimationEnd(String animationName, IGeometry geometry, GameGenerator gameGenerator) {
         if (animationName.equals("attack")) {
             geometry.startAnimation("attack_back");
-            int dmg = 200;
+            int dmg = 500;
             if (BOSS_STATE == STATE_UNDERLING_L_ATK || BOSS_STATE == STATE_UNDERLING_R_ATK)
-                dmg = 50;
-            gameGenerator.playerGetHit(dmg);
+                dmg = 100;
+            gameGenerator.playerGetHit(dmg,true);
         }
         if (animationName.equals("attack_back")) {
             if (BOSS_STATE != STATE_BOSS_ATK) {

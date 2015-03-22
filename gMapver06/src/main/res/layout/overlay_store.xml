@@ -6,51 +6,56 @@
     <RelativeLayout
         android:background="@drawable/mycraft_item_background2"
         android:layout_width="580dp"
-        android:layout_height="300dp"
+        android:layout_height="260dp"
         android:layout_centerInParent="true"
         android:id="@+id/relativeLayout">
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="80dp"
-            android:background="#E74C3C"
-            android:id="@+id/store_buy_potion"
-            android:layout_marginStart="45dp"
-            android:layout_alignTop="@+id/store_sell_item"
-            android:layout_alignParentStart="true" />
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="80dp"
-            android:background="#E74C3C"
-            android:id="@+id/store_sell_item"
-            android:layout_marginStart="30dp"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/store_buy_potion" />
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dp"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout"
+            android:layout_below="@+id/my_equip_gold_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp">
         <Button
-            android:layout_width="100dp"
-            android:layout_height="80dp"
-            android:text="Craft"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_weight="1"
+            android:layout_marginRight="20dp"
+            android:background="#E74C3C"
+            android:text="Buy\nPotions"
             android:textStyle="bold"
-
             android:textSize="20sp"
             android:textColor="#ECF0F1"
-            android:background="#E74C3C"
-            android:id="@+id/store_craft"
-            android:layout_marginStart="30dp"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/store_sell_item" />
+            android:id="@+id/store_buy_potion" />
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="80dp"
+        <Button
+            android:layout_width="80dp"
+            android:layout_height="120dp"
             android:background="#E74C3C"
+            android:text="Sell\nItems"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#ECF0F1"
+            android:id="@+id/store_sell_item"
+            android:layout_centerVertical="true" />
+
+        <Button
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:background="#E74C3C"
+            android:text="Upgrade\nEquips"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#ECF0F1"
             android:id="@+id/store_upgrade"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/store_craft"
-            android:layout_marginStart="30dp" />
-
+             />
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -58,7 +63,8 @@
             android:layout_marginRight="3dp"
             android:background="#E74C3C"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:id="@+id/relativeLayout3">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -86,11 +92,13 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="40dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
-            android:layout_margin="10dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true">
-
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:id="@+id/my_equip_gold_layout"
+            android:layout_below="@+id/relativeLayout3"
+            android:layout_alignEnd="@+id/relativeLayout3">
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -104,16 +112,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="9987845"
+                android:text="998"
                 android:textStyle="bold"
                 android:textColor="#E74C3C"
-                android:id="@+id/textView2"
+                android:id="@+id/store_gold"
                 android:layout_gravity="right|center_vertical" />
-
-
-
-
-
         </LinearLayout>
 
     </RelativeLayout>

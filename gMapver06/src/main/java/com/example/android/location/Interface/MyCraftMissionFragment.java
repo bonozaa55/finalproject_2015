@@ -29,7 +29,7 @@ import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemDetail;
-import com.example.android.location.Resource.Item.ItemsLoader;
+import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Mission.CraftMission;
 import com.example.android.location.Resource.Mission.MaterialRequired;
 import com.example.android.location.Resource.Player.Player;
@@ -62,7 +62,7 @@ public class MyCraftMissionFragment extends android.support.v4.app.Fragment {
         HashMap<Integer, PlayerItem> playerItemHashMap = Player.getPlayerItems();
         int complete=3;
         for (MaterialRequired t : itemsRequired) {
-            ItemDetail item = ItemsLoader.getItemList().get(t.getItemID());
+            ItemDetail item = ItemDATA.getItemList().get(t.getItemID());
             PlayerItem temp = playerItemHashMap.get(t.getItemID());
             TextView tv = new TextView(MainActivity.getThisContext());
             int playerItem = 0;
@@ -99,8 +99,8 @@ public class MyCraftMissionFragment extends android.support.v4.app.Fragment {
         TextView headerTitle = (TextView) rootView.findViewById(R.id.mycraft_title);
         TextView detailTitle = (TextView) rootView.findViewById(R.id.mycraft_title2);
         TextView detail = (TextView) rootView.findViewById(R.id.mycraft_detail);
-        ImageView img = (ImageView) rootView.findViewById(R.id.mycraft_img);
-        View getItButton = rootView.findViewById(R.id.mycraft_get_it);
+        ImageView img = (ImageView) rootView.findViewById(R.id.selling_icon);
+        View getItButton = rootView.findViewById(R.id.selling_ok);
         UpdateUI(craftMission, rootView);
 
         detail.setText(craftMission.getProperty());

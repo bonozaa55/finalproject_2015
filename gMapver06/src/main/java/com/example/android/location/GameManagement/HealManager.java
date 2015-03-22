@@ -34,6 +34,5 @@ public class HealManager {
     }
     void initResource(){
         healValue = (ProgressBar) GlobalResource.getListOfViews().get(Constants.HEAL_LAYOUT).findViewById(R.id.healing_progress);
-
     }
 }

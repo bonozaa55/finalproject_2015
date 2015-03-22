@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#90000000"
+    android:id="@+id/temp000">
+
+    <RelativeLayout
+        android:layout_width="260dp"
+        android:layout_height="320dp"
+        android:background="@drawable/mycraft_item_background2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp"
+            android:background="#88A825"
+            android:id="@+id/frameLayout">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:src="@drawable/cancel"
+                android:id="@+id/myequip_cancel"
+                android:layout_gravity="right|center_vertical" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="35dp"
+                android:text="My Equipment"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:id="@+id/mycraft_title"
+                android:textColor="#ECF0F1"
+                android:layout_gravity="left|center_vertical" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:id="@+id/my_equip_gold_layout"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/frameLayout">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="5dp"
+                android:id="@+id/imageView5"
+                android:src="@drawable/gold_icon"
+                android:layout_gravity="left|center_vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="998"
+                android:textStyle="bold"
+                android:textColor="#E74C3C"
+                android:id="@+id/my_equip_gold"
+                android:layout_gravity="right|center_vertical" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_below="@+id/my_equip_gold_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:background="#A0FFFFFF"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linearLayout4">
+
+                    <LinearLayout
+                        android:layout_margin="10dp"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_gravity="center"
+                            android:id="@+id/my_equip_atk_icon"
+                            android:src="@drawable/icon_cart" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="10dp"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Name: "
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:id="@+id/my_item_gold2"
+                                    android:layout_gravity="right|center_vertical" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="name"
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:id="@+id/my_equip_atk_name"
+                                    android:layout_gravity="right|center_vertical" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Detail: "
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:id="@+id/my_item_gold5"
+                                    android:layout_gravity="top|center_vertical" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="qweqweqweqweqwewqeqweqweqweqwe"
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:id="@+id/my_equip_atk_detail"
+                                    android:layout_gravity="right|center_horizontal" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Attack Dmg: "
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:id="@+id/my_item_gold6"
+                                    android:layout_gravity="right|center_vertical" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="7"
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:id="@+id/my_equip_atk_dmg"
+                                    android:layout_gravity="right|center_vertical" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="#88A825"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/my_equip_cost_atk_layout">
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal">
+
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center"
+                                android:id="@+id/imageView12"
+                                android:layout_marginRight="5dp"
+                                android:src="@drawable/gold_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:text="Cost"
+                                android:textColor="#ECF0F1"
+                                android:gravity="center"
+                                android:layout_gravity="center"
+                                android:textStyle="bold"
+                                android:textSize="18sp"
+                                android:id="@+id/my_equip_upgrade_atk" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:text=" (123456)"
+                                android:textColor="#ECF0F1"
+                                android:gravity="center"
+                                android:textSize="14sp"
+                                android:id="@+id/my_equip_cost_atk" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:background="#A0FFFFFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_margin="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_gravity="center"
+                            android:id="@+id/my_equip_def_icon"
+                            android:src="@drawable/icon_cart" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="10dp"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Name: "
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:id="@+id/textView"
+                                    android:layout_gravity="right|center_vertical" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="name"
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:id="@+id/my_equip_def_name"
+                                    android:layout_gravity="right|center_vertical" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Detail: "
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:id="@+id/textView5"
+                                    android:layout_gravity="top|center_vertical" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:id="@+id/my_equip_def_detail"
+                                    android:layout_gravity="right|center_vertical" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Def Dmg: "
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:id="@+id/textView7"
+                                    android:layout_gravity="right|center_vertical" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="7"
+                                    android:textColor="#88A825"
+                                    android:textSize="16sp"
+                                    android:id="@+id/my_equip_def_dmg"
+                                    android:layout_gravity="right|center_vertical" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="#88A825"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/my_equip_cost_def_layout">
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal">
+
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="center"
+                                android:id="@+id/imageView13"
+                                android:layout_marginRight="5dp"
+                                android:src="@drawable/gold_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:text="Cost"
+                                android:textColor="#ECF0F1"
+                                android:gravity="center"
+                                android:layout_gravity="center"
+                                android:textStyle="bold"
+                                android:textSize="18sp"
+                                android:id="@+id/my_equip_upgrade_atk5" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:text=" (123456)"
+                                android:textColor="#ECF0F1"
+                                android:gravity="center"
+                                android:textSize="14sp"
+                                android:id="@+id/my_equip_cost_def" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+</RelativeLayout>
+
