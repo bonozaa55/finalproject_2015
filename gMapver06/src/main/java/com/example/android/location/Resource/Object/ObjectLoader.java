@@ -55,8 +55,7 @@ public class ObjectLoader {
         objectGroupList.put(ObjectID.GROUP_FISHING,new ObjectGroup(new String[]{ObjectID.FISHING_ROD,ObjectID.FISH
                 ,ObjectID.WATER_VALVE,ObjectID.TENDON},ObjectID.WATER_VALVE));
         objectGroupList.put(ObjectID.SHOP_MAN,new ObjectGroup(new String[]{ObjectID.SHOP_MAN},ObjectID.SHOP_MAN));
-        objectGroupList.put(ObjectID.GROUP_PET,new ObjectGroup(new String[]{ObjectID.PET_V1,ObjectID.PET_V2
-                ,ObjectID.PET_V3},ObjectID.PET_V1));
+        objectGroupList.put(ObjectID.GROUP_PET,new ObjectGroup(new String[]{ObjectID.PET_V1},ObjectID.PET_V1));
     }
     public void LoadARcontent() {
 

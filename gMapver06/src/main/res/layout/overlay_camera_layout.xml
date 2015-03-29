@@ -13,7 +13,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#40FFFFFF"
+        android:background="@drawable/mist_layout2"
         android:id="@+id/overlay_mist"
         android:visibility="gone"
         android:layout_centerVertical="true"
@@ -145,7 +145,7 @@
         android:textAlignment="center"
         android:textSize="20sp"
         android:textColor="#000000"
-        android:background="#ffffff"
+        android:background="@drawable/potion_text"
         android:id="@+id/overlay_potions_count"
         android:layout_alignBottom="@+id/overlay_potions_interface"
         android:layout_alignEnd="@+id/overlay_potions_interface" />
@@ -166,6 +166,13 @@
         android:layout_above="@+id/overlay_player_hp"
         android:layout_toEndOf="@+id/backToNormal"
         android:layout_marginStart="100dp" />
-
+    <Button
+        android:id="@+id/switch_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="SwitchLocation"
+        android:text="Warp"
+        android:layout_alignBottom="@+id/overlay_player_hp"
+        android:layout_toStartOf="@+id/overlay_group_quest" />
 
 </RelativeLayout>

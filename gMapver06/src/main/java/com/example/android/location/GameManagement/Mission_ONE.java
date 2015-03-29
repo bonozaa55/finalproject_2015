@@ -2,6 +2,7 @@ package com.example.android.location.GameManagement;
 
 import android.content.Context;
 import android.os.Handler;
+import android.widget.Toast;
 
 import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.Interface.MyCraftMissionManager;
@@ -32,8 +33,8 @@ public class Mission_ONE {
     public static final int STATE_GET_CRAFT_MISSION_2=7;
     public static final int STATE_GET_NEW_ITEM_DEF=8;
     public static final int STATE_LOSE_TO_BOSS = 5;
-    public static final int STATE_WIN_BOSS=6;
-    public static final int STATE_COMPLETE = 4;
+    public static final int STATE_WIN_BOSS=10;
+    public static final int STATE_COMPLETE = 11;
     static GameGenerator gameGenerator;
     static IMetaioSDKAndroid metaioSDKAndroid;
     static Context context;
@@ -46,6 +47,8 @@ public class Mission_ONE {
 
     public Mission_ONE() {
     }
+
+
 
     public void startMission() {
         new Handler().postDelayed(new Runnable() {
@@ -60,6 +63,9 @@ public class Mission_ONE {
         //resetStateToMission();
     }
 
+    public void bossFear(){
+        MainActivity.showSimpleDialog("ปีศาจไส้อั่ว","ข้ากลัวแล้วว ข้าจะไม่ระรานใครอีกแล้ว");
+    }
     public void resetStateToMission() {
         String filePath = AssetsManager.getAssetPath(context,
                 "TrackingConfig/Assets/MarkerConfig_Mission.xml");
@@ -89,7 +95,7 @@ public class Mission_ONE {
                         ArrayList<CraftMission> temp= MyCraftMissionManager.getMyCraftMissionList();
                         temp.add(mCraftMission);
                         MyCraftMissionManager.setMyCraftMissionList(temp);
-                        MainActivity.makeToast("คุณได้รับ ใบรายการสร้างหนังสติ๊ก 1 ea!");
+                        MainActivity.makeToast("คุณได้รับ ใบรายการสร้างหนังสติ๊ก 1 ea!", Toast.LENGTH_LONG);
                         GlobalResource.setMISSION_STATE(STATE_GET_CRAFT_MISSION);
                     }
                 }
@@ -104,8 +110,8 @@ public class Mission_ONE {
                     Player.setAtkDmg(ItemDATA.getItemList().get(ItemsID.ATK_SLINK_SHOT).getAtkDMG());
                     GlobalResource.setMISSION_STATE(STATE_GET_NEW_ITEM);
                     Player.removeMaterialRequired(mCraftMission.getMaterialRequireList());
-
-                    MainActivity.makeToast("คุณได้รับหนังสติํกทรงพลัง 1 ea");
+                    MainActivity.playSound("get_item.mpe",false);
+                    MainActivity.makeToast("คุณได้รับหนังสติํกทรงพลัง 1 ea",Toast.LENGTH_LONG);
                 }else {
                     MainActivity.showSimpleDialog("ผู้เฒ่า", "ไปหาสิ่งของมาให้ครบก่อน ถ้าถึงจะสร้างให้เจ้า ว่ะฮ่าๆๆๆ");
                 }
@@ -119,7 +125,7 @@ public class Mission_ONE {
                     ArrayList<CraftMission> temp= MyCraftMissionManager.getMyCraftMissionList();
                     temp.add(mCraftMission2);
                     MyCraftMissionManager.setMyCraftMissionList(temp);
-                    MainActivity.makeToast("คุณได้รับ ใบรายการสร้างเสื้อจอมยุทธ 1 ea!");
+                    MainActivity.makeToast("คุณได้รับ ใบรายการสร้างเสื้อจอมยุทธ 1 ea!",Toast.LENGTH_LONG);
                     GlobalResource.setMISSION_STATE(STATE_GET_CRAFT_MISSION_2);
                 }
                 break;
@@ -130,10 +136,10 @@ public class Mission_ONE {
                     Player.getPlayerEquipment().remove(ItemsID.DEF_OLD_SHIRT);
                     Player.getPlayerEquipment().put(ItemsID.DEF_NICE_SHIRT, new PlayerItem(ItemsID.DEF_NICE_SHIRT, 1));
                     Player.setDefDmg(ItemDATA.getItemList().get(ItemsID.DEF_NICE_SHIRT).getDefDMG());
-
+                    MainActivity.playSound("get_item.mpe",false);
                     Player.removeMaterialRequired(mCraftMission2.getMaterialRequireList());
                     GlobalResource.setMISSION_STATE(STATE_GET_NEW_ITEM_DEF);
-                    MainActivity.makeToast("คุณได้รับเสื้อจอทยุทธ 1 ea");
+                    MainActivity.makeToast("คุณได้รับเสื้อจอทยุทธ 1 ea",Toast.LENGTH_LONG);
                 }else {
                     MainActivity.showSimpleDialog("ผู้เฒ่า", "ไปหาสิ่งของมาให้ครบก่อน เจ้าถึงจะได้รับมันไป ว่ะฮ่าๆๆๆ");
                 }

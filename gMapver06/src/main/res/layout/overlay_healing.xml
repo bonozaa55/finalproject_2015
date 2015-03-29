@@ -7,7 +7,7 @@
         android:layout_width="117dp"
         android:layout_height="122dp"
         android:rotation="270"
-        android:progressDrawable="@drawable/customprogressbar"
+        android:progressDrawable="@drawable/customprogressbar2"
         android:id="@+id/healing_progress"
         android:max="200"
         android:layout_marginBottom="18dp"

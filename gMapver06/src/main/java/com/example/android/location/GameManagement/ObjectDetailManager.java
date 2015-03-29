@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.R;
@@ -13,11 +14,13 @@ import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
+import com.example.android.location.Resource.Player.Player;
 import com.example.android.location.Util.Constants;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKAndroid;
 import com.metaio.sdk.jni.IRadar;
 import com.metaio.sdk.jni.Rotation;
+import com.metaio.sdk.jni.Vector3d;
 import com.metaio.tools.io.AssetsManager;
 
 import java.util.HashMap;
@@ -51,14 +54,14 @@ public class ObjectDetailManager {
         switch (GAME_STATE) {
             case GlobalResource.STATE_MARKER:
                 ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(objectGroup.getMainKey());
-                MainActivity.makeToast("BOSS!!");
+                MainActivity.makeToast("BOSS!!", Toast.LENGTH_LONG);
                 String filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + objectDATA.getMarkerPath() + ".xml");
                 setConfig(filePath);
                 loadMarkerModel(objectGroup);
                 break;
             case GlobalResource.STATE_LOCATIONBASED:
-                MainActivity.makeToast("Location monster");
+                MainActivity.makeToast("Location monster",Toast.LENGTH_LONG);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -68,7 +71,7 @@ public class ObjectDetailManager {
                 loadLocalModel(objectGroup);
                 break;
             case GlobalResource.STATE_METEOR:
-                MainActivity.makeToast("Meteor coming!!");
+                MainActivity.makeToast("Meteor coming!!",Toast.LENGTH_LONG);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -78,7 +81,7 @@ public class ObjectDetailManager {
                 loadMeteorModel(objectGroup);
                 break;
             case GlobalResource.STATE_DEAD:
-                MainActivity.makeToast("You are dead, Please go to heal station to refill it");
+                MainActivity.makeToast("You are dead, Please go to heal station to refill it",Toast.LENGTH_LONG);
                 String markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -86,7 +89,7 @@ public class ObjectDetailManager {
                 loadDeadResource();
                 break;
             case GlobalResource.STATE_HEALING:
-                MainActivity.makeToast("Healing");
+                MainActivity.makeToast("Healing",Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -94,16 +97,16 @@ public class ObjectDetailManager {
                 loadDeadResource();
                 break;
             case GlobalResource.STATE_MISSION:
-                MainActivity.makeToast("The Old man");
+                MainActivity.makeToast("The Old man",Toast.LENGTH_LONG);
                 new Mission_ONE().resetStateToMission();
                 break;
             case GlobalResource.STATE_GATHERING:
-                MainActivity.makeToast("Gathering");
+                MainActivity.makeToast("Gathering",Toast.LENGTH_LONG);
                 setCollectingState(true, objectGroup);
                 setGatheringConfig();
                 break;
             case GlobalResource.STATE_FISHING:
-                MainActivity.makeToast("Fishing");
+                MainActivity.makeToast("Fishing",Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.WATER_VALVE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -111,7 +114,7 @@ public class ObjectDetailManager {
                 loadFishingResource();
                 break;
             case GlobalResource.STATE_SHOPPING:
-                MainActivity.makeToast("SHOP");
+                MainActivity.makeToast("SHOP",Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.SHOP_MAN).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -119,7 +122,7 @@ public class ObjectDetailManager {
                 loadShopResource(objectGroup);
                 break;
             case GlobalResource.STATE_PETTING:
-                MainActivity.makeToast("PET");
+                MainActivity.makeToast("PET",Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.PET_V1).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -127,7 +130,7 @@ public class ObjectDetailManager {
                 loadPetResource();
                 break;
             case GlobalResource.STATE_MIST:
-                MainActivity.makeToast("MIST ZONE");
+                MainActivity.makeToast("MIST ZONE",Toast.LENGTH_LONG);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -170,6 +173,11 @@ public class ObjectDetailManager {
             if (!t.getKey().split("_")[1].equals(PettingManager.getPetID())) {
                 tt.setVisible(false);
             } else {
+                if(!Player.isIsGetPet()) {
+                    tt.setTranslation(new Vector3d(400,0,-555));
+                    tt.startAnimation("loop", true);
+                }else
+                    tt.setTranslation(new Vector3d(0,0,-555));
                 tt.setVisible(true);
             }
         }

@@ -203,7 +203,7 @@ public class StoreManager {
     int getDefID() {
         int defID;
         if (Player.getPlayerEquipment().containsKey(ItemsID.DEF_OLD_SHIRT))
-            defID = ItemsID.DEF_NICE_SHIRT;
+            defID = ItemsID.DEF_OLD_SHIRT;
         else
             defID = ItemsID.DEF_NICE_SHIRT;
         return defID;

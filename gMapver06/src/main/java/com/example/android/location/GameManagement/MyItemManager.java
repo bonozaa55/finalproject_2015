@@ -200,9 +200,13 @@ public class MyItemManager {
         Player.getPlayerItems().put(ItemsID.MUMMY_PIECE, new PlayerItem(ItemsID.MUMMY_PIECE, 5));
         Player.getPlayerItems().put(ItemsID.EGG, new PlayerItem(ItemsID.EGG, 3));
 
-
+/*
         Player.getPlayerEquipment().put(ItemsID.DEF_OLD_SHIRT, new PlayerItem(ItemsID.DEF_OLD_SHIRT, 1));
         Player.getPlayerEquipment().put(ItemsID.ATK_HAND, new PlayerItem(ItemsID.ATK_HAND, 1));
+        */
+        Player.getPlayerEquipment().put(ItemsID.DEF_NICE_SHIRT, new PlayerItem(ItemsID.DEF_NICE_SHIRT, 1));
+        Player.getPlayerEquipment().put(ItemsID.ATK_SLINK_SHOT, new PlayerItem(ItemsID.ATK_SLINK_SHOT, 1));
+
         Player.setAtkDmg(ItemDATA.getItemList().get(getAtkEquipment()).getAtkDMG());
         Player.setDefDmg(ItemDATA.getItemList().get(getDefEquipment()).getDefDMG());
 

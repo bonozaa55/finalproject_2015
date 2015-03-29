@@ -6,6 +6,7 @@ import android.os.HandlerThread;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.Resource.GlobalResource;
@@ -68,7 +69,7 @@ public class FishingManager {
                 isOpenValve = true;
                 t.setPickingEnabled(false);
                 t.setVisible(false);
-                MainActivity.makeToast("Open the valve, Finish!");
+                MainActivity.makeToast("Open the valve, Finish!", Toast.LENGTH_LONG);
             }
         }
     }
@@ -131,7 +132,7 @@ public class FishingManager {
         double y = values[1];
         double z = values[2];
         mAccelLast = mAccelCurrent;
-        mAccelCurrent = Math.sqrt(z*z+y*y);
+        mAccelCurrent = Math.sqrt(z*z+y*y+x*x);
         double delta = mAccelCurrent - mAccelLast;
         mAccel = mAccel * 0.9f + delta; // perform low-cut filter
         mAccel *= 0.2;
@@ -162,7 +163,7 @@ public class FishingManager {
         if (tv.isTrackingState()) {
             final Vector3d translation = tv.getTranslation();
             final float distanceToTarget = translation.norm();
-            final float threshold = 3900;
+            final float threshold = 1900;
             if (mIsCloseToModel) {
                 if (distanceToTarget > (threshold + 10) && isOpenValve) {
                     mIsCloseToModel = false;

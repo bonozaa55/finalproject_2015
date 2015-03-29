@@ -13,7 +13,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -31,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.android.location.GameManagement.FishingManager;
 import com.example.android.location.GameManagement.GameGenerator;
 import com.example.android.location.GameManagement.HealManager;
@@ -44,9 +47,9 @@ import com.example.android.location.Interface.MyCraftMissionManager;
 import com.example.android.location.Interface.TouchEffectView;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
+import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Item.ItemDetail;
 import com.example.android.location.Resource.Item.ItemsID;
-import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
@@ -75,6 +78,7 @@ import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.SystemInfo;
 import com.metaio.tools.io.AssetsManager;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,6 +94,8 @@ public class MainActivity extends ARViewActivity {
     static GameGenerator mGameGeneretor;
     static ImmersiveModeFragment immersiveModeFragment;
     static Mission_ONE mMissionOne;
+    static Toast mToast;
+    static MediaPlayer mMediaPlayer, mMediaPlayerEffect;
     private static TextView tBearing;
     private static double phoneHeading;
     SensorManager mSensorManager;
@@ -113,15 +119,13 @@ public class MainActivity extends ARViewActivity {
     private MetaioSDKCallbackHandler mCallbackHandler;
     private int timeCount = 0;
     private int maxTime = 200;
-    private boolean startCount = false;
+    private boolean startCount = false,doubleBackToExitPressedOnce=false;
     private int gameState = 0;
     private HealManager mHealManager;
     private GestureHandlerAndroid mGestureHandler;
-    private PettingManager mPettingManager;
+    private static PettingManager mPettingManager;
     private MistManager mMistManager;
-    static Toast mToast;
     private MyItemManager mMyItemManager;
-
 
     public static double getPhoneHeading() {
         return MainActivity.phoneHeading;
@@ -130,7 +134,11 @@ public class MainActivity extends ARViewActivity {
     public static Context getThisContext() {
         return applicationContext;
     }
-    public static Context getActivityContext() {return this_Context;}
+
+    public static Context getActivityContext() {
+        return this_Context;
+    }
+
     public static GameGenerator getmGameGeneretor() {
         return mGameGeneretor;
     }
@@ -172,23 +180,68 @@ public class MainActivity extends ARViewActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_PETTING)
+                    mPettingManager.resumeAnimation();
             }
         });
         ((TextView) dialog.findViewById(R.id.dialogTxt)).setText(Text);
         dialog.show();
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
-
-    public static void makeToast(String message) {
+    public static void makeToast(String message,int length) {
         View layout = GlobalResource.getListOfViews().get(Constants.TOAST_LAYOUT);
         ImageView image = (ImageView) layout.findViewById(R.id.image);
         image.setImageResource(R.drawable.icon_star);
         TextView text = (TextView) layout.findViewById(R.id.text);
         text.setText(message);
         mToast.setGravity(Gravity.TOP, 0, -200);
-        mToast.setDuration(Toast.LENGTH_LONG);
+        mToast.setDuration(length);
         mToast.setView(layout);
         mToast.show();
+    }
+
+    public static void stopPlaying() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+    }
+
+    public static void playSound(String sound, boolean isLoop) {
+        stopPlaying();
+        mMediaPlayer = new MediaPlayer();
+        try {
+            FileInputStream fis = new FileInputStream(AssetsManager.getAssetPath(this_Context, "SoundEffect1/Assets/" + sound));
+            mMediaPlayer.setDataSource(fis.getFD());
+            mMediaPlayer.prepare();
+            mMediaPlayer.setVolume(0.2f, 0.2f);
+            mMediaPlayer.setLooping(isLoop);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mMediaPlayer.start();
+    }
+
+    public static void stopPlayingEffect() {
+        if (mMediaPlayerEffect != null) {
+            mMediaPlayerEffect.stop();
+            mMediaPlayerEffect.release();
+            mMediaPlayerEffect = null;
+        }
+    }
+
+    public static void playSoundEffect(String sound) {
+        stopPlayingEffect();
+        mMediaPlayerEffect = new MediaPlayer();
+        try {
+            FileInputStream fis = new FileInputStream(AssetsManager.getAssetPath(this_Context, "SoundEffect1/Assets/" + sound));
+            mMediaPlayerEffect.setDataSource(fis.getFD());
+            mMediaPlayerEffect.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mMediaPlayerEffect.start();
     }
 
     @Override
@@ -198,47 +251,58 @@ public class MainActivity extends ARViewActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(new FrameLayout(this));
-        lReceiver = new LocationReceiver();
-        intent_location = new Intent(this, BackgroundLocationService.class);
 
-        if (getSupportFragmentManager().findFragmentByTag(FRAGTAG) == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            immersiveModeFragment = new ImmersiveModeFragment();
-            transaction.add(immersiveModeFragment, FRAGTAG);
-            transaction.commit();
-        }
-
-        try {
-            AssetsManager.extractAllAssets(this, true);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        mCallbackHandler = new MetaioSDKCallbackHandler();
         //mGestureCallback= new MetaioGestureHandlerCallback();
+        initOther();
         initSensor();
     }
 
     @Override
     protected void onResume() {
+        super.onResume();
+
         mSensorManager.registerListener(mOriantationListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
                 SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(mAccelerometerListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
+        mMediaPlayer = new MediaPlayer();
+        lReceiver = new LocationReceiver();
         registerReceiver(lReceiver, new IntentFilter("Location"));
         startService(intent_location);
-        super.onResume();
+
     }
 
     @Override
     protected void onPause() {
+        super.onPause();
         mSensorManager.unregisterListener(mOriantationListener);
         mSensorManager.unregisterListener(mAccelerometerListener);
         unregisterReceiver(lReceiver);
         stopService(intent_location);
-        super.onPause();
+        mMediaPlayer.stop();
+       // mGameGeneretor.resetState();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
     @Override
@@ -268,11 +332,30 @@ public class MainActivity extends ARViewActivity {
         // checkDistanceToTarget();
     }
 
-    public void initResource() {
+    void initOther() {
+        intent_location = new Intent(this, BackgroundLocationService.class);
 
+        if (getSupportFragmentManager().findFragmentByTag(FRAGTAG) == null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            immersiveModeFragment = new ImmersiveModeFragment();
+            transaction.add(immersiveModeFragment, FRAGTAG);
+            transaction.commit();
+        }
+
+        try {
+            AssetsManager.extractAllAssets(this, true);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        mCallbackHandler = new MetaioSDKCallbackHandler();
+    }
+
+    public void initResource() {
+        initOther();
         applicationContext = getApplicationContext();
         this_Context = this;
-        mMyItemManager=new MyItemManager();
+        mMyItemManager = new MyItemManager();
         SDK_ready = 1;
 
         initInterface();
@@ -281,18 +364,18 @@ public class MainActivity extends ARViewActivity {
         mHealManager = new HealManager();
         mFishingManager = new FishingManager(metaioSDK, mSurfaceView, mGestureHandler);
         mPettingManager = new PettingManager(mObjectDetailManager);
-        StoreManager mStoreManager = new StoreManager(this,mMyItemManager);
-        mMistManager=new MistManager();
+        StoreManager mStoreManager = new StoreManager(this, mMyItemManager);
+        mMistManager = new MistManager();
 
 
-        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager, mFishingManager,mMistManager, map);
+        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager, mFishingManager, mMistManager, map);
 
         mMissionOne = new Mission_ONE(mGameGeneretor, metaioSDK, applicationContext);
 
 
         mMissionOne.startMission();
         GlobalResource.setGAME_STATE(GlobalResource.STATE_IDLE);
-        mToast=new Toast(applicationContext);
+        mToast = new Toast(applicationContext);
     }
 
     public void initInterface() {
@@ -458,8 +541,9 @@ public class MainActivity extends ARViewActivity {
 
     public void AddAllMarker() {
 
-
         dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+
+        //dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
         /*
         dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
         dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
@@ -471,11 +555,14 @@ public class MainActivity extends ARViewActivity {
         dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
         dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
         */
-        /*
+
+/*
+        dlocation.add(new LLACoordinate(18.794280, 98.950866, 0, 0));//area2
+        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
         dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
         dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
         dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
-        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+
         dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
         dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));//area
         dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
@@ -588,19 +675,28 @@ public class MainActivity extends ARViewActivity {
             mGameGeneretor.checkGatheringGeometryTouch(geometry.getName(), playerItemHashMap);
         } else if (GAME_STATE == GlobalResource.STATE_DEAD || GAME_STATE == GlobalResource.STATE_HEALING) {
             mGameGeneretor.stopTimer();
-            mGameGeneretor.checkHealingGeometryTouch(geometry,GAME_STATE);
+            mGameGeneretor.checkHealingGeometryTouch(geometry, GAME_STATE);
         } else if (GAME_STATE == GlobalResource.STATE_MISSION) {
             mMissionOne.checkMissionState();
-
+            mGameGeneretor.stopTimer();
         } else if (GAME_STATE == GlobalResource.STATE_FISHING) {
             mFishingManager.checkFishingOnGeometryTouch(geometry, playerItemHashMap, mGameGeneretor);
+            mGameGeneretor.stopTimer();
         } else if (GAME_STATE == GlobalResource.STATE_SHOPPING) {
             mList.get(Constants.STORE_LAYOUT).setVisibility(View.VISIBLE);
+            mGameGeneretor.stopTimer();
         } else if (GAME_STATE == GlobalResource.STATE_PETTING) {
+            mGameGeneretor.stopTimer();
             mPettingManager.checkGeometryPetTouch(geometry);
         } else {
-            touchEffectView.setVisibility(View.VISIBLE);
-            mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, playerItemHashMap, mGameGeneretor);
+            if (GlobalResource.getMISSION_STATE() >= Mission_ONE.STATE_WIN_BOSS
+                    && GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER) {
+                mMissionOne.bossFear();
+                mGameGeneretor.stopTimer();
+            } else {
+                touchEffectView.setVisibility(View.VISIBLE);
+                mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, playerItemHashMap, mGameGeneretor);
+            }
         }
     }
 
@@ -834,7 +930,7 @@ public class MainActivity extends ARViewActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mGameGeneretor.playerGetHit(100,true);
+                        mGameGeneretor.playerGetHit(100, true);
                         mGameGeneretor.checkMeteor(geometry);
                     }
                 });
@@ -847,11 +943,11 @@ public class MainActivity extends ARViewActivity {
                     }
                 });
             }
-            if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_MIST){
+            if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MIST) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mMistManager.onMistModelAnimationEnd(animationName,geometry);
+                        mMistManager.onMistModelAnimationEnd(animationName, geometry);
                     }
                 });
             }

@@ -15,17 +15,27 @@ public class Player {
     static int maxHP;
     static int atkDmg;
     static int defDmg;
+    static boolean isGetPet;
     private static HashMap<Integer,PlayerItem> playerItems;
     private static HashMap<Integer,PlayerItem> playerEquipment;
     private static ArrayList<CraftMission> myCraftMission;
 
     public Player() {
+        isGetPet=false;
         defDmg=10;
         atkDmg=10;
         hp=1000;
         maxHP=1000;
         playerItems=new HashMap<Integer, PlayerItem>();
         playerEquipment=new HashMap<Integer, PlayerItem>();
+    }
+
+    public static void setIsGetPet(boolean isGetPet) {
+        Player.isGetPet = isGetPet;
+    }
+
+    public static boolean isIsGetPet() {
+        return isGetPet;
     }
 
     public static void removeMaterialRequired(ArrayList<MaterialRequired> t){

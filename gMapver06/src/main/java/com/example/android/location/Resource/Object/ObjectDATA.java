@@ -71,10 +71,8 @@ public class ObjectDATA {
         temp=new Location("");
         temp.setLatitude(18.794803);
         temp.setLongitude(98.950988);
-        objectDATAHashMap.put(ObjectID.PET_V1,new ObjectDATA(temp,135,45,15,0,"Pet",0,"prisoner2"
-                ,0,0,-555,0.3f,0.4f));
-        objectDATAHashMap.put(ObjectID.PET_V2,new ObjectDATA(100,"bomb_boss",200,0,0,-555,0.4f,0.5f));
-        objectDATAHashMap.put(ObjectID.PET_V3,new ObjectDATA(100,"monster_one_eye",200,0,0,-555,0.4f,0.5f));
+        objectDATAHashMap.put(ObjectID.PET_V1,new ObjectDATA(temp,135,45,15,0,"Pet",0,"dragon"
+                ,0,0,-555,0.2f,0.3f));
 
     }
 

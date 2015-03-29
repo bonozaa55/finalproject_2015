@@ -1,7 +1,9 @@
 package com.example.android.location.GameManagement;
 
 import android.os.Handler;
+import android.widget.Toast;
 
+import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
@@ -33,6 +35,9 @@ public class BossManager {
     public int onElephantBossTouch(String key, GameGenerator gameGenerator, int atkDmg) {
         String geometryID = objectGroup.getObjectDetailList().get(key).getKey();
         int retDmg = atkDmg;
+        if(geometryID.equals(ObjectID.ELEPHANT)&&under_L.getRemainingHP()>0&&under_R.getRemainingHP()>0){
+            retDmg=10;
+        }
         switch (BOSS_STATE) {
             case STATE_SHIELD:
                 retDmg = 0;
@@ -122,6 +127,8 @@ public class BossManager {
 
     }
 
+
+
     public void initResource() {
         objectGroup = GameGenerator.getObjectGroup();
         BOSS_STATE = STATE_SHIELD;
@@ -151,7 +158,8 @@ public class BossManager {
             isUnderlingDead = false;
         }
         if (bossRemainPercent <= 0) {
-            //MainActivity.makeToast("Congrats you had finish a hard boss");
+
+            MainActivity.makeToast("Congrats you had finish a hard boss", Toast.LENGTH_LONG);
             setPickingEnabled();
 
             new Handler().postDelayed(new Runnable() {
@@ -164,7 +172,6 @@ public class BossManager {
                 @Override
                 public void run() {
                     GlobalResource.setMISSION_STATE(Mission_ONE.STATE_WIN_BOSS);
-                    (new Mission_ONE()).resetStateToMission();
                 }
             },3000);
         }

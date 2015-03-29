@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="2dp"
             android:layout_marginLeft="2dp"
-            android:background="#2980B9"
+            android:background="#FFD34E"
             android:id="@+id/frameLayout">
 
             <ImageView
@@ -34,7 +34,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="35dp"
                 android:text="Buy Potions"
-                android:textColor="#ECF0F1"
+                android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:id="@+id/mycraft_title"
@@ -51,10 +51,11 @@
             android:layout_marginTop="15dp">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginRight="10dp"
                 android:id="@+id/selling_icon"
-                android:src="@drawable/monster1"
+                android:src="@drawable/potion_icon"
                 android:layout_gravity="right|center_vertical"
                 android:layout_below="@+id/mycraft_require_list"
                 android:layout_alignStart="@+id/selling_ok" />
@@ -111,8 +112,8 @@
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:background="#2980B9"
-                android:textColor="#ECF0F1" />
+                android:background="#FFD34E"
+                android:textColor="#FFFFFF" />
 
             <TextView
                 android:layout_marginLeft="10dp"
@@ -124,8 +125,8 @@
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:background="#2980B9"
-                android:textColor="#ECF0F1" />
+                android:background="#FFD34E"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
     </RelativeLayout>
 

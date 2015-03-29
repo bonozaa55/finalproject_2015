@@ -6,9 +6,11 @@ import android.location.Location;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.R;
@@ -57,6 +59,7 @@ public class GameGenerator {
     BossManager bossManager;
     FishingManager mFishingManager;
     MistManager mMistManager;
+
     private HashMap<String, ObjectGroup> objectGroupHashMap;
     private ProgressBar playerHpBar, objectHpBar;
     private View getHitView, mistView, mapGetHitView;
@@ -123,13 +126,13 @@ public class GameGenerator {
         return playerItemQuantity;
     }
 
-    public static void setPlayerItem(int id, int quantity,boolean makeToast) {
+    public static void setPlayerItem(int id, int quantity, boolean makeToast) {
         int playerItem = getPlayerItemQuantity(id) + quantity;
-        if(playerItem>0)
+        if (playerItem > 0)
             Player.getPlayerItems().put(id, new PlayerItem(id, playerItem));
         else
             Player.getPlayerItems().remove(id);
-        if(makeToast)
+        if (makeToast)
             MainActivity.makeToastItem(id, quantity);
     }
 
@@ -175,36 +178,41 @@ public class GameGenerator {
                     if (checkLocationDistance(objectDATA.getLocation(), currentLocation, objectDATA.getAcceptableDistance())
                             && check) {
                         if (t.getKey().equals(ObjectID.GROUP_BOSS)) {
-                            notifyEvent(temp, GlobalResource.STATE_MARKER, 60000);
-                            bossManager = new BossManager();
+                            if (GlobalResource.getMISSION_STATE() < Mission_ONE.STATE_WIN_BOSS) {
+                                MainActivity.playSound("boss_theme.mp3", true);
+                                notifyEvent(temp, GlobalResource.STATE_MARKER, 60000);
+                                bossManager = new BossManager();
+                            }else
+                                notifyEvent(temp, GlobalResource.STATE_MARKER, 10000);
                         }
                         if (t.getKey().equals(ObjectID.THE_OLD_MAN)) {
-                            notifyEvent(temp, GlobalResource.STATE_MISSION, 20000);
+                            notifyEvent(temp, GlobalResource.STATE_MISSION, 10000);
                         }
                         if (t.getKey().equals(ObjectID.BOTTLE)) {
-                            notifyEvent(temp, GlobalResource.STATE_HEALING, 20000);
+                            notifyEvent(temp, GlobalResource.STATE_HEALING, 10000);
                         }
                         if (t.getKey().equals(ObjectID.SHOP_MAN)) {
-                            notifyEvent(temp, GlobalResource.STATE_SHOPPING, 20000);
+                            notifyEvent(temp, GlobalResource.STATE_SHOPPING, 10000);
                         }
                         if (t.getKey().equals(ObjectID.GROUP_PET)) {
-                            notifyEvent(temp, GlobalResource.STATE_PETTING, 40000);
+                            MainActivity.playSound("pet_theme.mp3", true);
+                            notifyEvent(temp, GlobalResource.STATE_PETTING, 10000);
                         }
                         if (t.getKey().equals(ObjectID.GROUP_FISHING)) {
                             mFishingManager.resetRotateAngle();
-                            notifyEvent(temp, GlobalResource.STATE_FISHING, 30000);
+                            notifyEvent(temp, GlobalResource.STATE_FISHING, 10000);
                         }
                         found = 1;
                     }
                 }
             }
-            /*
+
             double temp = 1;
             if (found == 0)
                 temp = Math.random();
             double possibility = 0.5;
-            if (CheckLocationArea(18.795526f, 98.953083f, 0.00095f, 0.000206f, currentLocation) && temp <= possibility) {
-
+            if (CheckLocationArea(18.795526, 98.953083, 0.00095, 0.000206, currentLocation) && temp <= possibility) {
+                 MainActivity.playSound("area_theme.mp3",true);
                 if (temp <= possibility / 3) {
                     ObjectGroup t = createRandomMapObject();
                     notifyEvent(t, GlobalResource.STATE_GATHERING, 20000);
@@ -213,20 +221,19 @@ public class GameGenerator {
                     notifyEvent(ObjectLoader.getObjectGroupList().get(ObjectID.GROUP_METEOR)
                             , GlobalResource.STATE_METEOR, 12000);
                 } else {
-                    locationObjectCount=0;
-                    ObjectGroup t = createRandomLocationObject(currentLocation, 10,1);
+                    locationObjectCount = 0;
+                    ObjectGroup t = createRandomLocationObject(currentLocation, 10, 1);
                     notifyEvent(t, GlobalResource.STATE_LOCATIONBASED, 20000);
                 }
-                found=1;
-            }*/
-
-            if (CheckLocationArea(18.795526f, 98.953083f, 0.00095f, 0.000206f, currentLocation) && found != 1) {
+                found = 1;
+            }
+            if (CheckLocationArea(18.794280, 98.950866, 0.000463, 0.001099, currentLocation) && found != 1) {
+                MainActivity.playSound("mist_theme.mp3", true);
                 ObjectGroup t = createRandomLocationObject(currentLocation, 10, 0);
                 notifyEvent(t, GlobalResource.STATE_MIST);
                 mMistManager.generateAttacker();
                 mistView.setVisibility(View.VISIBLE);
                 locationObjectCount = 0;
-                //mistView.setVisibility(View.GONE);
             }
         }
     }
@@ -255,19 +262,21 @@ public class GameGenerator {
         View overlayLayout = GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT);
         View mapLayout = GlobalResource.getListOfViews().get(Constants.MAP_LAYOUT);
         playerHpBar = (ProgressBar) overlayLayout.findViewById(R.id.overlay_player_hp);
-        playerHpBar.setMax(Player.getHp());
+        playerHpBar.setMax(Player.getMaxHP());
         playerHpBar.setProgress(Player.getHp());
         objectHpBar = (ProgressBar) overlayLayout.findViewById(R.id.overlay_object_hp);
 
         mistView = overlayLayout.findViewById(R.id.overlay_mist);
         getHitView = overlayLayout.findViewById(R.id.overlay_get_hit);
-        getHitDmgView=(TextView)overlayLayout.findViewById(R.id.overlay_get_hit_dmg);
+        getHitDmgView = (TextView) overlayLayout.findViewById(R.id.overlay_get_hit_dmg);
 
         mapGetHitView = mapLayout.findViewById(R.id.map_dead);
         mVibration = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         objectGroupHashMap = ObjectLoader.getObjectGroupList();
 
         createMarkerObject();
+
+
     }
 
     private boolean checkLocationDistance(Location objectLocation, Location currentLocation, double maxDistance) {
@@ -287,7 +296,9 @@ public class GameGenerator {
             return false;
     }
 
-    private boolean CheckLocationArea(float pointLat, float pointLng, float height, float width, Location target) {
+    private boolean CheckLocationArea(double pointLat, double pointLng, double height, double width, Location target) {
+        Log.i("www1",target.getLatitude()+" "+pointLat+" "+height);
+        Log.i("www2",target.getLongitude()+" "+pointLng+" "+width);
         if ((target.getLatitude() >= pointLat && target.getLatitude() <= height + pointLat) &&
                 (target.getLongitude() >= pointLng && target.getLongitude() <= width + pointLng))
             return true;
@@ -340,6 +351,7 @@ public class GameGenerator {
     }
 
     public void resetState() {
+        MainActivity.stopPlaying();
         mistView.setVisibility(View.GONE);
         stopTimer();
         objectHpBar.setVisibility(View.GONE);
@@ -380,32 +392,31 @@ public class GameGenerator {
             int count = 0;
 
             public void onTick(long millisUntilFinished) {
-                if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER) {
+                if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER
+                        && GlobalResource.getMISSION_STATE() < Mission_ONE.STATE_WIN_BOSS) {
                     bossManager.changeBossState(count % 3);
-                }
-                count++;
-                if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MIST) {
 
                 }
+                count++;
             }
 
             public void onFinish() {
                 int GAME_STATE = GlobalResource.getGAME_STATE();
                 if (GAME_STATE == GlobalResource.STATE_METEOR)
-                    MainActivity.makeToast("Meteor Storm is ending!!");
+                    MainActivity.makeToast("Meteor Storm is ending!!", Toast.LENGTH_LONG);
                 else
-                    MainActivity.makeToast("Timeout!!");
+                    MainActivity.makeToast("Timeout!!",Toast.LENGTH_LONG);
                 resetState();
             }
         }.start();
     }
 
-    void showGetDmg(int dmg){
-        String prefix="";
-        String color="#B9121B";
-        if(dmg>=0) {
+    void showGetDmg(int dmg) {
+        String prefix = "";
+        String color = "#B9121B";
+        if (dmg >= 0) {
             prefix = "+";
-            color="#58aF27";
+            color = "#58aF27";
         }
         getHitDmgView.setText(prefix + dmg);
         getHitDmgView.setTextColor(Color.parseColor(color));
@@ -421,8 +432,8 @@ public class GameGenerator {
 
     public void playerGetHit(int dmg, boolean isFlash) {
 
-        float percentGetDmg=1-(Player.getDefDmg()/100f);
-        int getHitDmg=Math.round(dmg*percentGetDmg);
+        float percentGetDmg = 1 - (Player.getDefDmg() / 100f);
+        int getHitDmg = Math.round(dmg * percentGetDmg);
         showGetDmg(-getHitDmg);
         int playerHp = Player.getHp() - getHitDmg;
         Player.setHp(playerHp);
@@ -438,13 +449,16 @@ public class GameGenerator {
                 }
             }, 100);
         }
-
+        if(getHitDmg<80)
+        MainActivity.playSoundEffect("get_hit.wav");
+        else
+        MainActivity.playSoundEffect("get_hit_massive.wav");
         if (playerHp <= 0) {
-            resetState();
+
             if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_MARKER
                     && GlobalResource.getMISSION_STATE() != 0)
                 MainActivity.showSimpleDialog("ปีศาจไส้อั่ว", "นี้ผู้เฒ่าส่งเจ้ามาจริงรึเปล่า ฮ่าๆๆๆๆ ทำไมเจ้าอ่อนแอแบบนี้!");
-
+            resetState();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -456,9 +470,9 @@ public class GameGenerator {
                     playerHpBar.setProgress(Player.getHp());
                     if (GlobalResource.getMISSION_STATE() == Mission_ONE.STATE_GET_MISSION) {
                         GlobalResource.setMISSION_STATE(Mission_ONE.STATE_LOSE_TO_BOSS);
-                        MainActivity.makeToast("Your hp is empty, Please go to visit The old man");
+                        MainActivity.makeToast("Your hp is empty, Please go to visit The old man",Toast.LENGTH_LONG);
                     } else {
-                        MainActivity.makeToast("Your hp is empty, Please go to heal station to refill it");
+                        MainActivity.makeToast("Your hp is empty, Please go to heal station to refill it",Toast.LENGTH_LONG);
                     }
                 }
             }, 1000);
@@ -476,7 +490,7 @@ public class GameGenerator {
             geometry.startAnimation(animationList[(int) index]);
             meteorCount++;
         } else {
-            MainActivity.makeToast("Meteor Storm is ending!!");
+            MainActivity.makeToast("Meteor Storm is ending!!",Toast.LENGTH_LONG);
             resetState();
         }
     }
@@ -502,7 +516,7 @@ public class GameGenerator {
             public void onFinish() {
                 int getHp = (int) ((float) t.getProgress() / t.getMax() * 300);
                 restorePlayerHP(getHp);
-                MainActivity.makeToast("restore " + getHp + " HP");
+                MainActivity.makeToast("restore " + getHp + " HP",Toast.LENGTH_LONG);
                 GlobalResource.getListOfViews().get(Constants.HEAL_LAYOUT).setVisibility(View.GONE);
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -537,7 +551,10 @@ public class GameGenerator {
         Player.setHp(playerHp);
         playerHpBar.setProgress(playerHp);
         getHitView.setVisibility(View.GONE);
+        mapGetHitView.setVisibility(View.GONE);
         showGetDmg(restoreHP);
+
+        MainActivity.playSoundEffect("heal.wav");
         //change to sound
         /*
         getRestore.setVisibility(View.VISIBLE);
@@ -552,23 +569,17 @@ public class GameGenerator {
         */
     }
 
+
     public void checkGatheringGeometryTouch(String key, HashMap<Integer, PlayerItem> playerItemHashMap) {
         ObjectDetail objectDetail = objectGroup.getObjectDetailList().get(key);
         String mObjectID = objectDetail.getKey();
 
-        if (mObjectID.equals(ObjectID.STONE)) {
-            setPlayerItem(ItemsID.ORE, 1,true);
-            /*
-            int playerOreQuantity = getPlayerItemQuantity(ItemsID.ORE);
-            playerItemHashMap.put(ItemsID.ORE, new PlayerItem(ItemsID.ORE, playerOreQuantity + 1));
-            MainActivity.makeToastItem(ItemsID.ORE, 1);*/
-        }
-        if (mObjectID.equals(ObjectID.GRASS)) {
-            setPlayerItem(ItemsID.GRASS, 1,true);/*
-            int playerGrassQuantity = getPlayerItemQuantity(ItemsID.GRASS);
-            playerItemHashMap.put(ItemsID.GRASS, new PlayerItem(ItemsID.GRASS, playerGrassQuantity + 1));
-            MainActivity.makeToastItem(ItemsID.GRASS, 1);*/
-        }
+        if (mObjectID.equals(ObjectID.STONE))
+            setPlayerItem(ItemsID.ORE, 1, true);
+
+        if (mObjectID.equals(ObjectID.GRASS))
+            setPlayerItem(ItemsID.GRASS, 1, true);
+
         objectDetail.getModel().setVisible(false);
         objectDetail.getModel().setPickingEnabled(false);
     }
@@ -604,7 +615,7 @@ public class GameGenerator {
             mRadar.remove(objectDetail.getModel());
 
             if (GAME_STATE != GlobalResource.STATE_MIST) {
-                setPlayerItem(ItemsID.GOLD, objectDATA.getGoldDrop(),true);
+                setPlayerItem(ItemsID.GOLD, objectDATA.getGoldDrop(), true);
             } else
                 mMistManager.modelIDlist.remove(key);
 
@@ -614,7 +625,7 @@ public class GameGenerator {
             if (locationObjectCount == 3) {
                 resetState();
                 if (GAME_STATE == GlobalResource.STATE_MIST)
-                    setPlayerItem(ItemsID.MUMMY_PIECE, 1,true);
+                    setPlayerItem(ItemsID.MUMMY_PIECE, 1, true);
             }
 
 
