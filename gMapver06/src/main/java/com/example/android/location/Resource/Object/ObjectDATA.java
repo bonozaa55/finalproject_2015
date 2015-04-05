@@ -72,7 +72,7 @@ public class ObjectDATA {
         temp.setLatitude(18.794803);
         temp.setLongitude(98.950988);
         objectDATAHashMap.put(ObjectID.PET_V1,new ObjectDATA(temp,135,45,15,0,"Pet",0,"dragon"
-                ,0,0,-555,0.2f,0.3f));
+                ,0,0,-555,0.15f,0.25f));
 
     }
 

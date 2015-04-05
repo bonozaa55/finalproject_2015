@@ -6,6 +6,7 @@ import android.widget.ExpandableListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.example.android.location.Activity.MainActivity;
 import com.example.android.location.Interface.CraftMissionAdapter;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
@@ -15,7 +16,6 @@ import com.example.android.location.Resource.Item.ItemsID;
 import com.example.android.location.Resource.Mission.CraftMission;
 import com.example.android.location.Resource.Mission.MaterialRequired;
 import com.example.android.location.Resource.Player.Player;
-import com.example.android.location.Resource.Player.PlayerItem;
 import com.example.android.location.Util.Constants;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  */
 public class StoreManager {
     ArrayList<CraftMission> craftMissionList;
-    MyItemManager mItemManager;
+    final MyItemManager mItemManager;
     private Context context;
     private static TextView textPlayerGold;
     private static TextView playerPotionItem;
@@ -116,8 +116,8 @@ public class StoreManager {
             public void onClick(View v) {
                 int playerPotion = GameGenerator.getPlayerItemQuantity(ItemsID.POTION) + buyingNumber.getValue();
                 int playerGold = GameGenerator.getPlayerItemQuantity(ItemsID.GOLD) - (buyingNumber.getValue() * 100);
-                Player.getPlayerItems().put(ItemsID.POTION, new PlayerItem(ItemsID.POTION, playerPotion));
-                Player.getPlayerItems().put(ItemsID.GOLD, new PlayerItem(ItemsID.GOLD, playerGold));
+                GameGenerator.setPlayerItem(ItemsID.POTION,buyingNumber.getValue(),false);
+                GameGenerator.setPlayerItem(ItemsID.GOLD,- (buyingNumber.getValue() * 100),false);
                 textPlayerGold.setText(playerGold + "");
                 playerPotionItem.setText(playerPotion + "");
                 buyingNumber.setValue(0);
@@ -186,6 +186,7 @@ public class StoreManager {
             @Override
             public void onClick(View v) {
                 myItemLayout.setVisibility(View.VISIBLE);
+                mItemManager.updateGridItem();
                 mItemManager.setOnStore(true);
             }
         });
@@ -236,13 +237,16 @@ public class StoreManager {
             v.setText(playerGold + "");
             ItemDetail t = ItemDATA.getItemList().get(ID);
             if (t.getLv() <= 4) {
-                t.setLv(t.getLv() + 1);
+                int lv=t.getLv() + 1;
+                t.setLv(lv);
                 if (t.getAtkDMG() > 0)
                     t.setAtkDMG(t.getAtkDMG() + 5);
                 else
                     t.setDefDMG(t.getDefDMG() + 5);
                 Player.setAtkDmg(t.getAtkDMG());
                 Player.setDefDmg(t.getDefDMG());
+                MainActivity.getPlayerDB().updatePlayerEquipmentData(ID+"",lv+"",Player.getAtkDmg()+""
+                        ,Player.getDefDmg()+"",cost+"");
             }
         }
     }

@@ -30,10 +30,10 @@ public class Mission_ONE {
     public static final int STATE_GET_MISSION = 1;
     public static final int STATE_GET_CRAFT_MISSION = 2;
     public static final int STATE_GET_NEW_ITEM = 3;
-    public static final int STATE_GET_CRAFT_MISSION_2=7;
-    public static final int STATE_GET_NEW_ITEM_DEF=8;
+    public static final int STATE_GET_CRAFT_MISSION_2 = 7;
+    public static final int STATE_GET_NEW_ITEM_DEF = 8;
     public static final int STATE_LOSE_TO_BOSS = 5;
-    public static final int STATE_WIN_BOSS=10;
+    public static final int STATE_WIN_BOSS = 10;
     public static final int STATE_COMPLETE = 11;
     static GameGenerator gameGenerator;
     static IMetaioSDKAndroid metaioSDKAndroid;
@@ -48,24 +48,34 @@ public class Mission_ONE {
     public Mission_ONE() {
     }
 
-
+    public static void setVisibilityModel(boolean parameter) {
+        HashMap<String, ObjectDetail> temp = ObjectLoader.getObjectGroupList().get(ObjectID.THE_OLD_MAN).getObjectDetailList();
+        for (Map.Entry<String, ObjectDetail> t : temp.entrySet()) {
+            IGeometry tt = t.getValue().getModel();
+            tt.setPickingEnabled(parameter);
+            tt.setVisible(parameter);
+        }
+    }
 
     public void startMission() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity.showSimpleDialog("ผู้เฒ่า", "ยินดีต้อนรับสู่โลกใหม่ สหายข้า! ถ้าเจ้าต้องการรับรู้ถึงความเป็นมาของโลกนี้ละก็จงเดินทาง" +
-                        "มาหาข้า ที่โรงนา IE เถิด");
-                GlobalResource.setMISSION_STATE(Mission_ONE.STATE_GET_MISSION);
-            }
-        }, 3500);
+        if(GlobalResource.getMISSION_STATE()==STATE_GET_MISSION) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.showSimpleDialog("ผู้เฒ่า", "ยินดีต้อนรับสู่โลกใหม่ สหายข้า! ถ้าเจ้าต้องการรับรู้ถึงความเป็นมาของโลกนี้ละก็จงเดินทาง" +
+                            "มาหาข้า ที่โรงนา IE เถิด");
+                    GlobalResource.setMISSION_STATE(Mission_ONE.STATE_GET_MISSION);
+                }
+            }, 3500);
+        }
 
         //resetStateToMission();
     }
 
-    public void bossFear(){
-        MainActivity.showSimpleDialog("ปีศาจไส้อั่ว","ข้ากลัวแล้วว ข้าจะไม่ระรานใครอีกแล้ว");
+    public void bossFear() {
+        MainActivity.showSimpleDialog("ปีศาจไส้อั่ว", "ข้ากลัวแล้วว ข้าจะไม่ระรานใครอีกแล้ว");
     }
+
     public void resetStateToMission() {
         String filePath = AssetsManager.getAssetPath(context,
                 "TrackingConfig/Assets/MarkerConfig_Mission.xml");
@@ -76,7 +86,7 @@ public class Mission_ONE {
     public void checkMissionState() {
         int Mission_STATE = GlobalResource.getMISSION_STATE();
         CraftMission mCraftMission = GlobalResource.getCraftMissionList().get(0);
-        CraftMission mCraftMission2=GlobalResource.getCraftMissionList().get(1);
+        CraftMission mCraftMission2 = GlobalResource.getCraftMissionList().get(1);
         switch (Mission_STATE) {
             case STATE_GET_MISSION:
                 MainActivity.showSimpleDialog("ผู้เฒ่า", "\tโปรดช่วยเราด้วย ตอนนี้มีปีศาจไส้อั่วเมาแล้วอาละวาด " +
@@ -92,7 +102,7 @@ public class Mission_ONE {
                         MainActivity.showSimpleDialog("ผู้เฒ่า", "\tสหายยข้า! ไม่ต้องพูดอะไรข้าเข้าใจแล้วจงรับสิ่งนี้ไป ใบรายการสำหรับสร้าง" +
                                 "หนังสติ๊ก เอาไว้ไปต่อกรกับเจ้าปีศาจไส้อั่ว อ้อข้าลืมบอกไปอย่างนึงเจ้าสามารถหาสิ่งของได้ที่บริเวณถนนแถวๆโซนจิบชานะ");
                         mCraftMission.setMissionStatus(2);
-                        ArrayList<CraftMission> temp= MyCraftMissionManager.getMyCraftMissionList();
+                        ArrayList<CraftMission> temp = MyCraftMissionManager.getMyCraftMissionList();
                         temp.add(mCraftMission);
                         MyCraftMissionManager.setMyCraftMissionList(temp);
                         MainActivity.makeToast("คุณได้รับ ใบรายการสร้างหนังสติ๊ก 1 ea!", Toast.LENGTH_LONG);
@@ -101,7 +111,7 @@ public class Mission_ONE {
                 }
                 break;
             case STATE_GET_CRAFT_MISSION:
-                if(mCraftMission.getMissionStatus()==3){
+                if (mCraftMission.getMissionStatus() == 3) {
                     MainActivity.showSimpleDialog("ผู้เฒ่า", "ว้าวว เจ้าได้สิ่งของมาครบแล้วข้าจะสร้างหนังสติ๊กให้เจ้าเอง มาๆ ส่งของทั้งหมดมา" +
                             "ฮ่าๆๆ ข้าบอกว่าทั้งหมดไงง");
 
@@ -110,9 +120,10 @@ public class Mission_ONE {
                     Player.setAtkDmg(ItemDATA.getItemList().get(ItemsID.ATK_SLINK_SHOT).getAtkDMG());
                     GlobalResource.setMISSION_STATE(STATE_GET_NEW_ITEM);
                     Player.removeMaterialRequired(mCraftMission.getMaterialRequireList());
-                    MainActivity.playSound("get_item.mpe",false);
-                    MainActivity.makeToast("คุณได้รับหนังสติํกทรงพลัง 1 ea",Toast.LENGTH_LONG);
-                }else {
+                    MainActivity.getPlayerDB().updatePlayerEquipment(ItemsID.ATK_SLINK_SHOT + "", ItemsID.DEF_OLD_SHIRT + "");
+                    MainActivity.playSound("get_item.mpe", false);
+                    MainActivity.makeToast("คุณได้รับหนังสติํกทรงพลัง 1 ea", Toast.LENGTH_LONG);
+                } else {
                     MainActivity.showSimpleDialog("ผู้เฒ่า", "ไปหาสิ่งของมาให้ครบก่อน ถ้าถึงจะสร้างให้เจ้า ว่ะฮ่าๆๆๆ");
                 }
                 break;
@@ -122,25 +133,26 @@ public class Mission_ONE {
                             "สามารถช่วยผลการโจมตีทุกชนิด ว่ะฮ่าๆๆๆ ของดีมันไม่ได้มาง่ายๆหรอกนะข้าขอเตือนไว้ก่อน ");
                     mCraftMission2.setMissionStatus(2);
 
-                    ArrayList<CraftMission> temp= MyCraftMissionManager.getMyCraftMissionList();
+                    ArrayList<CraftMission> temp = MyCraftMissionManager.getMyCraftMissionList();
                     temp.add(mCraftMission2);
                     MyCraftMissionManager.setMyCraftMissionList(temp);
-                    MainActivity.makeToast("คุณได้รับ ใบรายการสร้างเสื้อจอมยุทธ 1 ea!",Toast.LENGTH_LONG);
+                    MainActivity.makeToast("คุณได้รับ ใบรายการสร้างเสื้อจอมยุทธ 1 ea!", Toast.LENGTH_LONG);
                     GlobalResource.setMISSION_STATE(STATE_GET_CRAFT_MISSION_2);
                 }
                 break;
             case STATE_GET_CRAFT_MISSION_2:
-                if(mCraftMission2.getMissionStatus()==3){
+                if (mCraftMission2.getMissionStatus() == 3) {
                     MainActivity.showSimpleDialog("ผู้เฒ่า", "เจ้านี้สุดยอดจริงๆ หาของมาได้ครบถ้วน เอ้า! รับไปตามสัญญาเสื้อจอมยุทธของเจ้า" +
                             "ใช้งานระวังหน่อยละ ถ้าขาดข้าฆ่าเจ้าแน่ มันทำยากนะรู้ไหมมม");
                     Player.getPlayerEquipment().remove(ItemsID.DEF_OLD_SHIRT);
                     Player.getPlayerEquipment().put(ItemsID.DEF_NICE_SHIRT, new PlayerItem(ItemsID.DEF_NICE_SHIRT, 1));
                     Player.setDefDmg(ItemDATA.getItemList().get(ItemsID.DEF_NICE_SHIRT).getDefDMG());
-                    MainActivity.playSound("get_item.mpe",false);
+                    MainActivity.playSound("get_item.mpe", false);
                     Player.removeMaterialRequired(mCraftMission2.getMaterialRequireList());
                     GlobalResource.setMISSION_STATE(STATE_GET_NEW_ITEM_DEF);
-                    MainActivity.makeToast("คุณได้รับเสื้อจอทยุทธ 1 ea",Toast.LENGTH_LONG);
-                }else {
+                    MainActivity.getPlayerDB().updatePlayerEquipment(ItemsID.ATK_SLINK_SHOT + "", ItemsID.DEF_NICE_SHIRT + "");
+                    MainActivity.makeToast("คุณได้รับเสื้อจอทยุทธ 1 ea", Toast.LENGTH_LONG);
+                } else {
                     MainActivity.showSimpleDialog("ผู้เฒ่า", "ไปหาสิ่งของมาให้ครบก่อน เจ้าถึงจะได้รับมันไป ว่ะฮ่าๆๆๆ");
                 }
                 break;
@@ -150,24 +162,16 @@ public class Mission_ONE {
 
                 break;
             case STATE_WIN_BOSS:
-                MainActivity.showSimpleDialog("ผู้เฒ่า","ยอดเยี่ยมม ยอดเยี่ยมจริงๆ แบบนี้สิไม่ผิดหวังที่ข้าฝากความหวังไว้กับเจ้า" +
+                MainActivity.showSimpleDialog("ผู้เฒ่า", "ยอดเยี่ยมม ยอดเยี่ยมจริงๆ แบบนี้สิไม่ผิดหวังที่ข้าฝากความหวังไว้กับเจ้า" +
                         "เอ้าา รับไปรางวัลสำหรับเจ้าาา!");
-                MainActivity.makeToastItem(ItemsID.GOLD,10000);
+                GameGenerator.setPlayerItem(ItemsID.GOLD, 10000, true);
                 GlobalResource.setMISSION_STATE(STATE_COMPLETE);
                 break;
             case STATE_COMPLETE:
-                MainActivity.showSimpleDialog("ผู้เฒ่า","นี้ข้าหมดตัวแล้วเนี้ย เจ้าจะมาเอาอะไรกับข้าอีกอยากได้เงินก็ไปหากับพวก" +
+                MainActivity.showSimpleDialog("ผู้เฒ่า", "นี้ข้าหมดตัวแล้วเนี้ย เจ้าจะมาเอาอะไรกับข้าอีกอยากได้เงินก็ไปหากับพวก" +
                         "มอนเตอร์ริมถนนนู้นน");
                 break;
         }
-    }
-
-    public static void setVisibilityModel(boolean parameter) {
-        HashMap<String, ObjectDetail> temp = ObjectLoader.getObjectGroupList().get(ObjectID.THE_OLD_MAN).getObjectDetailList();
-        for (Map.Entry<String, ObjectDetail> t : temp.entrySet()) {
-            IGeometry tt = t.getValue().getModel();
-            tt.setPickingEnabled(parameter);
-            tt.setVisible(parameter);
-        }
+        MainActivity.getPlayerDB().updatePlayerData();
     }
 }

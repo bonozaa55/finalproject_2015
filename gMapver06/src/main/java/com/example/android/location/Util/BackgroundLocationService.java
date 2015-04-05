@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -18,9 +17,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 //import com.google.android.gms.location.LocationClient;
-public class BackgroundLocationService extends Service implements
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener,GoogleApiClient.ConnectionCallbacks,
+public class BackgroundLocationService extends Service implements LocationListener,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
 	IBinder mBinder = new LocalBinder();
@@ -139,12 +136,12 @@ public class BackgroundLocationService extends Service implements
     public void onConnectionSuspended(int i) {
 
     }
-
+	/*
     @Override
 	public void onDisconnected() {
 		mInProgress = false;
         mGoogleApiClient = null;
-	}
+	}*/
 	@Override
 	public void onConnectionFailed(ConnectionResult connectionResult) {
 		Log.d("debug", "Connected Failed");

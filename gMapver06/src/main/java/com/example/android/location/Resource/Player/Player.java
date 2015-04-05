@@ -1,6 +1,9 @@
 package com.example.android.location.Resource.Player;
 
 import com.example.android.location.GameManagement.GameGenerator;
+import com.example.android.location.Resource.GlobalResource;
+import com.example.android.location.Resource.Item.ItemDATA;
+import com.example.android.location.Resource.Item.ItemsID;
 import com.example.android.location.Resource.Mission.CraftMission;
 import com.example.android.location.Resource.Mission.MaterialRequired;
 
@@ -16,33 +19,49 @@ public class Player {
     static int atkDmg;
     static int defDmg;
     static boolean isGetPet;
-    private static HashMap<Integer,PlayerItem> playerItems;
-    private static HashMap<Integer,PlayerItem> playerEquipment;
+    private static HashMap<Integer, PlayerItem> playerItems;
+    private static HashMap<Integer, PlayerItem> playerEquipment;
     private static ArrayList<CraftMission> myCraftMission;
 
-    public Player() {
+    public Player(String[] playerData) {
+        /*
+        Val.put("PlayerID", PlayerID);
+        Val.put("Remaining_HP", Remaining_HP);
+        Val.put("Max_HP", Max_HP);
+        Val.put("Get_Pet", Get_Pet);
+        Val.put("ATK_ITEM_ID", ATK_ITEM_ID);
+        Val.put("DEF_ITEM_ID", DEF_ITEM_ID);
+        Val.put("Mission_STATE", Mission_STATE);
+        */
         isGetPet=false;
-        defDmg=10;
-        atkDmg=10;
-        hp=1000;
-        maxHP=1000;
-        playerItems=new HashMap<Integer, PlayerItem>();
-        playerEquipment=new HashMap<Integer, PlayerItem>();
-    }
+        if(playerData[3].equals("true"))
+            isGetPet = true;
+        hp = Integer.parseInt(playerData[1]);
+        maxHP = Integer.parseInt(playerData[2]);
+        GlobalResource.setMISSION_STATE(Integer.parseInt(playerData[6]));
+        playerItems = new HashMap<Integer, PlayerItem>();
 
-    public static void setIsGetPet(boolean isGetPet) {
-        Player.isGetPet = isGetPet;
+        playerEquipment = new HashMap<Integer, PlayerItem>();
+
+        playerEquipment.put(Integer.parseInt(playerData[4]), new PlayerItem(Integer.parseInt(playerData[4]), 1));
+        playerEquipment.put(Integer.parseInt(playerData[5]), new PlayerItem(Integer.parseInt(playerData[5]), 1));
+
+        atkDmg = ItemDATA.getItemList().get(Integer.parseInt(playerData[4])).getAtkDMG();
+        defDmg = ItemDATA.getItemList().get(Integer.parseInt(playerData[5])).getDefDMG();
     }
 
     public static boolean isIsGetPet() {
         return isGetPet;
     }
 
-    public static void removeMaterialRequired(ArrayList<MaterialRequired> t){
-        for(MaterialRequired t1:t)
-            GameGenerator.setPlayerItem(t1.getItemID(),t1.getQuantity(),false);
+    public static void setIsGetPet(boolean isGetPet) {
+        Player.isGetPet = isGetPet;
     }
 
+    public static void removeMaterialRequired(ArrayList<MaterialRequired> t) {
+        for (MaterialRequired t1 : t)
+            GameGenerator.setPlayerItem(t1.getItemID(), t1.getQuantity(), false);
+    }
 
 
     public static int getDefDmg() {
@@ -95,5 +114,23 @@ public class Player {
 
     public static void setMyCraftMission(ArrayList<CraftMission> myCraftMission) {
         Player.myCraftMission = myCraftMission;
+    }
+
+    int getDefEquipment() {
+        int defID;
+        if (Player.getPlayerEquipment().containsKey(ItemsID.DEF_NICE_SHIRT))
+            defID = ItemsID.DEF_NICE_SHIRT;
+        else
+            defID = ItemsID.DEF_OLD_SHIRT;
+        return defID;
+    }
+
+    int getAtkEquipment() {
+        int atkID;
+        if (Player.getPlayerEquipment().containsKey(ItemsID.ATK_SLINK_SHOT))
+            atkID = ItemsID.ATK_SLINK_SHOT;
+        else
+            atkID = ItemsID.ATK_HAND;
+        return atkID;
     }
 }

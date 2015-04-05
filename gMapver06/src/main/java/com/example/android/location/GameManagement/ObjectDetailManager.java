@@ -179,6 +179,7 @@ public class ObjectDetailManager {
                 }else
                     tt.setTranslation(new Vector3d(0,0,-555));
                 tt.setVisible(true);
+                tt.setRotation(new Rotation(0,0,(float)Math.PI/180*25));
             }
         }
         GlobalResource.getListOfViews().get(Constants.PET_LAYOUT).setVisibility(View.VISIBLE);

@@ -55,6 +55,7 @@ import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
 import com.example.android.location.Resource.Player.Player;
+import com.example.android.location.Resource.Player.PlayerDB;
 import com.example.android.location.Resource.Player.PlayerItem;
 import com.example.android.location.Util.BackgroundLocationService;
 import com.example.android.location.Util.Constants;
@@ -119,13 +120,14 @@ public class MainActivity extends ARViewActivity {
     private MetaioSDKCallbackHandler mCallbackHandler;
     private int timeCount = 0;
     private int maxTime = 200;
-    private boolean startCount = false,doubleBackToExitPressedOnce=false;
+    private boolean startCount = false, doubleBackToExitPressedOnce = false;
     private int gameState = 0;
     private HealManager mHealManager;
     private GestureHandlerAndroid mGestureHandler;
     private static PettingManager mPettingManager;
     private MistManager mMistManager;
     private MyItemManager mMyItemManager;
+    static PlayerDB playerDB;
 
     public static double getPhoneHeading() {
         return MainActivity.phoneHeading;
@@ -137,6 +139,10 @@ public class MainActivity extends ARViewActivity {
 
     public static Context getActivityContext() {
         return this_Context;
+    }
+
+    public static PlayerDB getPlayerDB() {
+        return playerDB;
     }
 
     public static GameGenerator getmGameGeneretor() {
@@ -180,7 +186,7 @@ public class MainActivity extends ARViewActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                if(GlobalResource.getGAME_STATE()==GlobalResource.STATE_PETTING)
+                if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_PETTING)
                     mPettingManager.resumeAnimation();
             }
         });
@@ -188,7 +194,8 @@ public class MainActivity extends ARViewActivity {
         dialog.show();
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
-    public static void makeToast(String message,int length) {
+
+    public static void makeToast(String message, int length) {
         View layout = GlobalResource.getListOfViews().get(Constants.TOAST_LAYOUT);
         ImageView image = (ImageView) layout.findViewById(R.id.image);
         image.setImageResource(R.drawable.icon_star);
@@ -199,6 +206,11 @@ public class MainActivity extends ARViewActivity {
         mToast.setView(layout);
         mToast.show();
     }
+
+    public static void updatePlayerDataDB(){
+        playerDB.updatePlayerData();
+    }
+
 
     public static void stopPlaying() {
         if (mMediaPlayer != null) {
@@ -222,6 +234,7 @@ public class MainActivity extends ARViewActivity {
         }
         mMediaPlayer.start();
     }
+
 
     public static void stopPlayingEffect() {
         if (mMediaPlayerEffect != null) {
@@ -260,7 +273,8 @@ public class MainActivity extends ARViewActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        playerDB = new PlayerDB(this);
+        playerDB.getWritableDatabase();
         mSensorManager.registerListener(mOriantationListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
                 SensorManager.SENSOR_DELAY_NORMAL);
@@ -281,8 +295,9 @@ public class MainActivity extends ARViewActivity {
         mSensorManager.unregisterListener(mAccelerometerListener);
         unregisterReceiver(lReceiver);
         stopService(intent_location);
-        mMediaPlayer.stop();
-       // mGameGeneretor.resetState();
+        stopPlaying();
+        updatePlayerDataDB();
+        // mGameGeneretor.resetState();
 
     }
 
@@ -349,13 +364,14 @@ public class MainActivity extends ARViewActivity {
             e.printStackTrace();
         }
         mCallbackHandler = new MetaioSDKCallbackHandler();
+
     }
 
     public void initResource() {
-        initOther();
+        //initOther();
         applicationContext = getApplicationContext();
         this_Context = this;
-        mMyItemManager = new MyItemManager();
+        mMyItemManager = new MyItemManager(playerDB);
         SDK_ready = 1;
 
         initInterface();
@@ -368,7 +384,8 @@ public class MainActivity extends ARViewActivity {
         mMistManager = new MistManager();
 
 
-        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager, mFishingManager, mMistManager, map);
+        mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager, mFishingManager, mMistManager
+                , map, playerDB);
 
         mMissionOne = new Mission_ONE(mGameGeneretor, metaioSDK, applicationContext);
 
@@ -541,9 +558,13 @@ public class MainActivity extends ARViewActivity {
 
     public void AddAllMarker() {
 
-        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
-
+        dlocation.add(new LLACoordinate(18.794280, 98.950866, 0, 0));//area2
+        //dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+        //dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
+        //dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
+        //dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
         //dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+
         /*
         dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
         dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
@@ -562,7 +583,6 @@ public class MainActivity extends ARViewActivity {
         dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
         dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
         dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
-
         dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
         dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));//area
         dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
@@ -667,7 +687,7 @@ public class MainActivity extends ARViewActivity {
 
 
     @Override
-    protected void onGeometryTouched(IGeometry geometry) {
+    protected void onGeometryTouched(final IGeometry geometry) {
 
         int GAME_STATE = GlobalResource.getGAME_STATE();
         HashMap<Integer, PlayerItem> playerItemHashMap = Player.getPlayerItems();
@@ -680,7 +700,7 @@ public class MainActivity extends ARViewActivity {
             mMissionOne.checkMissionState();
             mGameGeneretor.stopTimer();
         } else if (GAME_STATE == GlobalResource.STATE_FISHING) {
-            mFishingManager.checkFishingOnGeometryTouch(geometry, playerItemHashMap, mGameGeneretor);
+            mFishingManager.checkFishingOnGeometryTouch(geometry);
             mGameGeneretor.stopTimer();
         } else if (GAME_STATE == GlobalResource.STATE_SHOPPING) {
             mList.get(Constants.STORE_LAYOUT).setVisibility(View.VISIBLE);
@@ -694,10 +714,16 @@ public class MainActivity extends ARViewActivity {
                 mMissionOne.bossFear();
                 mGameGeneretor.stopTimer();
             } else {
-                touchEffectView.setVisibility(View.VISIBLE);
-                mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, playerItemHashMap, mGameGeneretor);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        touchEffectView.setVisibility(View.VISIBLE);
+                    }
+                });
+                mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, mGameGeneretor);
             }
         }
+
     }
 
     public void onButtonClick(View v) {
@@ -875,6 +901,7 @@ public class MainActivity extends ARViewActivity {
                         //set global
                         mlist_size = mList.size();
                         GlobalResource.setListOfViews(mList);
+                        Log.i("www","www");
                     }
                 }
             });

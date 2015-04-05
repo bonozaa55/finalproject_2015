@@ -15,6 +15,7 @@ import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Item.ItemDetail;
 import com.example.android.location.Resource.Item.ItemsID;
 import com.example.android.location.Resource.Player.Player;
+import com.example.android.location.Resource.Player.PlayerDB;
 import com.example.android.location.Resource.Player.PlayerItem;
 import com.example.android.location.Util.Constants;
 
@@ -23,9 +24,12 @@ import com.example.android.location.Util.Constants;
  */
 public class MyItemManager {
     PlayerItem myPlayerItem;
+    PlayerDB playerDB;
     boolean isOnStore;
+    MyItemGridAdapter gridAdapter;
 
-    public MyItemManager() {
+    public MyItemManager(PlayerDB playerDB) {
+        this.playerDB = playerDB;
         initResource();
     }
 
@@ -43,7 +47,7 @@ public class MyItemManager {
 
 
         GridView myItemGrid = (GridView) myItemLayout.findViewById(R.id.myitem_grid);
-        final MyItemGridAdapter gridAdapter = new MyItemGridAdapter(MainActivity.getActivityContext());
+        gridAdapter = new MyItemGridAdapter(MainActivity.getActivityContext());
 
         myItemGrid.setAdapter(gridAdapter);
         overlayLayout.findViewById(R.id.overlay_myItem_interface).setOnClickListener(new View.OnClickListener() {
@@ -93,7 +97,7 @@ public class MyItemManager {
         myItemGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(isOnStore) {
+                if (isOnStore) {
                     myPlayerItem = gridAdapter.getItem(position);
                     icon.setImageResource(ItemDATA.getItemList().get(myPlayerItem.getId()).getIconResource());
                     numberPicker.setMaxValue(myPlayerItem.getQuantity());
@@ -123,16 +127,18 @@ public class MyItemManager {
                 int itemQuantity = myPlayerItem.getQuantity();
                 int pickValue = numberPicker.getValue();
                 GameGenerator.setPlayerItem(ItemsID.GOLD, pickValue * 100, false);
-                if (itemQuantity == numberPicker.getValue())
+                /*if (itemQuantity == pickValue) {
                     Player.getPlayerItems().remove(myPlayerItem.getId());
-                else
                     GameGenerator.setPlayerItem(myPlayerItem.getId(), -pickValue, false);
-                gridAdapter.updatePlayerItem();
+                }
+                else*/
+                GameGenerator.setPlayerItem(myPlayerItem.getId(), -pickValue, false);
+                updateGridItem();
                 sellingItemLayout.setVisibility(View.GONE);
-                StoreManager.getTextPlayerGold().setText(Player.getPlayerItems().get(ItemsID.GOLD).getQuantity()+"");
-                int potionRemain=GameGenerator.getPlayerItemQuantity(ItemsID.POTION);
-                if(myPlayerItem.getId()==ItemsID.POTION)
-                    StoreManager.getPlayerPotionItem().setText(potionRemain+"");
+                StoreManager.getTextPlayerGold().setText(Player.getPlayerItems().get(ItemsID.GOLD).getQuantity() + "");
+                int potionRemain = GameGenerator.getPlayerItemQuantity(ItemsID.POTION);
+                if (myPlayerItem.getId() == ItemsID.POTION)
+                    StoreManager.getPlayerPotionItem().setText(potionRemain + "");
 
             }
         });
@@ -143,6 +149,10 @@ public class MyItemManager {
 
             }
         });
+    }
+
+    void updateGridItem(){
+        gridAdapter.updatePlayerItem();
     }
 
     void updateEquipmentDATA() {
@@ -190,25 +200,27 @@ public class MyItemManager {
 
     void initDATA() {
         ItemDATA itemsData = new ItemDATA();
-        Player player = new Player();
+        Player player = new Player(playerDB.SelectPlayerData());
         //Player.setAtkDmg(50);
-        Player.getPlayerItems().put(ItemsID.GRASS, new PlayerItem(ItemsID.GRASS, 3));
-        Player.getPlayerItems().put(ItemsID.ORE, new PlayerItem(ItemsID.ORE, 3));
-        Player.getPlayerItems().put(ItemsID.POTION, new PlayerItem(ItemsID.POTION, 10));
-        Player.getPlayerItems().put(ItemsID.GOLD, new PlayerItem(ItemsID.GOLD, 7500));
-        Player.getPlayerItems().put(ItemsID.FISH, new PlayerItem(ItemsID.FISH, 15));
-        Player.getPlayerItems().put(ItemsID.MUMMY_PIECE, new PlayerItem(ItemsID.MUMMY_PIECE, 5));
-        Player.getPlayerItems().put(ItemsID.EGG, new PlayerItem(ItemsID.EGG, 3));
+        Player.setPlayerItems(playerDB.selectAllPlayerItems());
 
+        String atkData[]=playerDB.selectPlayerEquipmentData(getAtkEquipment()+"");
+        String defData[]=playerDB.selectPlayerEquipmentData(getDefEquipment()+"");
+        Player.setHp(1000);
+        playerDB.updatePlayerData();
 /*
-        Player.getPlayerEquipment().put(ItemsID.DEF_OLD_SHIRT, new PlayerItem(ItemsID.DEF_OLD_SHIRT, 1));
-        Player.getPlayerEquipment().put(ItemsID.ATK_HAND, new PlayerItem(ItemsID.ATK_HAND, 1));
-        */
-        Player.getPlayerEquipment().put(ItemsID.DEF_NICE_SHIRT, new PlayerItem(ItemsID.DEF_NICE_SHIRT, 1));
-        Player.getPlayerEquipment().put(ItemsID.ATK_SLINK_SHOT, new PlayerItem(ItemsID.ATK_SLINK_SHOT, 1));
+        "(Equipment_ID INTEGER PRIMARY KEY," +
+                " LV INTEGER," +
+                " ATK_DMG INTEGER," +
+                " DEF_DMG INTEGER," +
+                " Initial_Cost INTEGER" +
+  */
+        ItemDATA.getItemList().get(getAtkEquipment()).setAtkDMG(Integer.parseInt(atkData[2]));
+        ItemDATA.getItemList().get(getAtkEquipment()).setLv(Integer.parseInt(atkData[1]));
+        ItemDATA.getItemList().get(getAtkEquipment()).setInitialCost(Integer.parseInt(atkData[4]));
 
-        Player.setAtkDmg(ItemDATA.getItemList().get(getAtkEquipment()).getAtkDMG());
-        Player.setDefDmg(ItemDATA.getItemList().get(getDefEquipment()).getDefDMG());
-
+        ItemDATA.getItemList().get(getDefEquipment()).setDefDMG(Integer.parseInt(defData[3]));
+        ItemDATA.getItemList().get(getDefEquipment()).setLv(Integer.parseInt(defData[1]));
+        ItemDATA.getItemList().get(getDefEquipment()).setInitialCost(Integer.parseInt(defData[4]));
     }
 }

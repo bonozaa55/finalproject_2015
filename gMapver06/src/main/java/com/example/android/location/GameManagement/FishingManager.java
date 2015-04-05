@@ -15,7 +15,6 @@ import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.example.android.location.Resource.Object.ObjectLoader;
-import com.example.android.location.Resource.Player.PlayerItem;
 import com.metaio.sdk.GestureHandlerAndroid;
 import com.metaio.sdk.jni.IGeometry;
 import com.metaio.sdk.jni.IMetaioSDKAndroid;
@@ -146,12 +145,9 @@ public class FishingManager {
         return mAccelCurrent;
     }
 
-    public void checkFishingOnGeometryTouch(IGeometry geometry, HashMap<Integer, PlayerItem> playerItemHashMap
-            , GameGenerator mGameGenerator) {
+    public void checkFishingOnGeometryTouch(IGeometry geometry) {
         if (geometry.equals(mFish)) {
-            int playerFish = mGameGenerator.getPlayerItemQuantity( ItemsID.FISH);
-            playerItemHashMap.put(ItemsID.FISH, new PlayerItem(ItemsID.FISH, playerFish + 1));
-            MainActivity.makeToastItem(ItemsID.FISH, 1);
+            GameGenerator.setPlayerItem(ItemsID.FISH,1,true);
             mFish.setVisible(false);
             generateTendonVibrate();
             //mGameGenerator.resetState();

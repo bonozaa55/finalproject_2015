@@ -22,8 +22,8 @@ public class GlobalResource {
     public static final int STATE_IDLE=0;
     public static final int STATE_LOCATIONBASED=2;
     public static final int STATE_GATHERING=1;
-    public static final int STATE_MARKER=3;
-    public static final int STATE_METEOR=4;
+    public static final int STATE_MARKER=4;
+    public static final int STATE_METEOR=3;
     public static final int STATE_HEALING=5;
     public static final int STATE_DEAD=6;
     public static final int STATE_MISSION=7;
