@@ -6,7 +6,7 @@ import android.widget.ExpandableListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.Interface.CraftMissionAdapter;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
@@ -34,6 +34,13 @@ public class StoreManager {
         this.mItemManager = mItemManager;
         this.context = context;
         initUI();
+    }
+
+    public void setTextGoldPlayerInShop(){
+        View storeLayout = GlobalResource.getListOfViews().get(Constants.STORE_LAYOUT);
+        int playerGold = GameGenerator.getPlayerItemQuantity(ItemsID.GOLD);
+        textPlayerGold = (TextView) storeLayout.findViewById(R.id.store_gold);
+        textPlayerGold.setText(playerGold + "");
     }
 
     public static TextView getPlayerPotionItem() {
@@ -65,9 +72,10 @@ public class StoreManager {
         });
         playerPotionItem = (TextView) GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT)
                 .findViewById(R.id.overlay_potions_count);
-        final int playerGold = GameGenerator.getPlayerItemQuantity(ItemsID.GOLD);
-        textPlayerGold = (TextView) storeLayout.findViewById(R.id.store_gold);
-        textPlayerGold.setText(playerGold + "");
+        setTextGoldPlayerInShop();
+
+
+
 
         View craftRecipe = storeCraftLayout.findViewById(R.id.craft_recipe_cancle);
         craftRecipe.setOnClickListener(new View.OnClickListener() {
@@ -190,6 +198,7 @@ public class StoreManager {
                 mItemManager.setOnStore(true);
             }
         });
+
     }
 
     int getAtkID() {
@@ -235,6 +244,7 @@ public class StoreManager {
         if (playerGold >= 0) {
             GameGenerator.setPlayerItem(ItemsID.GOLD, cost, false);
             v.setText(playerGold + "");
+            setTextGoldPlayerInShop();
             ItemDetail t = ItemDATA.getItemList().get(ID);
             if (t.getLv() <= 4) {
                 int lv=t.getLv() + 1;
@@ -245,7 +255,7 @@ public class StoreManager {
                     t.setDefDMG(t.getDefDMG() + 5);
                 Player.setAtkDmg(t.getAtkDMG());
                 Player.setDefDmg(t.getDefDMG());
-                MainActivity.getPlayerDB().updatePlayerEquipmentData(ID+"",lv+"",Player.getAtkDmg()+""
+                LocationActivity.getPlayerDB().updatePlayerEquipmentData(ID+"",lv+"",Player.getAtkDmg()+""
                         ,Player.getDefDmg()+"",cost+"");
             }
         }
@@ -257,17 +267,17 @@ public class StoreManager {
         ArrayList<MaterialRequired> materialRequiredList2 = new ArrayList<MaterialRequired>();
 
 
-        materialRequiredList.add(new MaterialRequired(ItemsID.ORE, 3));
-        materialRequiredList.add(new MaterialRequired(ItemsID.GOLD, 1500));
-        materialRequiredList.add(new MaterialRequired(ItemsID.GRASS, 2));
+        materialRequiredList.add(new MaterialRequired(ItemsID.ORE, 2));
+        materialRequiredList.add(new MaterialRequired(ItemsID.GOLD, 800));
+        materialRequiredList.add(new MaterialRequired(ItemsID.GRASS, 1));
 
-        materialRequiredList2.add(new MaterialRequired(ItemsID.GOLD, 1500));
-        materialRequiredList2.add(new MaterialRequired(ItemsID.EGG, 3));
-        materialRequiredList2.add(new MaterialRequired(ItemsID.MUMMY_PIECE, 5));
+       // materialRequiredList2.add(new MaterialRequired(ItemsID.GOLD, 1500));
+        materialRequiredList2.add(new MaterialRequired(ItemsID.EGG, 2));
+        materialRequiredList2.add(new MaterialRequired(ItemsID.MUMMY_PIECE, 2));
         craftMissionList.add(new CraftMission(0, "หนังสติ๊กทรงพลัง", materialRequiredList, "หนังสติ๊กที่ทำจากหญ้าหลอม " +
-                "และหินแกรนิตจึงทำให้มีความแข็งแรงและทนทาน แถมยังมีพลังทำลายล้างสูง ,ATK+50", R.drawable.stick));
+                "และหินแกรนิตจึงทำให้มีความแข็งแรงและทนทาน แถมยังมีพลังทำลายล้างสูง ,ATK+50", R.drawable.slingshot_icon));
         craftMissionList.add(new CraftMission(0, "เสื้อจอมยุทธ", materialRequiredList2, "สุดยอดเสื้อที่ทำจากไข่ลึกลับและวิญญาณของมัมมี่"
-                , R.drawable.armor_icon1));
+                , R.drawable.suit_icon));
         GlobalResource.setCraftMissionList(craftMissionList);
     }
 }

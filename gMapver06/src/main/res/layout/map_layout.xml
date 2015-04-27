@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-
+        android:layout_height="match_parent">
 
         <fragment
             android:id="@+id/map"
@@ -23,8 +21,7 @@
             android:layout_alignParentRight="true"
             android:visibility="gone"
             android:onClick="SwitchLocation"
-            android:text="Warp"
-            />
+            android:text="Warp" />
 
         <TextView
             android:id="@+id/bearing_text"
@@ -32,8 +29,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
+            android:text="50212313"
             android:visibility="gone"
-            android:text="50"
+            android:shadowColor="#5F646B"
+            android:textStyle="bold"
+            android:textColor="#1F242B"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:layout_margin="5dp"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
@@ -42,10 +45,25 @@
             android:text="Resume"
             android:id="@+id/toggleZoom"
             android:onClick="ToggleZoom"
+            android:background="@drawable/button_background"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_margin="5dp"
             android:visibility="gone"
+            android:textColor="#cFe4eB"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:id="@+id/map_cancel"
+            android:src="@drawable/cancel"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -55,23 +73,6 @@
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#40FFFFFF"
-            android:id="@+id/map_mist"
-            android:visibility="gone"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#5000A000"
-            android:id="@+id/map_restore"
-            android:visibility="gone"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 

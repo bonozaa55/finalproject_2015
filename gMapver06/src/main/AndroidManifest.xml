@@ -40,7 +40,7 @@
         tools:replace="android:label"
         android:label="@string/app_name"
         android:description="@string/app_description"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppBaseTheme" >
 
           <meta-data android:name="com.google.android.maps.v2.API_KEY"
     android:value="AIzaSyACfapcACz_20O717jctquSo9GpbDg9PIY"/>
@@ -49,7 +49,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name=".Activity.MainActivity"
+            android:name=".Activity.StartActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             >
@@ -59,11 +59,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Activity.LocationActivity"
+            android:label="LocationActivity"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".Activity.StartActivity" >
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.StartActivity" />
+        </activity>
+
+        <activity
+            android:name=".Activity.MarkerActivity"
+            android:label="MarkerActivity"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".Activity.StartActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.StartActivity" />
+        </activity>
+
         <service
       android:name=".Util.BackgroundLocationService"
       android:label="updatelocation"/>
         <receiver
-      android:name=".Activity.MainActivity$LocationReceiver"
+      android:name=".Activity.LocationActivity$LocationReceiver"
       android:enabled="true"
 		android:exported="false"
       android:label="MainReceiver"/>

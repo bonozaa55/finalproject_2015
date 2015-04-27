@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="2dp"
             android:layout_marginLeft="2dp"
-            android:background="#FFD34E"
+            android:background="#B5E655"
             android:id="@+id/frameLayout">
 
             <ImageView
@@ -112,7 +112,7 @@
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:background="#FFD34E"
+                android:background="#B5E655"
                 android:textColor="#FFFFFF" />
 
             <TextView
@@ -125,7 +125,7 @@
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:background="#FFD34E"
+                android:background="#B5E655"
                 android:textColor="#FFFFFF" />
         </LinearLayout>
     </RelativeLayout>

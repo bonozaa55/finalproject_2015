@@ -8,7 +8,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemsID;
 import com.example.android.location.Resource.Object.ObjectDetail;
@@ -68,7 +68,7 @@ public class FishingManager {
                 isOpenValve = true;
                 t.setPickingEnabled(false);
                 t.setVisible(false);
-                MainActivity.makeToast("Open the valve, Finish!", Toast.LENGTH_LONG);
+                LocationActivity.makeToast("Open the valve, Finish!", Toast.LENGTH_LONG);
             }
         }
     }
@@ -159,7 +159,7 @@ public class FishingManager {
         if (tv.isTrackingState()) {
             final Vector3d translation = tv.getTranslation();
             final float distanceToTarget = translation.norm();
-            final float threshold = 1900;
+            final float threshold = 1000;
             if (mIsCloseToModel) {
                 if (distanceToTarget > (threshold + 10) && isOpenValve) {
                     mIsCloseToModel = false;

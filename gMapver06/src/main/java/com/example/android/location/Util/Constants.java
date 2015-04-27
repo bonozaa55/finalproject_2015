@@ -32,7 +32,11 @@ public final class Constants {
     public static final int MY_ITEMS_LAYOUT=9;
     public static final int MY_EQUIPMENT_LAYOUT=10;
     public static final int SELL_ITEM_LAYOUT=11;
+	public static final int HELP_LAYOUT=12;
+	public static final int DIALOG=13;
 
+	public static final int ACTION_RESET=0;
+	public static final int ACTION_NORMAL=1;
     public static TextView User_gold;
 
 	public static TextView getUser_gold() {

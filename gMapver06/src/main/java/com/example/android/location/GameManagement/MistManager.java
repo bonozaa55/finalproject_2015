@@ -2,7 +2,7 @@ package com.example.android.location.GameManagement;
 
 import android.os.CountDownTimer;
 
-import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.Resource.Object.ObjectID;
 import com.metaio.sdk.jni.IGeometry;
 
@@ -14,26 +14,32 @@ import java.util.ArrayList;
 public class MistManager {
     IGeometry models[];
     GameGenerator mGameGenerator;
-    CountDownTimer countDownTimer;
+    static CountDownTimer countDownTimer;
     ArrayList<String> modelIDlist=new ArrayList<String>();
+    boolean attacked;
 
+    public boolean isAttacked() {
+        return attacked;
+    }
 
+    public void setAttacked(boolean attacked) {
+        this.attacked = attacked;
+    }
 
     public void generateAttacker(){
         stopTimer();
         initResource();
         if(models==null)
-            mGameGenerator=MainActivity.getmGameGeneretor();
+            mGameGenerator= LocationActivity.getmGameGeneretor();
         countDownTimer= new CountDownTimer(15200,1000) {
             int time=0;
 
             @Override
             public void onTick(long millisUntilFinished) {
                 time++;
-
                 if(time%3==0)
-                    mGameGenerator.playerGetHit(20,false);
-                if(time%5==0){
+                    mGameGenerator.playerGetHit(10,false);
+                if(time%5==0&&attacked==true){
                     int random=mGameGenerator.randInt(0,modelIDlist.size()-1);
                     IGeometry t=GameGenerator.getObjectGroup().getObjectDetailList().get(modelIDlist.get(random)).getModel();
                     t.stopAnimation();
@@ -47,14 +53,14 @@ public class MistManager {
         }.start();
     }
 
-    public void stopTimer(){
+    public static void stopTimer(){
         if(countDownTimer!=null)
             countDownTimer.cancel();
     }
 
     public void onMistModelAnimationEnd(String animationName,IGeometry model){
         if(animationName.equals("pri_attack")){
-            mGameGenerator.playerGetHit(100,true);
+            mGameGenerator.playerGetHit(50,true);
             model.startAnimation("pri_attack_back");
         }else if(animationName.equals("pri_attack_back")){
             model.startAnimation("pri_loop",true);

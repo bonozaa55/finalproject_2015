@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:columnCount="8"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:background="#00FFFF"
+        android:id="@+id/marker7"
+        android:layout_gravity="left|top"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:background="#FFF0F0"
+        android:id="@+id/marker4"
+        android:layout_gravity="right|top"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="#0000FF"
+        android:id="@+id/marker6"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_alignBottom="@+id/marker7"
+        android:layout_toStartOf="@+id/marker7" />
+
+
+    <ImageView
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:background="#00FF00"
+        android:id="@+id/marker2"
+        android:layout_gravity="right|bottom"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/marker4" />
+
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:background="#FFFF00"
+        android:id="@+id/marker3"
+        android:layout_gravity="left|top"
+        android:layout_above="@+id/marker7"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="#F000F0"
+        android:id="@+id/marker5"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_alignBottom="@+id/marker7"
+        android:layout_toStartOf="@+id/marker6" />
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:background="#00F0F0"
+        android:id="@+id/marker1"
+        android:layout_gravity="right|top"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/marker2" />
+
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="140dp"
+        android:background="#FF00FF"
+        android:id="@+id/mission_text"
+        android:text="Mission1"
+        android:layout_above="@+id/marker4" />
+</RelativeLayout>

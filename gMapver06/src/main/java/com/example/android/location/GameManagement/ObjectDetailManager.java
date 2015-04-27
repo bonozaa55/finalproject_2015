@@ -6,8 +6,7 @@ import android.os.HandlerThread;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.android.location.Activity.MainActivity;
-import com.example.android.location.R;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Object.ObjectDATA;
 import com.example.android.location.Resource.Object.ObjectDetail;
@@ -54,14 +53,15 @@ public class ObjectDetailManager {
         switch (GAME_STATE) {
             case GlobalResource.STATE_MARKER:
                 ObjectDATA objectDATA = ObjectDATA.getObjectDATAHashMap().get(objectGroup.getMainKey());
-                MainActivity.makeToast("BOSS!!", Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("ระวังบอสสส!!", Toast.LENGTH_LONG);
+                //com.example.android.location.Activity.LocationActivity.makeToast("????????!!", Toast.LENGTH_LONG);
                 String filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + objectDATA.getMarkerPath() + ".xml");
                 setConfig(filePath);
                 loadMarkerModel(objectGroup);
                 break;
             case GlobalResource.STATE_LOCATIONBASED:
-                MainActivity.makeToast("Location monster",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("มีมอนเตอร์อยู่แถวๆนี้!!", Toast.LENGTH_LONG);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -71,7 +71,7 @@ public class ObjectDetailManager {
                 loadLocalModel(objectGroup);
                 break;
             case GlobalResource.STATE_METEOR:
-                MainActivity.makeToast("Meteor coming!!",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("อุกกาบาตตกลงมาแล้ว!!", Toast.LENGTH_LONG);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -81,7 +81,7 @@ public class ObjectDetailManager {
                 loadMeteorModel(objectGroup);
                 break;
             case GlobalResource.STATE_DEAD:
-                MainActivity.makeToast("You are dead, Please go to heal station to refill it",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("เจ้าหนะได้ตายไปแล้ว จงไปเพิ่มพลังชีวิตซะ", Toast.LENGTH_LONG);
                 String markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -89,7 +89,7 @@ public class ObjectDetailManager {
                 loadDeadResource();
                 break;
             case GlobalResource.STATE_HEALING:
-                MainActivity.makeToast("Healing",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("ขวดยาวางตรงนั้นน!!", Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.BOTTLE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -97,16 +97,16 @@ public class ObjectDetailManager {
                 loadDeadResource();
                 break;
             case GlobalResource.STATE_MISSION:
-                MainActivity.makeToast("The Old man",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("นั้นไง!! ผู้เฒ่าา", Toast.LENGTH_LONG);
                 new Mission_ONE().resetStateToMission();
                 break;
             case GlobalResource.STATE_GATHERING:
-                MainActivity.makeToast("Gathering",Toast.LENGTH_LONG);
+                LocationActivity.makeToast("สิ่งของโผล่ออกมาแล้ว~", Toast.LENGTH_LONG);
                 setCollectingState(true, objectGroup);
                 setGatheringConfig();
                 break;
             case GlobalResource.STATE_FISHING:
-                MainActivity.makeToast("Fishing",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("จุดตรงปลาอยู่แถวๆนี้!!", Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.WATER_VALVE).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -114,7 +114,7 @@ public class ObjectDetailManager {
                 loadFishingResource();
                 break;
             case GlobalResource.STATE_SHOPPING:
-                MainActivity.makeToast("SHOP",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("เจ้าเห็นร้านค้านั้นไหมม!!", Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.SHOP_MAN).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -122,7 +122,7 @@ public class ObjectDetailManager {
                 loadShopResource(objectGroup);
                 break;
             case GlobalResource.STATE_PETTING:
-                MainActivity.makeToast("PET",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("พบมังกรน้อย 1 ea", Toast.LENGTH_LONG);
                 markerPath = ObjectDATA.getObjectDATAHashMap().get(ObjectID.PET_V1).getMarkerPath();
                 filePath = AssetsManager.getAssetPath(context.getApplicationContext(),
                         "TrackingConfig/Assets/MarkerConfig_" + markerPath + ".xml");
@@ -130,7 +130,7 @@ public class ObjectDetailManager {
                 loadPetResource();
                 break;
             case GlobalResource.STATE_MIST:
-                MainActivity.makeToast("MIST ZONE",Toast.LENGTH_LONG);
+                com.example.android.location.Activity.LocationActivity.makeToast("เข้าสู่โซนหมอกก!!", Toast.LENGTH_LONG);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -148,7 +148,7 @@ public class ObjectDetailManager {
             public void run() {
                 metaioSDK.startInstantTracking("INSTANT_2D_GRAVITY_SLAM_EXTRAPOLATED", "", false);
             }
-        },100);
+        }, 100);
     }
     void setGameState(boolean parameter) {
         GlobalResource.setGAME_STATE(GlobalResource.STATE_IDLE);
@@ -176,10 +176,12 @@ public class ObjectDetailManager {
                 if(!Player.isIsGetPet()) {
                     tt.setTranslation(new Vector3d(400,0,-555));
                     tt.startAnimation("loop", true);
-                }else
-                    tt.setTranslation(new Vector3d(0,0,-555));
+                }else {
+                    tt.setRotation(new Rotation(0,0,(float)Math.PI/180*25));
+                    tt.setTranslation(new Vector3d(0, 0, -555));
+                }
                 tt.setVisible(true);
-                tt.setRotation(new Rotation(0,0,(float)Math.PI/180*25));
+
             }
         }
         GlobalResource.getListOfViews().get(Constants.PET_LAYOUT).setVisibility(View.VISIBLE);
@@ -204,7 +206,7 @@ public class ObjectDetailManager {
         for (Map.Entry<String, ObjectDetail> t : temp.entrySet()) {
             IGeometry tt = t.getValue().getModel();
             tt.setPickingEnabled(true);
-            tt.setAnimationSpeed(50);
+            tt.setAnimationSpeed(30);
             tt.setVisible(true);
             tt.startAnimation("falling");
         }
@@ -256,13 +258,10 @@ public class ObjectDetailManager {
             tt.stopAnimation();
             tt.setRotation(new Rotation(0, 0, 0));
         }
-        GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT)
-                .findViewById(R.id.backToNormal).setVisibility(View.GONE);
         GlobalResource.getListOfViews().get(Constants.PET_LAYOUT).setVisibility(View.GONE);
     }
 
     public void setVisibilityCollectItem(boolean parameter, ObjectGroup object) {
-        View motherView = GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT);
         if (parameter) {
             for (Map.Entry<String, ObjectDetail> t : object.getObjectDetailList().entrySet()) {
                 IGeometry tt = t.getValue().getModel();
@@ -270,9 +269,7 @@ public class ObjectDetailManager {
                 tt.setFadeInTime(1);
                 tt.setPickingEnabled(true);
             }
-            motherView.findViewById(R.id.backToNormal).setVisibility(View.VISIBLE);
-        } else
-            motherView.findViewById(R.id.backToNormal).setVisibility(View.GONE);
+        }
     }
 
     public void loadShopResource(ObjectGroup mModelList){

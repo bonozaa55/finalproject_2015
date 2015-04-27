@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#a0000000"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:background="@drawable/mycraft_item_background2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_height="145dp">
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout2">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="60dp"
+            android:src="@drawable/oldman_icon1"
+            android:layout_height="60dp"
+            android:id="@+id/dialog_icon"
+
+            android:layout_centerHorizontal="true" />
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:layout_below="@+id/dialog_icon"
+                android:text="Small"
+                android:id="@+id/dialog_title"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="3dp"
+                android:background="#1F8A70"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_height="match_parent"
+                android:id="@+id/dialog_space" />
+
+            <TextView
+                    android:id="@+id/dialogTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:text="Appearing as expectedqweqweqweqweqweqwe...?"
+                    android:textSize="14sp"
+                    android:layout_below="@+id/dialog_title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
+        <Button
+
+            android:id="@+id/dialogBtnOK"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="OK"
+            android:layout_marginRight="1.5dp"
+            android:layout_marginLeft="1.5dp"
+            android:background="#1F8A70"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
+</RelativeLayout>

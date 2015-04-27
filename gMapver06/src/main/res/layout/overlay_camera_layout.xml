@@ -13,7 +13,13 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/mist_layout2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/mist_layout3"
         android:id="@+id/overlay_mist"
         android:visibility="gone"
         android:layout_centerVertical="true"
@@ -29,33 +35,13 @@
         android:layout_centerHorizontal="true" />
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#5000A000"
-        android:id="@+id/overlay_get_restore"
-        android:visibility="gone"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        android:id="@+id/backToNormal"
-        android:onClick="BackToNormal"
-        android:visibility="gone"
-        android:layout_margin="10dp"
-        android:layout_gravity="left|top" />
-
-
-    <ImageView
-        android:layout_width="110dp"
-        android:layout_height="110dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:id="@+id/overlay_potions_interface"
         android:layout_gravity="right|bottom"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/potion0"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/potion_icon"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -66,22 +52,21 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/overlay_potions_interface"
         android:layout_alignEnd="@+id/overlay_potions_interface"
-        android:layout_marginBottom="5dp"
         android:id="@+id/overlay_group_item">
 
-
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginBottom="5dp"
-            android:src="@drawable/sword_icon0"
-            android:id="@+id/overlay_equipment" />
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
             android:id="@+id/overlay_myItem_interface"
-            android:src="@drawable/toolbox" />
+            android:src="@drawable/bag_icon" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/equipment_icon"
+            android:id="@+id/overlay_equipment" />
 
 
     </LinearLayout>
@@ -89,66 +74,102 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
         android:layout_alignBottom="@+id/overlay_potions_interface"
         android:layout_toStartOf="@+id/overlay_potions_interface"
         android:id="@+id/overlay_group_quest">
+        <!--
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="SwitchLocation"
+                    android:text="Warp"
+                    android:id="@+id/button" />
+        -->
+
 
         <ImageView
+            android:id="@+id/overlay_help"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:id="@+id/overlay_craft_quest_interface"
-            android:src="@drawable/icon_flag" />
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/overlay_myQuest_interface"
-            android:src="@drawable/stack"
-            android:layout_marginLeft="10dp"
+            android:src="@drawable/help_icon"
             android:layout_marginRight="10dp" />
-    </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/overlay_object_hp"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:progressDrawable="@drawable/customprogressbar"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="250dp"
-        android:layout_height="30dp"
-        android:rotation="180"
-        android:visibility="gone"
-        android:layout_alignParentRight="true"
-        android:max="100"
-        android:progress="100"
-        android:indeterminate="false" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
+            android:id="@+id/overlay_craft_quest_interface"
+            android:src="@drawable/mission_icon" />
+        <ImageView
+            android:id="@+id/overlay_map"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/map_icon1" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/overlay_player_hp"
         style="?android:attr/progressBarStyleHorizontal"
         android:progressDrawable="@drawable/customprogressbar"
-        android:layout_width="250dp"
-        android:layout_height="30dp"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
         android:layout_marginLeft="10dp"
         android:max="100"
         android:progress="100"
         android:indeterminate="false"
         android:layout_alignBottom="@+id/overlay_group_quest" />
 
+    <ProgressBar
+        android:id="@+id/overlay_monster_hp_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressDrawable="@drawable/customprogressbar_red"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:rotation="180"
+        android:max="100"
+        android:progress="100"
+        android:visibility="gone"
+        android:indeterminate="false"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <!--
+    <ProgressBar
+            android:id="@+id/overlay_monster_hp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/customprogressbar"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="250dp"
+            android:layout_height="30dp"
+            android:rotation="180"
+            android:layout_alignParentRight="true"
+            android:max="100"
+            android:progress="100"
+            android:indeterminate="false" />
+            -->
+
+
     <Button
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="0"
         android:textStyle="bold"
         android:textAlignment="center"
+        android:onClick="SwitchLocation"
         android:textSize="20sp"
         android:textColor="#000000"
-        android:background="@drawable/potion_text"
+        android:background="@drawable/potion_quantity_icon"
         android:id="@+id/overlay_potions_count"
-        android:layout_alignBottom="@+id/overlay_potions_interface"
-        android:layout_alignEnd="@+id/overlay_potions_interface" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -164,15 +185,7 @@
         android:id="@+id/overlay_get_hit_dmg"
         android:textColor="#58aF27"
         android:layout_above="@+id/overlay_player_hp"
-        android:layout_toEndOf="@+id/backToNormal"
         android:layout_marginStart="100dp" />
-    <Button
-        android:id="@+id/switch_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="SwitchLocation"
-        android:text="Warp"
-        android:layout_alignBottom="@+id/overlay_player_hp"
-        android:layout_toStartOf="@+id/overlay_group_quest" />
+
 
 </RelativeLayout>

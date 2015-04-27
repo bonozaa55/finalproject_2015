@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="2dp"
                 android:layout_marginLeft="2dp"
-                android:background="#2980B9"
+                android:background="#DC3522"
                 android:id="@+id/frameLayout">
 
                 <ImageView
@@ -81,7 +81,7 @@
                     android:layout_marginLeft="30dp"
                     android:text="Check materials!"
                     android:gravity="center"
-                    android:background="#2980B9"
+                    android:background="#DC3522"
                     android:textColor="#ECF0F1"
                     android:textSize="20dp"
 

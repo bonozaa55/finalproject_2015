@@ -3,7 +3,7 @@ package com.example.android.location.GameManagement;
 import android.os.Handler;
 import android.widget.Toast;
 
-import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
@@ -106,7 +106,7 @@ public class BossManager {
     public void checkOnAnimationEnd(String animationName, IGeometry geometry, GameGenerator gameGenerator) {
         if (animationName.equals("attack")) {
             geometry.startAnimation("attack_back");
-            int dmg = 500;
+            int dmg = 400;
             if (BOSS_STATE == STATE_UNDERLING_L_ATK || BOSS_STATE == STATE_UNDERLING_R_ATK)
                 dmg = 100;
             gameGenerator.playerGetHit(dmg,true);
@@ -140,7 +140,7 @@ public class BossManager {
                 under_R = t1.getValue();
             if (t1.getValue().getKey().equals(ObjectID.ELEPHANT))
                 boss = t1.getValue();
-            t1.getValue().getModel().setScale(0.2f);
+            t1.getValue().getModel().setScale(0.1f);
             t1.getValue().getModel().startAnimation("loop", true);
         }
     }
@@ -159,7 +159,7 @@ public class BossManager {
         }
         if (bossRemainPercent <= 0) {
 
-            MainActivity.makeToast("Congrats you had finish a hard boss", Toast.LENGTH_LONG);
+            LocationActivity.makeToast("Congrats you had finish a hard boss", Toast.LENGTH_LONG);
             setPickingEnabled();
 
             new Handler().postDelayed(new Runnable() {

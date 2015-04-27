@@ -25,7 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemDetail;
@@ -64,7 +64,7 @@ public class MyCraftMissionFragment extends android.support.v4.app.Fragment {
         for (MaterialRequired t : itemsRequired) {
             ItemDetail item = ItemDATA.getItemList().get(t.getItemID());
             PlayerItem temp = playerItemHashMap.get(t.getItemID());
-            TextView tv = new TextView(MainActivity.getThisContext());
+            TextView tv = new TextView(LocationActivity.getThisContext());
             int playerItem = 0;
             if (temp != null) {
                 playerItem = temp.getQuantity();
@@ -114,10 +114,10 @@ public class MyCraftMissionFragment extends android.support.v4.app.Fragment {
                 /*
                 if (craftMission.getMissionStatus()==3) {
                     Player.setAtkDmg(50);
-                    MainActivity.makeToast("Crafting Successful!");
+                    LocationActivity.makeToast("Crafting Successful!");
 
                 } else {
-                    MainActivity.makeToast("Go out and find materials!!");
+                    LocationActivity.makeToast("Go out and find materials!!");
                 }*/
             }
         });

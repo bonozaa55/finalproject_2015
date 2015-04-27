@@ -25,11 +25,11 @@ public class ItemDATA {
         itemList.put(ItemsID.ATK_HAND,new ItemDetail(ItemsID.ATK_HAND,"มือเปล่า","อุปกรณ์โจมตีที่ติดตัวผู้เล่นมาตั้งแต่กำเนิด"
                 ,R.drawable.hand_icon,10,0,200));
         itemList.put(ItemsID.ATK_SLINK_SHOT,new ItemDetail(ItemsID.ATK_SLINK_SHOT,"หนังสติ๊กทรงพลัง"
-                ,"อุปกรณ์โจมตีระยะไกลที่ทำจากวัสดุหายาก จึงทำให้มีความรุนแรงในการโจมตีสูง",R.drawable.stick,50,0,500));
-        itemList.put(ItemsID.DEF_OLD_SHIRT,new ItemDetail(ItemsID.DEF_OLD_SHIRT,"เสื้อตัวเก่า"
-                ,"อุปกรณป้องกันที่ติดตัวผู้เล่นมาตั้งแต่กำเนิด",R.drawable.icon_heart,0,10,200));
+                ,"อุปกรณ์โจมตีระยะไกลที่ทำจากวัสดุหายาก จึงทำให้มีความรุนแรงในการโจมตีสูง",R.drawable.slingshot_icon,50,0,500));
+        itemList.put(ItemsID.DEF_OLD_SHIRT,new ItemDetail(ItemsID.DEF_OLD_SHIRT,"กระโปรงตัวเก่า"
+                ,"อุปกรณป้องกันที่ติดตัวผู้เล่นมาตั้งแต่กำเนิด",R.drawable.old_skirt,0,10,200));
         itemList.put(ItemsID.DEF_NICE_SHIRT,new ItemDetail(ItemsID.DEF_NICE_SHIRT,"เสื้อจอมยุทธ"
-                ,"อุปกรณป้องกันที่ได้รับจากภารกิจซึ่งมีความทนทานสูง",R.drawable.armor_icon1,0,50,500));
+                ,"อุปกรณป้องกันที่ได้รับจากภารกิจซึ่งมีความทนทานสูง",R.drawable.suit_icon,0,50,500));
         itemList.put(ItemsID.EGG,new ItemDetail(ItemsID.EGG,"Egg","",R.drawable.egg));
         itemList.put(ItemsID.MUMMY_PIECE,new ItemDetail(ItemsID.MUMMY_PIECE,"Mummy soul","",R.drawable.mummy));
     }

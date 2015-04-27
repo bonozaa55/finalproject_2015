@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -16,8 +17,11 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -25,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -37,6 +42,7 @@ import android.widget.Toast;
 import com.example.android.location.GameManagement.FishingManager;
 import com.example.android.location.GameManagement.GameGenerator;
 import com.example.android.location.GameManagement.HealManager;
+import com.example.android.location.GameManagement.InstructionManager;
 import com.example.android.location.GameManagement.Mission_ONE;
 import com.example.android.location.GameManagement.MistManager;
 import com.example.android.location.GameManagement.MyItemManager;
@@ -44,12 +50,15 @@ import com.example.android.location.GameManagement.ObjectDetailManager;
 import com.example.android.location.GameManagement.PettingManager;
 import com.example.android.location.GameManagement.StoreManager;
 import com.example.android.location.Interface.MyCraftMissionManager;
+import com.example.android.location.Interface.PageIndicator;
+import com.example.android.location.Interface.StartActivityFragmentManager;
 import com.example.android.location.Interface.TouchEffectView;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
 import com.example.android.location.Resource.Item.ItemDATA;
 import com.example.android.location.Resource.Item.ItemDetail;
 import com.example.android.location.Resource.Item.ItemsID;
+import com.example.android.location.Resource.Object.ObjectDATA;
 import com.example.android.location.Resource.Object.ObjectDetail;
 import com.example.android.location.Resource.Object.ObjectGroup;
 import com.example.android.location.Resource.Object.ObjectID;
@@ -64,6 +73,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.metaio.sdk.ARViewActivity;
 import com.metaio.sdk.GestureHandlerAndroid;
@@ -79,15 +90,18 @@ import com.metaio.sdk.jni.TrackingValuesVector;
 import com.metaio.tools.SystemInfo;
 import com.metaio.tools.io.AssetsManager;
 
+import org.w3c.dom.Text;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends ARViewActivity {
+public class LocationActivity extends ARViewActivity {
 
     public static final String FRAGTAG = "ImmersiveModeFragment";
+
     public static Vibrator mVibration;
     static Context applicationContext, this_Context;
     static TouchEffectView touchEffectView;
@@ -108,9 +122,9 @@ public class MainActivity extends ARViewActivity {
     private Button resumeMapButton;
     private LocationReceiver lReceiver;
     private Intent intent_location;
-    private Location cLocation;
+    static Location cLocation;
     private String sLocation = "";
-    private GoogleMap map;
+    static GoogleMap map;
     private float mDeclination;
     private ArrayList<LLACoordinate> dlocation = new ArrayList<LLACoordinate>();
     private IRadar mRadar;
@@ -120,7 +134,7 @@ public class MainActivity extends ARViewActivity {
     private MetaioSDKCallbackHandler mCallbackHandler;
     private int timeCount = 0;
     private int maxTime = 200;
-    private boolean startCount = false, doubleBackToExitPressedOnce = false;
+    private boolean startCount = false, doubleBackToExitPressedOnce = false,isOpenMap=false;
     private int gameState = 0;
     private HealManager mHealManager;
     private GestureHandlerAndroid mGestureHandler;
@@ -128,9 +142,10 @@ public class MainActivity extends ARViewActivity {
     private MistManager mMistManager;
     private MyItemManager mMyItemManager;
     static PlayerDB playerDB;
+    private InstructionManager mInstructionManager;
 
     public static double getPhoneHeading() {
-        return MainActivity.phoneHeading;
+        return com.example.android.location.Activity.LocationActivity.phoneHeading;
     }
 
     public static Context getThisContext() {
@@ -167,33 +182,37 @@ public class MainActivity extends ARViewActivity {
 
     }
 
+    public static void showSimpleDialog(String title, String text, int mode) {
+        final View dialog = GlobalResource.getListOfViews().get(Constants.DIALOG);
+        dialog.setVisibility(View.VISIBLE);
+        ImageView icon = (ImageView) dialog.findViewById(R.id.dialog_icon);
+        TextView textView = (TextView) dialog.findViewById(R.id.dialogTxt);
+        TextView textTitle = (TextView) dialog.findViewById(R.id.dialog_title);
+        if (mode == 1) {
+            icon.setImageResource(R.drawable.oldman_icon1);
+            dialog.findViewById(R.id.dialogBtnOK).setBackgroundColor(Color.parseColor("#1F8A70"));
+            dialog.findViewById(R.id.dialog_space).setBackgroundColor(Color.parseColor("#1F8A70"));
+        } else if (mode == 0) {
+            icon.setImageResource(R.drawable.boss_icon1);
+            dialog.findViewById(R.id.dialogBtnOK).setBackgroundColor(Color.parseColor("#2980B9"));
+            dialog.findViewById(R.id.dialog_space).setBackgroundColor(Color.parseColor("#2980B9"));
 
-    public static void showSimpleDialog(String title, String Text) {
-        final Dialog dialog = new Dialog(this_Context);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-        dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        dialog.setContentView(R.layout.dialog_ok);
-        dialog.setTitle(title);
-
+        } else {
+            icon.setImageResource(R.drawable.pet_icon2);
+            dialog.findViewById(R.id.dialogBtnOK).setBackgroundColor(Color.parseColor("#FFB03B"));
+            dialog.findViewById(R.id.dialog_space).setBackgroundColor(Color.parseColor("#FFB03B"));
+        }
+        textView.setText(text);
+        textTitle.setText(title);
         dialog.findViewById(R.id.dialogBtnOK).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
-                if (GlobalResource.getGAME_STATE() == GlobalResource.STATE_PETTING)
-                    mPettingManager.resumeAnimation();
+                dialog.setVisibility(View.GONE);
+                mPettingManager.resumeAnimation();
             }
         });
-        ((TextView) dialog.findViewById(R.id.dialogTxt)).setText(Text);
-        dialog.show();
-        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
+
 
     public static void makeToast(String message, int length) {
         View layout = GlobalResource.getListOfViews().get(Constants.TOAST_LAYOUT);
@@ -207,7 +226,7 @@ public class MainActivity extends ARViewActivity {
         mToast.show();
     }
 
-    public static void updatePlayerDataDB(){
+    public static void updatePlayerDataDB() {
         playerDB.updatePlayerData();
     }
 
@@ -273,6 +292,7 @@ public class MainActivity extends ARViewActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         playerDB = new PlayerDB(this);
         playerDB.getWritableDatabase();
         mSensorManager.registerListener(mOriantationListener,
@@ -283,6 +303,7 @@ public class MainActivity extends ARViewActivity {
                 SensorManager.SENSOR_DELAY_NORMAL);
         mMediaPlayer = new MediaPlayer();
         lReceiver = new LocationReceiver();
+        intent_location = new Intent(this, BackgroundLocationService.class);
         registerReceiver(lReceiver, new IntentFilter("Location"));
         startService(intent_location);
 
@@ -296,8 +317,9 @@ public class MainActivity extends ARViewActivity {
         unregisterReceiver(lReceiver);
         stopService(intent_location);
         stopPlaying();
+        MistManager.stopTimer();
         updatePlayerDataDB();
-        // mGameGeneretor.resetState();
+        //mGameGeneretor.resetState();
 
     }
 
@@ -309,7 +331,7 @@ public class MainActivity extends ARViewActivity {
         }
 
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
 
@@ -348,7 +370,7 @@ public class MainActivity extends ARViewActivity {
     }
 
     void initOther() {
-        intent_location = new Intent(this, BackgroundLocationService.class);
+
 
         if (getSupportFragmentManager().findFragmentByTag(FRAGTAG) == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -369,9 +391,10 @@ public class MainActivity extends ARViewActivity {
 
     public void initResource() {
         //initOther();
+
         applicationContext = getApplicationContext();
         this_Context = this;
-        mMyItemManager = new MyItemManager(playerDB);
+        mMyItemManager = new MyItemManager(playerDB, getIntent().getIntExtra(StartActivityFragmentManager.ACTION, -1));
         SDK_ready = 1;
 
         initInterface();
@@ -382,12 +405,12 @@ public class MainActivity extends ARViewActivity {
         mPettingManager = new PettingManager(mObjectDetailManager);
         StoreManager mStoreManager = new StoreManager(this, mMyItemManager);
         mMistManager = new MistManager();
-
+        mInstructionManager = new InstructionManager(map);
 
         mGameGeneretor = new GameGenerator(this, metaioSDK, mObjectDetailManager, mFishingManager, mMistManager
-                , map, playerDB);
+                , map, playerDB, mInstructionManager);
 
-        mMissionOne = new Mission_ONE(mGameGeneretor, metaioSDK, applicationContext);
+        mMissionOne = new Mission_ONE(mGameGeneretor, metaioSDK, applicationContext, mInstructionManager);
 
 
         mMissionOne.startMission();
@@ -397,9 +420,9 @@ public class MainActivity extends ARViewActivity {
 
     public void initInterface() {
 
-        View mapLayout = mList.get(Constants.MAP_LAYOUT);
+        final View mapLayout = mList.get(Constants.MAP_LAYOUT);
         final View overlayLayout = mList.get(Constants.OVERLAY_LAYOUT);
-        View craftLayout = mList.get(Constants.MY_CRAFT_DETIAL_LAYOUT);
+        final View craftLayout = mList.get(Constants.MY_CRAFT_DETIAL_LAYOUT);
         final View storeLayout = mList.get(3);
 
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -434,10 +457,12 @@ public class MainActivity extends ARViewActivity {
                 sLocation = "2";
             }
         });
+
         TextView t = (TextView) mapLayout.findViewById(R.id.bearing_text);
         t.setVisibility(View.GONE);
+        /*
         Button b = (Button) mapLayout.findViewById(R.id.switch_location);
-        b.setVisibility(View.VISIBLE);
+        b.setVisibility(View.VISIBLE);*/
         resumeMapButton = (Button) mapLayout.findViewById(R.id.toggleZoom);
         tBearing = (TextView) findViewById(R.id.bearing_text);
         tBearing.setVisibility(View.VISIBLE);
@@ -450,30 +475,53 @@ public class MainActivity extends ARViewActivity {
             public void onClick(View view) {
                 mGameGeneretor.restoreHPbyItems();
 
-                /*View t = overlayLayout.findViewById(R.id.overlay_group_item);
-                View t2 = overlayLayout.findViewById(R.id.overlay_group_quest);
-                if (t.getVisibility() == View.INVISIBLE) {
-                    t.setVisibility(View.VISIBLE);
-                    t2.setVisibility(View.VISIBLE);
-                } else {
-                    t.setVisibility(View.INVISIBLE);
-                    t2.setVisibility(View.INVISIBLE);
-                }
-                */
-
 
             }
         });
-        ImageView interfaceCraftQuest = (ImageView) overlayLayout.findViewById(R.id.overlay_craft_quest_interface);
 
+
+
+
+
+        View interfaceCraftQuest = overlayLayout.findViewById(R.id.overlay_craft_quest_interface);
+        View interfaceHelpLayout = overlayLayout.findViewById(R.id.overlay_help);
+        final View helpLayout = mList.get(Constants.HELP_LAYOUT);
         interfaceCraftQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mList.get(2).setVisibility(View.VISIBLE);
-                // mMyCraftMissionManager.checkCraftingMaterial();
+                craftLayout.setVisibility(View.VISIBLE);
+            }
+        });
+        interfaceHelpLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpLayout.setVisibility(View.VISIBLE);
+            }
+        });
+        helpLayout.findViewById(R.id.instruction_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helpLayout.setVisibility(View.GONE);
+            }
+        });
+
+        overlayLayout.findViewById(R.id.overlay_map).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               // mList.get(Constants.MAP_LAYOUT).setVisibility(View.VISIBLE);
+                isOpenMap=true;
+                mapLayout.findViewById(R.id.map_cancel).setVisibility(View.VISIBLE);
+            }
+        });
+        mapLayout.findViewById(R.id.map_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isOpenMap=false;
+                v.setVisibility(View.GONE);
             }
         });
         MyCraftMissionManager test = new MyCraftMissionManager(craftLayout, getSupportFragmentManager());
+
 
     }
 
@@ -517,10 +565,9 @@ public class MainActivity extends ARViewActivity {
                     float x_value = Math.abs(event.values[0]);
                     // Log.i("www",z_value+" "+y_value+" "+x_value);
                     //boolean check=x_value<1&&y_value<1&&z_value<8;
-                    boolean check = z_value < 8 && x_value > 3;
+                    boolean check = z_value < 8 &&(x_value > 3||(z_value>-14&&z_value<-9));
                     // show map only a phone flip up
-
-                    boolean x = check || (GlobalResource.getGAME_STATE() != GlobalResource.STATE_IDLE);
+                    boolean x = (check || (GlobalResource.getGAME_STATE() != GlobalResource.STATE_IDLE))&&!isOpenMap;
                     //Log.i("www",x+"");
                     if (count > 20) {//camera
                         if (x) {
@@ -551,6 +598,7 @@ public class MainActivity extends ARViewActivity {
         };
     }
 
+
     /**
      * ******************************
      */
@@ -558,35 +606,28 @@ public class MainActivity extends ARViewActivity {
 
     public void AddAllMarker() {
 
-        dlocation.add(new LLACoordinate(18.794280, 98.950866, 0, 0));//area2
-        //dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
-        //dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
-        //dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
+        //dlocation.add(new LLACoordinate(18.794676, 98.952404, 0, 0));//fishing
+        //dlocation.add(new LLACoordinate(18.793860, 98.950866, 0, 0));//area2
+        // dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+        //  dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//fishing
+        //dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
         //dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
         //dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
 
-        /*
-        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
-        dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
-        dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
-        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
-        dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
-        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
-        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
-        dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
-        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
-        */
 
-/*
-        dlocation.add(new LLACoordinate(18.794280, 98.950866, 0, 0));//area2
-        dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
-        dlocation.add(new LLACoordinate(18.795122, 98.951545, 0, 0));//fishing
-        dlocation.add(new LLACoordinate(18.795893, 98.951211, 0, 0));//shop
-        dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
-        dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+        //dlocation.add(new LLACoordinate(18.794676, 98.952404, 0, 0));//shop
+        //  dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+          //dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+        // dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
         dlocation.add(new LLACoordinate(18.795526f, 98.953083f, 0, 0));//area
-        dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
-        */
+        //  dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+        //
+        //  dlocation.add(new LLACoordinate(18.794803, 98.950988, 0, 0));//pet
+          dlocation.add(new LLACoordinate(18.793860f, 98.950866f, 0, 0));//area2
+        //  dlocation.add(new LLACoordinate(18.796568, 98.951905, 0, 0));//heal
+        //  dlocation.add(new LLACoordinate(18.796474, 98.952519, 0, 0));//boss
+        // dlocation.add(new LLACoordinate(18.795396, 98.951926, 0, 0));//mission
+
 
         LLACoordinate t = new LLACoordinate(cLocation.getLatitude(), cLocation.getLongitude(), 0, 0);
         dlocation.add(t);
@@ -660,7 +701,6 @@ public class MainActivity extends ARViewActivity {
                         mGestureHandler.addObject(t.getValue().getModel(), 1);
                 }
                 mGestureHandler.setRotationAxis('y');
-
             }
         });
 
@@ -720,6 +760,8 @@ public class MainActivity extends ARViewActivity {
                         touchEffectView.setVisibility(View.VISIBLE);
                     }
                 });
+                GlobalResource.getListOfViews().get(Constants.OVERLAY_LAYOUT)
+                        .findViewById(R.id.overlay_monster_hp_bar).setVisibility(View.VISIBLE);
                 mGameGeneretor.checkLocationGeometryTouch(geometry.getName(), GAME_STATE, mRadar, mGameGeneretor);
             }
         }
@@ -789,7 +831,7 @@ public class MainActivity extends ARViewActivity {
                     if (mList.size() == 0) {
 
                         // add map layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.map_layout, null);
                         mList.add(mGUIView);
                         mGUIView.setVisibility(View.GONE);
@@ -797,7 +839,7 @@ public class MainActivity extends ARViewActivity {
                                 LayoutParams.MATCH_PARENT,
                                 LayoutParams.MATCH_PARENT));
                         //camera overlay
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.overlay_camera_layout, null);
                         mList.add(mGUIView);
                         addContentView(mGUIView, new LayoutParams(
@@ -805,7 +847,7 @@ public class MainActivity extends ARViewActivity {
                                 LayoutParams.MATCH_PARENT));
                         mGUIView.setVisibility(View.GONE);
                         //craft detail View
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.mycraft_main, null);
                         mList.add(mGUIView);
                         Resources r = getResources();
@@ -818,7 +860,7 @@ public class MainActivity extends ARViewActivity {
                         touchEffectView = (TouchEffectView) mList.get(Constants.OVERLAY_LAYOUT).findViewById(R.id.touch_effect);
 
                         //store view
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.overlay_store, null);
                         mList.add(mGUIView);
                         px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 580, r.getDisplayMetrics());
@@ -829,7 +871,7 @@ public class MainActivity extends ARViewActivity {
                         mGUIView.setVisibility(View.GONE);
 
                         //store craft
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.overlay_craft_recipe, null);
                         mList.add(mGUIView);
                         px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 280, r.getDisplayMetrics());
@@ -843,7 +885,7 @@ public class MainActivity extends ARViewActivity {
                         View layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toast_layout_root));
                         mList.add(layout);
                         //heal layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.overlay_healing, null);
                         mList.add(mGUIView);
                         px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 390, r.getDisplayMetrics());
@@ -853,7 +895,7 @@ public class MainActivity extends ARViewActivity {
                         addContentView(mGUIView, temp);
                         mGUIView.setVisibility(View.GONE);
                         //buy potion layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.dialog_buying, null);
                         mList.add(mGUIView);
                         px_w = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 640, r.getDisplayMetrics());
@@ -863,16 +905,16 @@ public class MainActivity extends ARViewActivity {
                         addContentView(mGUIView, temp);
                         mGUIView.setVisibility(View.GONE);
                         //pet layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.petting_layout, null);
                         mList.add(mGUIView);
-                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                         temp.gravity = Gravity.CENTER;
                         addContentView(mGUIView, temp);
                         mGUIView.setVisibility(View.GONE);
 
                         //Myitem Layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.overlay_myitem_list, null);
                         mList.add(mGUIView);
                         temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
@@ -881,7 +923,7 @@ public class MainActivity extends ARViewActivity {
                         mGUIView.setVisibility(View.GONE);
 
                         //MyEquipment Layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.overlay_my_equip_list, null);
                         mList.add(mGUIView);
                         temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
@@ -890,8 +932,26 @@ public class MainActivity extends ARViewActivity {
                         mGUIView.setVisibility(View.GONE);
 
                         //selling Layout
-                        mGUIView = View.inflate(MainActivity.this,
+                        mGUIView = View.inflate(LocationActivity.this,
                                 R.layout.dialog_selling, null);
+                        mList.add(mGUIView);
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //instruction Layout
+                        mGUIView = View.inflate(LocationActivity.this,
+                                R.layout.overlay_instruction, null);
+                        mList.add(mGUIView);
+                        temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
+                        temp.gravity = Gravity.CENTER;
+                        addContentView(mGUIView, temp);
+                        mGUIView.setVisibility(View.GONE);
+
+                        //dialog Layout
+                        mGUIView = View.inflate(LocationActivity.this,
+                                R.layout.dialog_ok2, null);
                         mList.add(mGUIView);
                         temp = new FrameLayout.LayoutParams((int) px_w, (int) px_h);
                         temp.gravity = Gravity.CENTER;
@@ -901,7 +961,7 @@ public class MainActivity extends ARViewActivity {
                         //set global
                         mlist_size = mList.size();
                         GlobalResource.setListOfViews(mList);
-                        Log.i("www","www");
+                        Log.i("www", mlist_size + "");
                     }
                 }
             });
@@ -957,7 +1017,7 @@ public class MainActivity extends ARViewActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mGameGeneretor.playerGetHit(100, true);
+                        mGameGeneretor.playerGetHit(50, true);
                         mGameGeneretor.checkMeteor(geometry);
                     }
                 });
@@ -1004,4 +1064,6 @@ public class MainActivity extends ARViewActivity {
             }
         }
     }
+
+
 }

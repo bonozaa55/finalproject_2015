@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
-            android:background="#88A825"
+            android:background="#FFD34E"
             android:id="@+id/frameLayout">
 
             <ImageView
@@ -37,7 +37,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:id="@+id/mycraft_title"
-                android:textColor="#ECF0F1"
+                android:textColor="#FFFAE5"
                 android:layout_gravity="left|center_vertical" />
 
         </FrameLayout>
@@ -123,7 +123,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Name: "
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
                                     android:id="@+id/my_item_gold2"
@@ -133,7 +133,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="name"
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:id="@+id/my_equip_atk_name"
                                     android:layout_gravity="right|center_vertical" />
@@ -148,7 +148,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Detail: "
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
                                     android:id="@+id/my_item_gold5"
@@ -158,7 +158,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="qweqweqweqweqwewqeqweqweqweqwe"
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:id="@+id/my_equip_atk_detail"
                                     android:layout_gravity="right|center_horizontal" />
@@ -173,7 +173,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Attack Dmg: "
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
                                     android:id="@+id/my_item_gold6"
@@ -183,7 +183,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="7"
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:id="@+id/my_equip_atk_dmg"
                                     android:layout_gravity="right|center_vertical" />
@@ -197,7 +197,7 @@
                         android:layout_marginRight="20dp"
                         android:visibility="gone"
                         android:layout_marginBottom="10dp"
-                        android:background="#88A825"
+                        android:background="#FFD34E"
                         android:layout_height="wrap_content"
                         android:id="@+id/my_equip_cost_atk_layout">
 
@@ -278,7 +278,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Name: "
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
                                     android:id="@+id/textView"
@@ -288,7 +288,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="name"
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:id="@+id/my_equip_def_name"
                                     android:layout_gravity="right|center_vertical" />
@@ -303,7 +303,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Detail: "
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
                                     android:id="@+id/textView5"
@@ -313,7 +313,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:id="@+id/my_equip_def_detail"
                                     android:layout_gravity="right|center_vertical" />
@@ -328,7 +328,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Def Dmg: "
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:textStyle="bold"
                                     android:id="@+id/textView7"
@@ -338,7 +338,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="7"
-                                    android:textColor="#88A825"
+                                    android:textColor="#FFD34E"
                                     android:textSize="16sp"
                                     android:id="@+id/my_equip_def_dmg"
                                     android:layout_gravity="right|center_vertical" />
@@ -352,7 +352,7 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
-                        android:background="#88A825"
+                        android:background="#FFD34E"
                         android:layout_height="wrap_content"
                         android:id="@+id/my_equip_cost_def_layout">
 

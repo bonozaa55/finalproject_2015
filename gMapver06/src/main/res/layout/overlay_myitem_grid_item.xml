@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:text="Potion(15)"
-        android:textColor="#88A825"
+        android:textColor="#374140"
         android:textStyle="bold"
         android:textSize="10sp"
         android:layout_gravity="center_horizontal|center_vertical"

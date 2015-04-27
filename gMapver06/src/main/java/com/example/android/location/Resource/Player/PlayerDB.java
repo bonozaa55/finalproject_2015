@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.example.android.location.Resource.GlobalResource;
@@ -78,6 +79,20 @@ public class PlayerDB extends SQLiteOpenHelper {
         } catch (Exception e) {
             return -1;
         }
+    }
+
+    public long resetAllPlayerItem(){
+        try {
+            SQLiteStatement insertCmd;
+            SQLiteDatabase db;
+            db = this.getWritableDatabase();
+            String strSQL = "UPDATE " + TABLE_PLAYER_ITEM+ " SET Quantity = 0";
+            db.execSQL(strSQL);
+            return 1;
+        }catch (Exception e){
+            return -1;
+        }
+
     }
 
     public long updatePlayerEquipment(String ATK_ITEM_ID, String DEF_ITEM_ID) {

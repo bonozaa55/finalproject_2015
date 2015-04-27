@@ -18,12 +18,13 @@ public class GlobalResource {
     private static ArrayList<View> listOfViews;
     private static int GAME_STATE=0;
     private static int MISSION_STATE=0;
+    private static boolean clearMarkerMission=false;
 
     public static final int STATE_IDLE=0;
-    public static final int STATE_LOCATIONBASED=2;
     public static final int STATE_GATHERING=1;
-    public static final int STATE_MARKER=4;
+    public static final int STATE_LOCATIONBASED=2;
     public static final int STATE_METEOR=3;
+    public static final int STATE_MARKER=4;
     public static final int STATE_HEALING=5;
     public static final int STATE_DEAD=6;
     public static final int STATE_MISSION=7;
@@ -31,6 +32,7 @@ public class GlobalResource {
     public static final int STATE_PETTING=9;
     public static final int STATE_SHOPPING=10;
     public static final int STATE_MIST=11;
+    public static final int STATE_AREA2=12;
 
     public static int getMISSION_STATE() {
         return MISSION_STATE;
@@ -46,6 +48,14 @@ public class GlobalResource {
 
     public static void setCraftMissionList(ArrayList<CraftMission> craftMissionList) {
         GlobalResource.craftMissionList = craftMissionList;
+    }
+
+    public static boolean isClearMarkerMission() {
+        return clearMarkerMission;
+    }
+
+    public static void setClearMarkerMission(boolean clearMarkerMission) {
+        GlobalResource.clearMarkerMission = clearMarkerMission;
     }
 
     public static Player getPlayer() {

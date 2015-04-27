@@ -1,5 +1,6 @@
 package com.example.android.location.GameManagement;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -7,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import com.example.android.location.Activity.MainActivity;
+import com.example.android.location.Activity.LocationActivity;
 import com.example.android.location.Interface.MyItemGridAdapter;
 import com.example.android.location.R;
 import com.example.android.location.Resource.GlobalResource;
@@ -26,10 +27,12 @@ public class MyItemManager {
     PlayerItem myPlayerItem;
     PlayerDB playerDB;
     boolean isOnStore;
+    int action;
     MyItemGridAdapter gridAdapter;
 
-    public MyItemManager(PlayerDB playerDB) {
+    public MyItemManager(PlayerDB playerDB, int action) {
         this.playerDB = playerDB;
+        this.action = action;
         initResource();
     }
 
@@ -47,7 +50,7 @@ public class MyItemManager {
 
 
         GridView myItemGrid = (GridView) myItemLayout.findViewById(R.id.myitem_grid);
-        gridAdapter = new MyItemGridAdapter(MainActivity.getActivityContext());
+        gridAdapter = new MyItemGridAdapter(LocationActivity.getActivityContext());
 
         myItemGrid.setAdapter(gridAdapter);
         overlayLayout.findViewById(R.id.overlay_myItem_interface).setOnClickListener(new View.OnClickListener() {
@@ -151,7 +154,7 @@ public class MyItemManager {
         });
     }
 
-    void updateGridItem(){
+    void updateGridItem() {
         gridAdapter.updatePlayerItem();
     }
 
@@ -198,16 +201,31 @@ public class MyItemManager {
         return atkID;
     }
 
+    void playerResetData() {
+
+        Player.setHp(1000);
+        Player.setMaxHP(1000);
+        Player.setIsGetPet(false);
+        GlobalResource.setMISSION_STATE(Mission_ONE.STATE_GET_MISSION);
+        playerDB.updatePlayerEquipment(ItemsID.ATK_HAND + "", ItemsID.DEF_OLD_SHIRT + "");
+        playerDB.updatePlayerEquipmentData(ItemsID.ATK_HAND + "", 0 + "", 10 + "", 0 + "", 500 + "");
+        playerDB.updatePlayerEquipmentData(ItemsID.DEF_OLD_SHIRT + "", 0 + "", 0 + "", 10 + "", 500 + "");
+        playerDB.resetAllPlayerItem();
+        playerDB.updatePlayerData();
+    }
+
     void initDATA() {
+        if (action == Constants.ACTION_RESET)
+            playerResetData();
         ItemDATA itemsData = new ItemDATA();
         Player player = new Player(playerDB.SelectPlayerData());
         //Player.setAtkDmg(50);
         Player.setPlayerItems(playerDB.selectAllPlayerItems());
-
-        String atkData[]=playerDB.selectPlayerEquipmentData(getAtkEquipment()+"");
-        String defData[]=playerDB.selectPlayerEquipmentData(getDefEquipment()+"");
-        Player.setHp(1000);
-        playerDB.updatePlayerData();
+        Log.i("www","ww:"+GlobalResource.getMISSION_STATE()+"");
+        String atkData[] = playerDB.selectPlayerEquipmentData(getAtkEquipment() + "");
+        String defData[] = playerDB.selectPlayerEquipmentData(getDefEquipment() + "");
+        //Player.setHp(1000);
+        //playerDB.updatePlayerData();
 /*
         "(Equipment_ID INTEGER PRIMARY KEY," +
                 " LV INTEGER," +
@@ -215,6 +233,17 @@ public class MyItemManager {
                 " DEF_DMG INTEGER," +
                 " Initial_Cost INTEGER" +
   */
+/*
+        Player.getPlayerItems().put(ItemsID.GOLD,new PlayerItem(ItemsID.GOLD,15000));
+        Player.getPlayerItems().put(ItemsID.ORE,new PlayerItem(ItemsID.ORE,5));
+        Player.getPlayerItems().put(ItemsID.GRASS,new PlayerItem(ItemsID.GRASS,5));
+
+        Player.getPlayerItems().put(ItemsID.EGG,new PlayerItem(ItemsID.EGG,5));
+        Player.getPlayerItems().put(ItemsID.FISH,new PlayerItem(ItemsID.FISH,10));
+        Player.getPlayerItems().put(ItemsID.MUMMY_PIECE,new PlayerItem(ItemsID.MUMMY_PIECE,5));
+
+*/
+        //GlobalResource.setMISSION_STATE(Mission_ONE.STATE_GET_CRAFT_MISSION_2);
         ItemDATA.getItemList().get(getAtkEquipment()).setAtkDMG(Integer.parseInt(atkData[2]));
         ItemDATA.getItemList().get(getAtkEquipment()).setLv(Integer.parseInt(atkData[1]));
         ItemDATA.getItemList().get(getAtkEquipment()).setInitialCost(Integer.parseInt(atkData[4]));

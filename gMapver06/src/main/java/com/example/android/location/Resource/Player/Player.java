@@ -50,6 +50,10 @@ public class Player {
         defDmg = ItemDATA.getItemList().get(Integer.parseInt(playerData[5])).getDefDMG();
     }
 
+    public static void setMaxHP(int maxHP) {
+        Player.maxHP = maxHP;
+    }
+
     public static boolean isIsGetPet() {
         return isGetPet;
     }
@@ -60,7 +64,7 @@ public class Player {
 
     public static void removeMaterialRequired(ArrayList<MaterialRequired> t) {
         for (MaterialRequired t1 : t)
-            GameGenerator.setPlayerItem(t1.getItemID(), t1.getQuantity(), false);
+            GameGenerator.setPlayerItem(t1.getItemID(), -t1.getQuantity(), false);
     }
 
 
